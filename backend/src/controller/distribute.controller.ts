@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import AppError from "../utils/appError";
 import { CreateDistributeInput, UpdateDistributeInput } from "../schema/distribute.schama";
-import { findDistribute, createDistribute, findAllDistribute, findAndUpdateDistribute, deleteDistribute } from "../service/distribute.service";
+import { createDistribute, findAllDistribute, findDistribute, findAndUpdateDistribute, deleteDistribute } from "../service/distribute.service";
 
 var colors = require("colors");
 

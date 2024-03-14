@@ -11,18 +11,7 @@ import productRoute from "../src/routes/product.route";
 import inventoryRoute from "../src/routes/inventory.route";
 import distributeRoute from "../src/routes/distribute.route";
 import memberRoute from "../src/routes/member.route";
-
-import typeRoute from "../src/routes/type.route";
-import unitRoute from "../src/routes/unit.route";
-
-import incomeRoute from "../src/routes/income.route";
-import expenseRoute from "../src/routes/expense.route";
-
-import paymentInRoute from "../src/routes/paymentIn.route";
-import paymentOutRoute from "../src/routes/paymentOut.route";
-
-import incomeCategoryRoute from "../src/routes/incomeCategory.route";
-import expenseCategoryRoute from "../src/routes/expenseCategory.route";
+import saleRoute from "../src/routes/sale.route";
 
 const app = express();
 // const port = process.env.PORT;
@@ -43,23 +32,13 @@ app.use(
 
 // Route
 app.use("/api/users", userRouter);
-app.use("/api/types", typeRoute);
-app.use("/api/units", unitRoute);
 app.use("/api/categories", categoryRoute);
 app.use("/api/branches", branchRoute);
 app.use("/api/products", productRoute);
 app.use("/api/inventories", inventoryRoute);
 app.use("/api/distributes", distributeRoute);
 app.use("/api/members", memberRoute);
-
-app.use("/api/income-categories", incomeCategoryRoute);
-app.use("/api/expense-categories", expenseCategoryRoute);
-
-app.use("/api/incomes", incomeRoute);
-app.use("/api/expenses", expenseRoute);
-
-app.use("/api/payments-in", paymentInRoute);
-app.use("/api/payments-out", paymentOutRoute);
+app.use("/api/sales", saleRoute);
 
 // Testing
 app.get("/healthChecker", (req: Request, res: Response, next: NextFunction) => {
