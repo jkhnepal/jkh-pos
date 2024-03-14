@@ -7,6 +7,11 @@ import connectDB from "./utils/connectDB";
 import userRouter from "../src/routes/user.route";
 import categoryRoute from "../src/routes/category.route";
 import branchRoute from "../src/routes/branch.route";
+import productRoute from "../src/routes/product.route";
+import inventoryRoute from "../src/routes/inventory.route";
+import distributeRoute from "../src/routes/distribute.route";
+import memberRoute from "../src/routes/member.route";
+
 import typeRoute from "../src/routes/type.route";
 import unitRoute from "../src/routes/unit.route";
 
@@ -42,6 +47,11 @@ app.use("/api/types", typeRoute);
 app.use("/api/units", unitRoute);
 app.use("/api/categories", categoryRoute);
 app.use("/api/branches", branchRoute);
+app.use("/api/products", productRoute);
+app.use("/api/inventories", inventoryRoute);
+app.use("/api/distributes", distributeRoute);
+app.use("/api/members", memberRoute);
+
 app.use("/api/income-categories", incomeCategoryRoute);
 app.use("/api/expense-categories", expenseCategoryRoute);
 

@@ -6,25 +6,24 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
-import defaultImg from "../../../public/default-images/unit-default-image.png";
+import { useDeleteMemberMutation, useGetAllMemberQuery } from "@/lib/features/memberSlice";
 import LoaderPre from "@/app/custom-components/LoaderPre";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
 
 export default function Page() {
-  const { data: branches, isError, isLoading: isFetching, refetch } = useGetAllBranchQuery({ name: "" });
+  const { data: members, isError, isLoading: isFetching, refetch } = useGetAllMemberQuery({ name: "" });
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const [deleteBranch, { data, isError: isDeleteError, error: deleteError, isLoading: isDeleting }] = useDeleteBranchMutation();
+  const [deleteMember, { data, isError: isDeleteError, error: deleteError, isLoading: isDeleting }] = useDeleteMemberMutation();
 
   const handleDelete = async (id: string) => {
-    const res: any = await deleteBranch(id);
+    const res: any = await deleteMember(id);
     if (res.data) {
       toast.success(res.data.msg);
       refetch();
@@ -42,7 +41,7 @@ export default function Page() {
     }
   }
 
-  // const columns: ColumnDef<IBranchOut>[] = [
+  // const columns: ColumnDef<IMemberOut>[] = [
   const columns: ColumnDef<any>[] = [
     {
       id: "select",
@@ -71,7 +70,7 @@ export default function Page() {
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-            Branch Name
+            Member Name
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         );
@@ -80,29 +79,12 @@ export default function Page() {
     },
 
     {
-      accessorKey: "description",
-      header: "Description",
-      cell: ({ row }: any) => <div>{row.getValue("description")}</div>,
+      accessorKey: "phone",
+      header: "Phone",
+      cell: ({ row }: any) => <div>{row.getValue("phone")}</div>,
     },
 
-    {
-      accessorKey: "image",
-      header: "Image",
-      cell: ({ row }) => {
-        const image: string = row.getValue("image") as string;
-        return (
-          <div className="">
-            <Image
-              src={image || defaultImg}
-              alt="Branch Image"
-              width={30}
-              height={30}
-              className=" border p-1 rounded-md"
-            />
-          </div>
-        );
-      },
-    },
+  
 
     {
       id: "actions",
@@ -133,18 +115,18 @@ export default function Page() {
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem
                 onClick={() => {
-                  navigator.clipboard.writeText(item.branchId);
+                  navigator.clipboard.writeText(item.memberId);
                   toast.success("Copy success");
                 }}>
                 Copy id
               </DropdownMenuItem>
               <DropdownMenuSeparator />
 
-              <Link href={`/dashboard/branches/edit/${item.branchId}`}>
+              <Link href={`/dashboard/members/edit/${item.memberId}`}>
                 <DropdownMenuItem>View/Edit</DropdownMenuItem>
               </Link>
               <DropdownMenuItem
-                onClick={() => handleDelete(item.branchId)}
+                onClick={() => handleDelete(item.memberId)}
                 className=" text-destructive">
                 Delete
               </DropdownMenuItem>
@@ -157,7 +139,7 @@ export default function Page() {
 
   const table = useReactTable({
     // data,
-    data: branches?.data || [],
+    data: members?.data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -196,7 +178,7 @@ export default function Page() {
         />
 
         <div className=" space-x-2">
-          <Link href={"/dashboard/branches/create"}>
+          <Link href={"/dashboard/members/create"}>
             <Button>Add New</Button>
           </Link>
           <DropdownMenu>
@@ -296,7 +278,6 @@ export default function Page() {
 // Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { useGetAllBranchQuery, useDeleteBranchMutation } from "@/lib/features/branchSlice";
 
 function Breadcumb() {
   return (
@@ -310,7 +291,7 @@ function Breadcumb() {
         </BreadcrumbSeparator>
 
         <BreadcrumbItem>
-          <BreadcrumbPage>Branches</BreadcrumbPage>
+          <BreadcrumbPage>members</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>

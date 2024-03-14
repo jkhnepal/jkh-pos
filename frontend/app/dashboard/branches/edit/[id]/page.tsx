@@ -11,51 +11,70 @@ import defaultImage from "../../../../../public/default-images/unit-default-imag
 import { toast } from "sonner";
 import { useParams } from "next/navigation";
 
-import { useGetCategoryQuery, useUpdateCategoryMutation } from "@/lib/features/categorySlice";
-import ButtonActionLoader from "@/components/custom/ButtonActionLoader";
-import OptionalLabel from "@/components/custom/OptionalLabel";
 import useCloudinaryFileUpload from "@/app/hooks/useCloudinaryFileUpload";
-import SpinLoader from "@/app/dashboard/components/SpinLoader";
+import LoaderSpin from "@/app/custom-components/LoaderSpin";
+import OptionalLabel from "@/app/custom-components/OptionalLabel";
+import LoaderPre from "@/app/custom-components/LoaderPre";
 
 const formSchema = z.object({
   name: z.string().min(2, {
     message: "Name must be at least 2 characters.",
   }),
-  description: z.string().optional(),
+
+  email: z.string().min(2, {
+    message: "Email must be at least 10 characters.",
+  }),
+
+  phone: z.coerce.number(),
+  address: z.string().min(10, {
+    message: "Address must be at least 10 characters.",
+  }),
+
+  password: z.string().min(10, {
+    message: "Password must be at least 10 characters.",
+  }),
+
   image: z.string().optional(),
 });
 
 export default function Page() {
+  const { refetch } = useGetAllBranchQuery({ name: "" });
   const params = useParams();
-  const categoryId = params.id;
+  const branchId = params.id;
 
-  const { data, isFetching } = useGetCategoryQuery(categoryId);
-  const category = data?.data;
+  const { data, isFetching } = useGetBranchQuery(branchId);
+  const branch = data?.data;
 
   const { uploading, handleFileUpload } = useCloudinaryFileUpload();
   const [imageUrl, setImageUrl] = useState<string>("");
 
-  const [updateCategory, { error: updateError, isError: ab, isLoading: isUpdating }] = useUpdateCategoryMutation();
+  const [updateBranch, { error: updateError, isError: ab, isLoading: isUpdating }] = useUpdateBranchMutation();
   // 1. Define your form.
-  const form = useForm({
+  const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      description: "",
+      email: "",
+      phone: 0,
+      address: "",
+      password: "",
       image: "",
     },
   });
 
   useEffect(() => {
-    if (category) {
+    if (branch) {
       form.reset({
-        name: category.name || "",
-        description: category.description || "",
-        image: category.image || "",
+        name: branch.name || "",
+        email: branch.email || "",
+        phone: branch.phone || 0,
+        address: branch.address || "",
+        password: branch.password || "",
+        image: branch.image || "",
       });
-      setImageUrl(category.image || "");
+      setImageUrl(branch.image || "");
     }
-  }, [form, category]);
+  }, [form, branch]);
 
   useEffect(() => {
     form.setValue("image", imageUrl);
@@ -63,9 +82,10 @@ export default function Page() {
 
   // Define a submit handler.
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const res: any = await updateCategory({ categoryId: categoryId, updatedCategory: values });
+    const res: any = await updateBranch({ branchId: branchId, updatedBranch: values });
     if (res.data) {
       toast.success(res.data.msg);
+      refetch();
     }
   };
 
@@ -84,13 +104,14 @@ export default function Page() {
     return (
       <div>
         {" "}
-        <SpinLoader />{" "}
+        <LoaderSpin />{" "}
       </div>
     );
   }
 
   return (
     <Form {...form}>
+      <Breadcumb />
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className=" space-y-8">
@@ -99,10 +120,10 @@ export default function Page() {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Category Name *</FormLabel>
+              <FormLabel>Branch Name *</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Category Name"
+                  placeholder="Branch Name"
                   {...field}
                 />
               </FormControl>
@@ -113,15 +134,64 @@ export default function Page() {
 
         <FormField
           control={form.control}
-          name="description"
+          name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>
-                Description <OptionalLabel />{" "}
-              </FormLabel>
+              <FormLabel>Branch Email *</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Description"
+                  placeholder="Branch Email"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="phone"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Branch Phone *</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Branch Phone"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="address"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Branch Address *</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Branch Address"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Branch Password *</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Branch Password"
                   {...field}
                 />
               </FormControl>
@@ -145,7 +215,7 @@ export default function Page() {
 
               {uploading ? (
                 <div className=" flex flex-col gap-2 rounded-md items-center justify-center h-16 w-16 border">
-                  <ButtonActionLoader />
+                  <LoaderSpin />
                 </div>
               ) : (
                 <Image
@@ -160,8 +230,39 @@ export default function Page() {
           )}
         />
 
-        <Button type="submit"> {isUpdating && <ButtonActionLoader />} Submit</Button>
+        <Button type="submit"> {isUpdating && <LoaderPre />} Submit</Button>
       </form>
     </Form>
+  );
+}
+
+// Breadcumb
+import { SlashIcon } from "@radix-ui/react-icons";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { useGetAllBranchQuery, useGetBranchQuery, useUpdateBranchMutation } from "@/lib/features/branchSlice";
+
+function Breadcumb() {
+  return (
+    <Breadcrumb className=" mb-8">
+      <BreadcrumbList>
+        <BreadcrumbItem>
+          <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbSeparator>
+          <SlashIcon />
+        </BreadcrumbSeparator>
+
+        <BreadcrumbItem>
+          <BreadcrumbLink href="/dashboard/branches">Branches</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbSeparator>
+          <SlashIcon />
+        </BreadcrumbSeparator>
+
+        <BreadcrumbItem>
+          <BreadcrumbPage>Edit Branch</BreadcrumbPage>
+        </BreadcrumbItem>
+      </BreadcrumbList>
+    </Breadcrumb>
   );
 }

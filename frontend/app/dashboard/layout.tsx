@@ -54,7 +54,7 @@ const navItems = [
   },
 
   {
-    name: "Items",
+    name: "Headquarter",
     icon: <User2 size={15} />,
     href: "",
 
@@ -70,36 +70,31 @@ const navItems = [
       },
 
       {
-        title: "Types",
-        href: "/dashboard/types",
+        title: "Products",
+        href: "/dashboard/products",
       },
 
       {
-        title: "Income Categories",
-        href: "/income-categories",
+        title: "Members",
+        href: "/dashboard/members",
       },
 
       {
-        title: "Expense Categories",
-        href: "/expense-categories",
+        title: "Distributes",
+        href: "/dashboard/distributes",
       },
     ],
   },
 
   {
-    name: "Incomes Expenses",
+    name: "Branch",
     icon: <User2 size={15} />,
     href: "",
 
     subLinks: [
       {
-        title: "Incomes",
-        href: "/incomes",
-      },
-
-      {
-        title: "Expenses",
-        href: "/expenses",
+        title: "Sales",
+        href: "/sales",
       },
     ],
   },

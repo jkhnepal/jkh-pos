@@ -5,8 +5,9 @@ export interface BranchInput {
   name: string;
   email: string;
   phone: number;
+  password: string;
   address: string;
-  type: string;
+  type?: string;
   image?: string;
 }
 
@@ -25,6 +26,7 @@ const branchSchema = new mongoose.Schema(
     },
     name: { type: String, required: true },
     email: { type: String, required: true },
+    password: { type: String, required: true },
     phone: { type: Number, required: true },
     address: { type: String, required: true },
     type: { type: String, enum: ["head", "branch"], default: "branch" },
