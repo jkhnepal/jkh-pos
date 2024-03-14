@@ -30,10 +30,6 @@ const formSchema = z.object({
     message: "Address must be at least 10 characters.",
   }),
 
-  password: z.string().min(10, {
-    message: "Password must be at least 10 characters.",
-  }),
-
   image: z.string().optional(),
 });
 
@@ -57,7 +53,6 @@ export default function Page() {
       email: "",
       phone: 0,
       address: "",
-      password: "",
       image: "",
     },
   });
@@ -69,7 +64,6 @@ export default function Page() {
         email: branch.email || "",
         phone: branch.phone || 0,
         address: branch.address || "",
-        password: branch.password || "",
         image: branch.image || "",
       });
       setImageUrl(branch.image || "");
@@ -175,23 +169,6 @@ export default function Page() {
               <FormControl>
                 <Input
                   placeholder="Branch Address"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Branch Password *</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Branch Password"
                   {...field}
                 />
               </FormControl>

@@ -21,6 +21,15 @@ export const branchApi = createApi({
       }),
     }),
 
+    loginBranch: builder.mutation({
+      query: (credential) => ({
+        url: `/login`,
+        method: "POST",
+        // headers: { "Content-Type": "application/json" },
+        body: credential,
+      }),
+    }),
+
     updateBranch: builder.mutation({
       query: ({ branchId, updatedBranch }) => ({
         url: `/${branchId}`,
@@ -28,6 +37,17 @@ export const branchApi = createApi({
         // headers: { "Content-Type": "application/json" },
         body: updatedBranch,
       }),
+    }),
+
+    resetPassword: builder.mutation({
+      query: ({ email_phone }) => {
+        console.log("Resetting password for:", email_phone);
+        return {
+          url: `/reset-password/${email_phone}`,
+          method: "PATCH",
+          // headers: { "Content-Type": "application/json" },
+        };
+      },
     }),
 
     deleteBranch: builder.mutation({
@@ -39,4 +59,4 @@ export const branchApi = createApi({
   }),
 });
 
-export const { useCreateBranchMutation, useDeleteBranchMutation, useGetAllBranchQuery, useGetBranchQuery, useUpdateBranchMutation } = branchApi;
+export const { useCreateBranchMutation, useLoginBranchMutation, useResetPasswordMutation, useDeleteBranchMutation, useGetAllBranchQuery, useGetBranchQuery, useUpdateBranchMutation } = branchApi;

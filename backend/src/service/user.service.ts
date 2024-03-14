@@ -25,15 +25,3 @@ export async function findAndUpdateUser(query: FilterQuery<UserDocument>, update
 export async function deleteUser(query: FilterQuery<UserDocument>) {
   return UserModel.deleteOne(query);
 }
-
-export async function validatePassword({ email, password }: { email: string; password: string }) {
-  const user = await UserModel.findOne({ email });
-  if (!user) {
-    return false;
-  }
-
-  // const isValid = await user.comparePassword(password);
-  const isValid = await bcrypt.compare(password, user.password);
-  if (!isValid) return false;
-  return omit(user.toJSON(), "password");
-}

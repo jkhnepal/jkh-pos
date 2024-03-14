@@ -7,6 +7,10 @@ export async function createProduct(input: ProductInput) {
 }
 
 export async function findAllProduct(filter: FilterQuery<ProductDocument> = {}) {
+  // Converting the name value to a case-insensitive regex pattern
+  if (filter.name) {
+    filter.name = { $regex: new RegExp(filter.name, "i") };
+  }
   const results = await ProductModel.find(filter);
   return results;
 }

@@ -13,6 +13,8 @@ export interface SaleInput {
   quantity: number;
   discount: number; // in %
   sp: number;
+
+  note?: string;
 }
 
 export interface SaleDocument extends SaleInput, mongoose.Document {
@@ -35,6 +37,8 @@ const saleSchema = new mongoose.Schema(
     quantity: { type: Number, required: true },
     discount: { type: Number, required: true },
     sp: { type: Number, required: true },
+
+    note: { type: String },
   },
   {
     timestamps: true,

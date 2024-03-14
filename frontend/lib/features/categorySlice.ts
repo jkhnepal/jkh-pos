@@ -5,7 +5,14 @@ export const categoryApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5008/api/categories" }),
   endpoints: (builder) => ({
     getAllCategory: builder.query({
-      query: () => "/",
+      query: (options) => {
+        const { name } = options;
+        const params = name ? { name } : {};
+        return {
+          url: "/",
+          params: params,
+        };
+      },
     }),
 
     getCategory: builder.query({

@@ -94,7 +94,7 @@ const navItems = [
     subLinks: [
       {
         title: "Sales",
-        href: "/sales",
+        href: "/dashboard/sales",
       },
     ],
   },

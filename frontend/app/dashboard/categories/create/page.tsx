@@ -17,7 +17,7 @@ import LoaderSpin from "@/app/custom-components/LoaderSpin";
 
 const formSchema = z.object({
   name: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
+    message: "Catagory name must be at least 4 character long.",
   }),
   description: z.string().optional(),
   image: z.string().optional(),
@@ -46,7 +46,6 @@ export default function Page() {
   // Define a submit handler.
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const res: any = await createCategory(values);
-    console.log(res);
     if (res.data) {
       refetch();
       toast.success(res.data.msg);
@@ -98,7 +97,7 @@ export default function Page() {
                 Description <OptionalLabel />
               </FormLabel>
               <FormControl>
-                <Input
+                <Textarea
                   placeholder="Description"
                   {...field}
                 />
@@ -120,6 +119,7 @@ export default function Page() {
                 type="file"
                 onChange={(event) => handleFileUpload(event.target.files?.[0], setImageUrl)}
               />
+              <span className="text-primary/85  text-xs">Image must be less than 1 MB.</span>
 
               {uploading ? (
                 <div className=" flex flex-col gap-2 rounded-md items-center justify-center h-16 w-16 border">
@@ -147,6 +147,7 @@ export default function Page() {
 // Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { Textarea } from "@/components/ui/textarea";
 
 function Breadcumb() {
   return (

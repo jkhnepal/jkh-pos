@@ -26,6 +26,8 @@ const payload = {
     sp: coerce.number({
       required_error: "sp is required",
     }),
+
+    note: string().optional(),
   }),
 };
 

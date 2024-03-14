@@ -28,7 +28,7 @@ export async function createCategoryHandler(req: Request<{}, {}, CreateCategoryI
 
 export async function getAllCategoryHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
   try {
-    const queryParameters = req.query; // /categories?status=active
+    const queryParameters = req.query;
 
     const results = await findAllCategory(queryParameters);
     return res.json({

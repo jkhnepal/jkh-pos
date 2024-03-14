@@ -6,6 +6,7 @@ import { productApi } from "./features/product.sclice";
 import { inventoryApi } from "./features/inventorySlice";
 import { memberApi } from "./features/memberSlice";
 import { distributeApi } from "./features/distributeSlice";
+import { saleApi } from "./features/saleSlice";
 
 export const makeStore = () => {
   const store = configureStore({
@@ -16,6 +17,7 @@ export const makeStore = () => {
       [inventoryApi.reducerPath]: inventoryApi.reducer,
       [memberApi.reducerPath]: memberApi.reducer,
       [distributeApi.reducerPath]: distributeApi.reducer,
+      [saleApi.reducerPath]: saleApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().concat(
@@ -25,6 +27,7 @@ export const makeStore = () => {
         inventoryApi.middleware,
         memberApi.middleware,
         distributeApi.middleware,
+        saleApi.middleware,
         
       ),
   });

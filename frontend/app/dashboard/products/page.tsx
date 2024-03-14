@@ -16,13 +16,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useCreateProductMutation, useDeleteProductMutation, useGetAllProductQuery } from "@/lib/features/product.sclice";
 
 export default function Page() {
-  const { data: products, isError, isLoading: isFetching, refetch } = useGetAllProductQuery({ name: "" });
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-
+  
+  const [searchText, setsearchText] = React.useState<string>("");
   const [deleteProduct, { data, isError: isDeleteError, error: deleteError, isLoading: isDeleting }] = useDeleteProductMutation();
+  const { data: products, isError, isLoading: isFetching, refetch } = useGetAllProductQuery({name:searchText});
 
   const handleDelete = async (id: string) => {
     const res: any = await deleteProduct(id);
@@ -189,10 +190,9 @@ export default function Page() {
     <div className="w-full">
       <Breadcumb />
       <div className="flex justify-between items-center py-4">
-        <Input
-          placeholder="Filter by name..."
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-          onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}
+      <Input
+          placeholder="Search by product name..."
+          onChange={(e) => setsearchText(e.target.value)}
           className="max-w-sm"
         />
 

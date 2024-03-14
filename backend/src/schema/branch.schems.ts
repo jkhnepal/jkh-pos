@@ -29,6 +29,30 @@ const payload = {
   }),
 };
 
+const updatePayload = {
+  body: object({
+    name: string({
+      required_error: "name is required",
+    }),
+
+    email: string({
+      required_error: "email is required",
+    }),
+
+    phone: coerce.number({
+      required_error: "phone is required",
+    }),
+
+    address: string({
+      required_error: "address is required",
+    }),
+
+    image: string().optional(),
+
+    type: string().default("branch"),
+  }),
+};
+
 const params = {
   params: object({
     branchId: string({
@@ -43,7 +67,7 @@ export const createBranchSchema = object({
 });
 
 export const updateBranchSchema = object({
-  ...payload,
+  ...updatePayload,
   ...params,
 });
 

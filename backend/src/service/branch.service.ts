@@ -7,19 +7,19 @@ export async function createBranch(input: BranchInput) {
 }
 
 export async function findAllBranch(filter: FilterQuery<BranchDocument> = {}) {
-  const results = await BranchModel.find(filter);
+  const results = await BranchModel.find(filter).select("-password");
   return results;
 }
 
 export async function findBranch(query: FilterQuery<BranchDocument>, options: QueryOptions = { lean: true }) {
-  const result = await BranchModel.findOne(query, {}, options);
+  const result = await BranchModel.findOne(query, {}, options).select("-password");
   return result;
 }
 
 export async function findAndUpdateBranch(query: FilterQuery<BranchDocument>, update: UpdateQuery<BranchDocument>, options: QueryOptions) {
-  return BranchModel.findOneAndUpdate(query, update, options);
+  return BranchModel.findOneAndUpdate(query, update, options).select("-password");
 }
 
 export async function deleteBranch(query: FilterQuery<BranchDocument>) {
-  return BranchModel.deleteOne(query);
+  return BranchModel.deleteOne(query).select("-password");
 }

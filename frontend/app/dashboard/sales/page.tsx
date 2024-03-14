@@ -1,31 +1,31 @@
 "use client";
 import * as React from "react";
 import { ColumnDef, ColumnFiltersState, SortingState, VisibilityState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal, Search } from "lucide-react";
+import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
-import { useDeleteCategoryMutation, useGetAllCategoryQuery } from "@/lib/features/categorySlice";
+import { useDeleteSaleMutation, useGetAllSaleQuery } from "@/lib/features/saleSlice";
 import defaultImg from "../../../public/default-images/unit-default-image.png";
 import LoaderPre from "@/app/custom-components/LoaderPre";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
 
 export default function Page() {
+  const { data: sales, isError, isLoading: isFetching, refetch } = useGetAllSaleQuery({ name: "" });
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const [deleteCategory, { data, isError: isDeleteError, error: deleteError, isLoading: isDeleting }] = useDeleteCategoryMutation();
-  const [searchText, setsearchText] = React.useState<string>("");
-  const { data: categories, isError, isLoading: isFetching, refetch } = useGetAllCategoryQuery({ name: searchText });
+  const [deleteSale, { data, isError: isDeleteError, error: deleteError, isLoading: isDeleting }] = useDeleteSaleMutation();
 
   const handleDelete = async (id: string) => {
-    const res: any = await deleteCategory(id);
+    const res: any = await deleteSale(id);
     if (res.data) {
       toast.success(res.data.msg);
       refetch();
@@ -43,7 +43,8 @@ export default function Page() {
     }
   }
 
-  const columns: ColumnDef<ICategoryOut>[] = [
+  // const columns: ColumnDef<ISaleOut>[] = [
+  const columns: ColumnDef<any>[] = [
     {
       id: "select",
       header: ({ table }) => (
@@ -71,7 +72,7 @@ export default function Page() {
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-            Category Name
+            Sale Name
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         );
@@ -94,7 +95,7 @@ export default function Page() {
           <div className="">
             <Image
               src={image || defaultImg}
-              alt="Category Image"
+              alt="Sale Image"
               width={30}
               height={30}
               className=" border p-1 rounded-md"
@@ -133,18 +134,18 @@ export default function Page() {
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem
                 onClick={() => {
-                  navigator.clipboard.writeText(item.categoryId);
+                  navigator.clipboard.writeText(item.saleId);
                   toast.success("Copy success");
                 }}>
                 Copy id
               </DropdownMenuItem>
               <DropdownMenuSeparator />
 
-              <Link href={`/dashboard/categories/edit/${item.categoryId}`}>
+              <Link href={`/dashboard/sales/edit/${item.saleId}`}>
                 <DropdownMenuItem>View/Edit</DropdownMenuItem>
               </Link>
               <DropdownMenuItem
-                onClick={() => handleDelete(item.categoryId)}
+                onClick={() => handleDelete(item.saleId)}
                 className=" text-destructive">
                 Delete
               </DropdownMenuItem>
@@ -157,7 +158,7 @@ export default function Page() {
 
   const table = useReactTable({
     // data,
-    data: categories?.data || [],
+    data: sales?.data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -189,13 +190,14 @@ export default function Page() {
       <Breadcumb />
       <div className="flex justify-between items-center py-4">
         <Input
-          placeholder="Search by category name..."
-          onChange={(e) => setsearchText(e.target.value)}
+          placeholder="Filter by name..."
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+          onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}
           className="max-w-sm"
         />
 
         <div className=" space-x-2">
-          <Link href={"/dashboard/categories/create"}>
+          <Link href={"/dashboard/sales/create"}>
             <Button>Add New</Button>
           </Link>
           <DropdownMenu>
@@ -285,11 +287,16 @@ export default function Page() {
   );
 }
 
+// "use client"
+// export default function page() {
+//   return (
+//     <div>page</div>
+//   )
+// }
+
 // Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { Input } from "@/components/ui/input";
-import { ICategoryOut } from "@/interfaces/category";
 
 function Breadcumb() {
   return (
@@ -303,7 +310,7 @@ function Breadcumb() {
         </BreadcrumbSeparator>
 
         <BreadcrumbItem>
-          <BreadcrumbPage>Categories</BreadcrumbPage>
+          <BreadcrumbPage>Sales</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>

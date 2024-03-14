@@ -5,71 +5,54 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import Image from "next/image";
-import { useEffect, useState } from "react";
-import defaultImage from "../../../../public/default-images/unit-default-image.png";
 import { toast } from "sonner";
-import { useCreateBranchMutation, useGetAllBranchQuery } from "@/lib/features/branchSlice";
-import useCloudinaryFileUpload from "@/app/hooks/useCloudinaryFileUpload";
+import { useCreateSaleMutation, useGetAllSaleQuery } from "@/lib/features/saleSlice";
 import LoaderPre from "@/app/custom-components/LoaderPre";
-import OptionalLabel from "@/app/custom-components/OptionalLabel";
-import LoaderSpin from "@/app/custom-components/LoaderSpin";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const formSchema = z.object({
-  name: z.string().min(5, {
-    message: "Name must be at least 5 characters.",
-  }),
+  branch: z.string(),
+  product: z.string(),
+  member: z.string(),
 
-  email: z.string().min(10, {
-    message: "Email must be at least 10 characters.",
-  }),
+  quantity: z.coerce.number(),
+  discount: z.coerce.number(),
+  sp: z.coerce.number(),
 
-  phone: z.coerce.number().min(10, {
-    message: "Phone must be at least 10 characters.",
-  }),
-
-  address: z.string().min(5, {
-    message: "Address must be at least 5 characters.",
-  }),
-
-  password: z.string().min(5, {
-    message: "Password must be at least 5 characters.",
-  }),
-
-  image: z.string().optional(),
+  note: z.string(),
 });
 
 export default function Page() {
-  const [createBranch, { data, error, status, isSuccess, isError, isLoading: isCreating }] = useCreateBranchMutation();
-  const { refetch } = useGetAllBranchQuery({ name: "" });
-  const { uploading, handleFileUpload } = useCloudinaryFileUpload();
-  const [imageUrl, setImageUrl] = useState<string>("");
+  const [createSale, { data, error, status, isSuccess, isError, isLoading: isCreating }] = useCreateSaleMutation();
+  const { refetch } = useGetAllSaleQuery({ name: "" });
+  const { data: members } = useGetAllMemberQuery({ name: "" });
+  const { data: products } = useGetAllProductQuery({ name: "" });
+
+  const branch_id = "507f191e810c19729de860ea";
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      phone: 0, 
-      address: "",
-      password: "",
-      image: "",
+      branch: branch_id,
+      product: "",
+      member: "",
+
+      quantity: 0,
+      discount: 0,
+      sp: 0,
+
+      note: "",
     },
   });
 
-  useEffect(() => {
-    form.setValue("image", imageUrl);
-  }, [form, imageUrl]);
-
   // Define a submit handler.
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const res: any = await createBranch(values);
+    const res: any = await createSale(values);
     if (res.data) {
       refetch();
       toast.success(res.data.msg);
       form.reset();
-      setImageUrl("");
     }
   };
 
@@ -92,13 +75,80 @@ export default function Page() {
         className=" space-y-8">
         <FormField
           control={form.control}
-          name="name"
+          name="member"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Branch Name *</FormLabel>
+              <FormLabel>Members</FormLabel>
+              <FormControl>
+                <Select
+                  {...field}
+                  onValueChange={field.onChange}
+                  defaultValue={field.name}>
+                  <SelectTrigger className="">
+                    <SelectValue placeholder="Select Member" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Members </SelectLabel>
+                      {members?.data.map((item: any) => (
+                        <SelectItem
+                          key={item._id}
+                          value={item._id}>
+                          {item.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="product"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Product</FormLabel>
+              <FormControl>
+                <Select
+                  {...field}
+                  onValueChange={field.onChange}
+                  defaultValue={field.name}>
+                  <SelectTrigger className="">
+                    <SelectValue placeholder="Select Product" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Products </SelectLabel>
+                      {products?.data.map((item: any) => (
+                        <SelectItem
+                          key={item._id}
+                          value={item._id}>
+                          {item.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="quantity"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Quantity</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Branch Name"
+                  type="number"
+                  placeholder="Quantity"
                   {...field}
                 />
               </FormControl>
@@ -109,13 +159,14 @@ export default function Page() {
 
         <FormField
           control={form.control}
-          name="email"
+          name="discount"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Branch Email *</FormLabel>
+              <FormLabel>Discount</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Branch Email"
+                  type="number"
+                  placeholder="Discount"
                   {...field}
                 />
               </FormControl>
@@ -126,14 +177,14 @@ export default function Page() {
 
         <FormField
           control={form.control}
-          name="phone"
+          name="sp"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Branch Phone *</FormLabel>
+              <FormLabel>Selling Price (per unit)</FormLabel>
               <FormControl>
                 <Input
-                type="number"
-                  placeholder="Branch Phone"
+                  type="number"
+                  placeholder="Selling Price (per unit)"
                   {...field}
                 />
               </FormControl>
@@ -144,64 +195,19 @@ export default function Page() {
 
         <FormField
           control={form.control}
-          name="address"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Branch Address *</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Branch Address"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Branch Password *</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Branch Password"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="image"
+          name="note"
           render={({ field }) => (
             <FormItem>
               <FormLabel>
-                Image <OptionalLabel />
+                Note <OptionalLabel />
               </FormLabel>
-              <Input
-                type="file"
-                onChange={(event) => handleFileUpload(event.target.files?.[0], setImageUrl)}
-              />
- <span className="text-primary/85  text-xs">image must be less than 1MB</span>
-              {uploading ? (
-                <div className=" flex flex-col gap-2 rounded-md items-center justify-center h-16 w-16 border">
-                  <LoaderSpin />
-                </div>
-              ) : (
-                <Image
-                  width={100}
-                  height={100}
-                  src={imageUrl || defaultImage}
-                  alt="img"
-                  className="p-2 rounded-md overflow-hidden h-16 w-16 border"
+              <FormControl>
+                <Input
+                  placeholder="Note"
+                  {...field}
                 />
-              )}
+              </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -215,6 +221,10 @@ export default function Page() {
 // Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { useGetAllProductQuery } from "@/lib/features/product.sclice";
+import { useGetAllBranchQuery } from "@/lib/features/branchSlice";
+import { useGetAllMemberQuery } from "@/lib/features/memberSlice";
+import OptionalLabel from "@/app/custom-components/OptionalLabel";
 
 function Breadcumb() {
   return (
@@ -228,14 +238,14 @@ function Breadcumb() {
         </BreadcrumbSeparator>
 
         <BreadcrumbItem>
-          <BreadcrumbLink href="/dashboard/branches">Branches</BreadcrumbLink>
+          <BreadcrumbLink href="/dashboard/sales">sales</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator>
           <SlashIcon />
         </BreadcrumbSeparator>
 
         <BreadcrumbItem>
-          <BreadcrumbPage>New Branch</BreadcrumbPage>
+          <BreadcrumbPage>New Sale</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>
