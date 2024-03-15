@@ -41,6 +41,8 @@ export default function Page() {
   const { data, isFetching } = useGetProductQuery(productId);
   const product = data?.data;
 
+  console.log(product);
+
   const { uploading, handleFileUpload } = useCloudinaryFileUpload();
   const [imageUrl, setImageUrl] = useState<string>("");
 
@@ -83,6 +85,9 @@ export default function Page() {
   useEffect(() => {
     form.setValue("image", imageUrl);
   }, [form, imageUrl]);
+
+  // const { data: stat } = useGetHeadquarterStatQuery({ inventoryId: product?._id });
+  // console.log(stat)
 
   // Define a submit handler.
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -302,6 +307,8 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import { Textarea } from "@/components/ui/textarea";
 import { useGetAllCategoryQuery } from "@/lib/features/categorySlice";
 import InventoryAdd from "../../components/InventoryAdd";
+import { useGetInventoryByProductQuery } from "@/lib/features/inventorySlice";
+import { useGetHeadquarterStatQuery } from "@/lib/features/statSlice";
 
 function Breadcumb() {
   return (

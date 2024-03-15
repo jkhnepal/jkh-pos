@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import AppError from "../utils/appError";
 import { CreateProductInput, UpdateProductInput } from "../schema/product.schema";
 import { findProduct, createProduct, findAllProduct, findAndUpdateProduct, deleteProduct } from "../service/product.service";
+import ProductModel, { ProductDocument } from "../models/product.model";
 
 var colors = require("colors");
 
@@ -27,19 +28,79 @@ export async function createProductHandler(req: Request<{}, {}, CreateProductInp
   }
 }
 
+// export async function getAllProductHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
+//   try {
+//     const queryParameters = req.query;
+
+//     const results = await findAllProduct(queryParameters);
+//     console.log(results)
+//     return res.json({
+//       status: "success",
+//       msg: "Get all product success",
+//       data: results,
+//     });
+//   } catch (error: any) {
+//     console.error(colors.red("msg:", error.message));
+//     next(new AppError("Internal server error", 500));
+//   }
+// }
+
 export async function getAllProductHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
   try {
     const queryParameters = req.query;
 
-    const results = await findAllProduct(queryParameters);
-    return res.json({
+    // Aggregate query to get products with totalAddedStock and totalDistributedStock
+    const productsWithStockData = await ProductModel.aggregate([
+      { $match: queryParameters },
+      {
+        $lookup: {
+          from: "inventories",
+          localField: "_id",
+          foreignField: "product",
+          as: "inventory",
+        },
+      },
+      {
+        $lookup: {
+          from: "distributes",
+          localField: "_id",
+          foreignField: "product",
+          as: "distribute",
+        },
+      },
+      {
+        $addFields: {
+          totalAddedStock: { $sum: "$inventory.stock" },
+          totalDistributedStock: { $sum: "$distribute.quantity" },
+        },
+      },
+      {
+        $project: {
+          name: 1,
+          sku: 1,
+          category: 1,
+          cp: 1,
+          sp: 1,
+          discount: 1,
+          image: 1,
+          note: 1,
+          productId: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          totalAddedStock: 1,
+          totalDistributedStock: 1,
+        },
+      },
+    ]);
+
+    return res.status(200).json({
       status: "success",
-      msg: "Get all product success",
-      data: results,
+      msg: "Get all products success",
+      data: productsWithStockData,
     });
-  } catch (error: any) {
-    console.error(colors.red("msg:", error.message));
-    next(new AppError("Internal server error", 500));
+  } catch (error) {
+    console.error("Error:", error);
+    next(new Error("Internal server error"));
   }
 }
 

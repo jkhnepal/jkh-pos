@@ -1,19 +1,16 @@
 "use client";
 import * as React from "react";
 import { ColumnDef, ColumnFiltersState, SortingState, VisibilityState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, ChevronDown, MoreHorizontal, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
-import defaultImg from "../../../public/default-images/unit-default-image.png";
+import { useDeleteCategoryMutation, useGetAllCategoryQuery } from "@/lib/features/categorySlice";
 import LoaderPre from "@/app/custom-components/LoaderPre";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useCreateProductMutation, useDeleteProductMutation, useGetAllProductQuery } from "@/lib/features/product.sclice";
 
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -21,14 +18,17 @@ export default function Page() {
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  const branchId = "branch_gokvvvrewe";
+  const branch_id = "65f333f74482d9774195ba8e";
+  const [deleteCategory, { data, isError: isDeleteError, error: deleteError, isLoading: isDeleting }] = useDeleteCategoryMutation();
   const [searchText, setsearchText] = React.useState<string>("");
-  const [deleteProduct, { data, isError: isDeleteError, error: deleteError, isLoading: isDeleting }] = useDeleteProductMutation();
-  // const { data: products, isError, isLoading: isFetching, refetch } = useGetAllProductQuery({name:searchText});
+  const { data: categories, isError, isLoading: isFetching, refetch } = useGetAllCategoryQuery({ name: searchText });
 
-  const { data: products, isError, isLoading: isFetching, refetch } = useGetAllProductQuery({ name: searchText });
+  const { data: histories } = useGetAllDistributeQuery({ branch: branch_id });
+  console.log(histories);
 
   const handleDelete = async (id: string) => {
-    const res: any = await deleteProduct(id);
+    const res: any = await deleteCategory(id);
     if (res.data) {
       toast.success(res.data.msg);
       refetch();
@@ -46,8 +46,7 @@ export default function Page() {
     }
   }
 
-  // const columns: ColumnDef<IProductOut>[] = [
-  const columns: ColumnDef<any>[] = [
+  const columns: ColumnDef<ICategoryOut>[] = [
     {
       id: "select",
       header: ({ table }) => (
@@ -69,105 +68,76 @@ export default function Page() {
     },
 
     {
-      accessorKey: "name",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-            Product Name
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      cell: ({ row }: any) => <div>{row.getValue("name")}</div>,
+      accessorKey: "quantity",
+      header: "Quantity",
+      cell: ({ row }: any) => <div>{row.getValue("quantity")}</div>,
     },
 
     {
-      id: "inStock",
-      header: "In Stock",
-      cell: ({ row }) => <div>{row.original.totalAddedStock - row.original.totalDistributedStock}  </div>,
+      accessorKey: "createdAt",
+      header: "Sent Date",
+      cell: ({ row }: any) => <div>{row.getValue("createdAt")}</div>,
     },
 
     {
-      accessorKey: "sku",
-      header: "SKU",
-      cell: ({ row }: any) => <div>{row.getValue("sku")}</div>,
+      accessorKey: "updatedAt",
+      header: "Updated Date",
+      cell: ({ row }: any) => <div>{row.getValue("updatedAt")}</div>,
     },
 
-    {
-      accessorKey: "image",
-      header: "Image",
-      cell: ({ row }) => {
-        const image: string = row.getValue("image") as string;
-        return (
-          <div className="">
-            <Image
-              src={image || defaultImg}
-              alt="Product Image"
-              width={30}
-              height={30}
-              className=" border p-1 rounded-md"
-            />
-          </div>
-        );
-      },
-    },
+    // {
+    //   id: "actions",
+    //   enableHiding: false,
+    //   cell: ({ row }) => {
+    //     const item = row.original;
 
-    {
-      id: "actions",
-      enableHiding: false,
-      cell: ({ row }) => {
-        const item = row.original;
+    //     return (
+    //       <DropdownMenu>
+    //         <DropdownMenuTrigger asChild>
+    //           {isDeleting ? (
+    //             <Button
+    //               variant="ghost"
+    //               className="h-8 w-8 p-0">
+    //               <span className="sr-only">Open menu</span>
+    //               <LoaderPre />
+    //             </Button>
+    //           ) : (
+    //             <Button
+    //               variant="ghost"
+    //               className="h-8 w-8 p-0">
+    //               <span className="sr-only">Open menu</span>
+    //               <MoreHorizontal className="h-4 w-4" />
+    //             </Button>
+    //           )}
+    //         </DropdownMenuTrigger>
+    //         <DropdownMenuContent align="end">
+    //           <DropdownMenuLabel>Actions</DropdownMenuLabel>
+    //           <DropdownMenuItem
+    //             onClick={() => {
+    //               navigator.clipboard.writeText(item.categoryId);
+    //               toast.success("Copy success");
+    //             }}>
+    //             Copy id
+    //           </DropdownMenuItem>
+    //           <DropdownMenuSeparator />
 
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              {isDeleting ? (
-                <Button
-                  variant="ghost"
-                  className="h-8 w-8 p-0">
-                  <span className="sr-only">Open menu</span>
-                  <LoaderPre />
-                </Button>
-              ) : (
-                <Button
-                  variant="ghost"
-                  className="h-8 w-8 p-0">
-                  <span className="sr-only">Open menu</span>
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              )}
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => {
-                  navigator.clipboard.writeText(item.productId);
-                  toast.success("Copy success");
-                }}>
-                Copy id
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-
-              <Link href={`/dashboard/products/edit/${item.productId}`}>
-                <DropdownMenuItem>View/Edit</DropdownMenuItem>
-              </Link>
-              <DropdownMenuItem
-                onClick={() => handleDelete(item.productId)}
-                className=" text-destructive">
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        );
-      },
-    },
+    //           <Link href={`/dashboard/categories/edit/${item.categoryId}`}>
+    //             <DropdownMenuItem>View/Edit</DropdownMenuItem>
+    //           </Link>
+    //           <DropdownMenuItem
+    //             onClick={() => handleDelete(item.categoryId)}
+    //             className=" text-destructive">
+    //             Delete
+    //           </DropdownMenuItem>
+    //         </DropdownMenuContent>
+    //       </DropdownMenu>
+    //     );
+    //   },
+    // },
   ];
 
   const table = useReactTable({
-    // data,
-    data: products?.data || [],
+    data: histories?.data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -199,13 +169,13 @@ export default function Page() {
       <Breadcumb />
       <div className="flex justify-between items-center py-4">
         <Input
-          placeholder="Search by product name..."
+          placeholder="Search by category name..."
           onChange={(e) => setsearchText(e.target.value)}
           className="max-w-sm"
         />
 
         <div className=" space-x-2">
-          <Link href={"/dashboard/products/create"}>
+          <Link href={"/dashboard/categories/create"}>
             <Button>Add New</Button>
           </Link>
           <DropdownMenu>
@@ -295,16 +265,12 @@ export default function Page() {
   );
 }
 
-// "use client"
-// export default function page() {
-//   return (
-//     <div>page</div>
-//   )
-// }
-
 // Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { Input } from "@/components/ui/input";
+import { ICategoryOut } from "@/interfaces/category";
+import { useGetAllDistributeQuery } from "@/lib/features/distributeSlice";
 
 function Breadcumb() {
   return (
@@ -318,7 +284,7 @@ function Breadcumb() {
         </BreadcrumbSeparator>
 
         <BreadcrumbItem>
-          <BreadcrumbPage>Products</BreadcrumbPage>
+          <BreadcrumbPage>Categories</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>

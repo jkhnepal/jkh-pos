@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import AppError from "../utils/appError";
 import { CreateInventoryInput, UpdateInventoryInput } from "../schema/inventory.schema";
-import { findInventory, createInventory, findAllInventory, findAndUpdateInventory, deleteInventory } from "../service/inventory.service";
-
+import { findInventory, createInventory, findAllInventory, findAndUpdateInventory, deleteInventory, getTotalAddedStock } from "../service/inventory.service";
+import { getTotalDistributedStock } from "../service/distribute.service";
 var colors = require("colors");
 
 export async function createInventoryHandler(req: Request<{}, {}, CreateInventoryInput["body"]>, res: Response, next: NextFunction) {
@@ -24,6 +24,7 @@ export async function createInventoryHandler(req: Request<{}, {}, CreateInventor
 export async function getAllInventoryHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
   try {
     const queryParameters = req.query;
+    console.log(queryParameters)
 
     const results = await findAllInventory(queryParameters);
     return res.json({
@@ -93,7 +94,7 @@ export async function deleteInventoryHandler(req: Request<UpdateInventoryInput["
     }
 
     await deleteInventory({ inventoryId });
-    return res.json({
+    return res.status(200).json({
       status: "success",
       msg: "Delete success",
       data: {},
@@ -101,5 +102,22 @@ export async function deleteInventoryHandler(req: Request<UpdateInventoryInput["
   } catch (error: any) {
     console.error(colors.red("msg:", error.message));
     next(new AppError("Internal server error", 500));
+  }
+}
+
+export async function getInventoryStatOfAProductHandler(req: Request<UpdateInventoryInput["params"]>, res: Response, next: NextFunction) {
+  try {
+    const product = req.params.inventoryId;
+    const totalAddedStock = await getTotalAddedStock(product);
+    const totalDistributedStock = await getTotalDistributedStock(product);
+
+    return res.status(200).json({
+      status: "success",
+      totalAddedStock,
+      totalDistributedStock,
+    });
+  } catch (error: any) {
+    console.error(colors.red("msg:", error.message));
+    return next(new AppError("Internal server error", 500));
   }
 }

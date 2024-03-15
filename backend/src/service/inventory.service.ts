@@ -1,4 +1,4 @@
-import { FilterQuery, QueryOptions, UpdateQuery } from "mongoose";
+import mongoose, { FilterQuery, QueryOptions, UpdateQuery } from "mongoose";
 import InventoryModel, { InventoryInput, InventoryDocument } from "../models/inventory.model";
 
 export async function createInventory(input: InventoryInput) {
@@ -22,4 +22,21 @@ export async function findAndUpdateInventory(query: FilterQuery<InventoryDocumen
 
 export async function deleteInventory(query: FilterQuery<InventoryDocument>) {
   return InventoryModel.deleteOne(query);
+}
+
+export async function getTotalAddedStock(product: string) {
+  const product_id = new mongoose.Types.ObjectId(product); // Convert product string to ObjectId
+  const totalAddedStock = await InventoryModel.aggregate([
+    {
+      $match: { product: product_id },
+    },
+
+    {
+      $group: {
+        _id: "$product",
+        totalStock: { $sum: "$stock" },
+      },
+    },
+  ]);
+  return totalAddedStock[0]?.totalStock;
 }

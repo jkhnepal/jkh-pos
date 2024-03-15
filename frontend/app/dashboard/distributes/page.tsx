@@ -75,13 +75,13 @@ export default function Page() {
           </Button>
         );
       },
-      cell: ({ row }: any) => <div>{row.getValue("branch").name}</div>,
+      cell: ({ row }: any) => <div>{row.getValue("branch")?.name}</div>,
     },
 
     {
       accessorKey: "product",
       header: "Product Name",
-      cell: ({ row }: any) => <div>{row.getValue("product").name}</div>,
+      cell: ({ row }: any) => <div>{row.getValue("product")?.name}</div>,
     },
 
 

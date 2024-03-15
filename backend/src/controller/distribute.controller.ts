@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import AppError from "../utils/appError";
 import { CreateDistributeInput, UpdateDistributeInput } from "../schema/distribute.schama";
 import { createDistribute, findAllDistribute, findDistribute, findAndUpdateDistribute, deleteDistribute } from "../service/distribute.service";
+import mongoose from "mongoose";
+import DistributeModel from "../models/distribute.model";
 
 var colors = require("colors");
 
@@ -21,20 +23,69 @@ export async function createDistributeHandler(req: Request<{}, {}, CreateDistrib
   }
 }
 
+// export async function getAllDistributeHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
+//   try {
+//     const queryParameters = req.query;
+
+//     const results = await findAllDistribute(queryParameters);
+//     return res.json({
+//       status: "success",
+//       msg: "Get all distribute success",
+//       data: results,
+//     });
+//   } catch (error: any) {
+//     console.error(colors.red("msg:", error.message));
+//     next(new AppError("Internal server error", 500));
+//   }
+// }
+
 export async function getAllDistributeHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
   try {
+    console.log(req.query)
     const queryParameters = req.query;
-
+    console.log(queryParameters)
+    console.log("loki")
     const results = await findAllDistribute(queryParameters);
+
+    // Extract unique product IDs
+    const uniqueProductIds = results.map((result) => result.product._id).filter((value, index, self) => self.indexOf(value) === index);
+
+    const uniqueProducts = await Promise.all(
+      uniqueProductIds.map(async (productId) => {
+        const totalQuantity = await getTotalStock(productId);
+        const productResult: any = results.find((result: any) => result.product._id === productId);
+        const { _id, branch, product, quantity, distributeId, createdAt, updatedAt, __v } = productResult?._doc;
+        return { _id, branch, product, quantity, distributeId, createdAt, updatedAt, __v, totalQuantity };
+      })
+    );
+
+    console.log(uniqueProducts);
     return res.json({
       status: "success",
       msg: "Get all distribute success",
-      data: results,
+      data: uniqueProducts,
     });
   } catch (error: any) {
     console.error(colors.red("msg:", error.message));
     next(new AppError("Internal server error", 500));
   }
+}
+
+export async function getTotalStock(product: string) {
+  const product_id = new mongoose.Types.ObjectId(product); // Convert product string to ObjectId
+
+  const totalAddedStock = await DistributeModel.aggregate([
+    {
+      $match: { product: product_id },
+    },
+    {
+      $group: {
+        _id: "$product",
+        totalStock: { $sum: "$quantity" },
+      },
+    },
+  ]);
+  return totalAddedStock[0]?.totalStock;
 }
 
 export async function getDistributeHandler(req: Request<UpdateDistributeInput["params"]>, res: Response, next: NextFunction) {

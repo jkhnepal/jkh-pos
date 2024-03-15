@@ -7,6 +7,7 @@ import { inventoryApi } from "./features/inventorySlice";
 import { memberApi } from "./features/memberSlice";
 import { distributeApi } from "./features/distributeSlice";
 import { saleApi } from "./features/saleSlice";
+import { statApi } from "./features/statSlice";
 
 export const makeStore = () => {
   const store = configureStore({
@@ -18,6 +19,7 @@ export const makeStore = () => {
       [memberApi.reducerPath]: memberApi.reducer,
       [distributeApi.reducerPath]: distributeApi.reducer,
       [saleApi.reducerPath]: saleApi.reducer,
+      [statApi.reducerPath]: statApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().concat(
@@ -28,6 +30,7 @@ export const makeStore = () => {
         memberApi.middleware,
         distributeApi.middleware,
         saleApi.middleware,
+        statApi.middleware,
         
       ),
   });

@@ -1,4 +1,4 @@
-import { FilterQuery, QueryOptions, UpdateQuery } from "mongoose";
+import mongoose, { FilterQuery, QueryOptions, UpdateQuery } from "mongoose";
 import DistributeModel, { DistributeInput, DistributeDocument } from "../models/distribute.model";
 
 export async function createDistribute(input: DistributeInput) {
@@ -23,3 +23,20 @@ export async function findAndUpdateDistribute(query: FilterQuery<DistributeDocum
 export async function deleteDistribute(query: FilterQuery<DistributeDocument>) {
   return DistributeModel.deleteOne(query);
 }
+
+export async function getTotalDistributedStock(product: string) {
+  const product_id = new mongoose.Types.ObjectId(product); // Convert product string to ObjectId
+  const totalDistributedStock = await DistributeModel.aggregate([
+    {
+      $match: { product: product_id },
+    },
+    {
+      $group: {
+        _id: "$product",
+        totalStock: { $sum: "$quantity" },
+      },
+    },
+  ]);
+  return totalDistributedStock[0]?.totalStock;
+}
+

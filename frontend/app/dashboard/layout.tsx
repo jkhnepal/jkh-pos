@@ -96,6 +96,21 @@ const navItems = [
         title: "Sales",
         href: "/dashboard/sales",
       },
+
+      {
+        title: "Stock History",
+        href: "/dashboard/stock-history",
+      },
+
+      {
+        title: "Branch Inventory",
+        href: "/dashboard/branch-inventory",
+      },
+
+      {
+        title: "Sales",
+        href: "/dashboard/branch_gokvvvrewe/sales",
+      },
     ],
   },
 

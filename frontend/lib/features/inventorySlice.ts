@@ -4,12 +4,32 @@ export const inventoryApi = createApi({
   reducerPath: "inventory",
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5008/api/inventories" }),
   endpoints: (builder) => ({
+    // getAllInventory: builder.query({
+    //   query: () => "/",
+    // }),
+
     getAllInventory: builder.query({
-      query: () => "/",
+      query: (options) => {
+        const { product } = options;
+        const params = product ? { product } : {};
+        return {
+          url: "/",
+          params: params,
+        };
+      },
+    }),
+
+    getInventoryStatOfAProduct: builder.query({
+      query: (product) => `/inventory-stat-of-a-product/${product}`,
     }),
 
     getInventory: builder.query({
       query: (inventoryId) => `/${inventoryId}`,
+    }),
+
+    // inventoryId->product_id
+    getInventoryByProduct: builder.query({
+      query: (inventoryId) => `/product-id/${inventoryId}`,
     }),
 
     createInventory: builder.mutation({
@@ -39,4 +59,4 @@ export const inventoryApi = createApi({
   }),
 });
 
-export const { useCreateInventoryMutation, useDeleteInventoryMutation, useGetAllInventoryQuery, useGetInventoryQuery, useUpdateInventoryMutation } = inventoryApi;
+export const { useCreateInventoryMutation, useGetInventoryStatOfAProductQuery, useGetInventoryByProductQuery, useDeleteInventoryMutation, useGetAllInventoryQuery, useGetInventoryQuery, useUpdateInventoryMutation } = inventoryApi;
