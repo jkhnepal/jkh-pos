@@ -13,6 +13,18 @@ const payload = {
   }),
 };
 
+const updatePayload = {
+  body: object({
+    product: string({
+      required_error: "product is required",
+    }).optional(),
+
+    stock: coerce.number({
+      required_error: "stock price is required",
+    }).optional()
+  }),
+};
+
 const params = {
   params: object({
     inventoryId: string({
@@ -27,7 +39,7 @@ export const createInventorySchema = object({
 });
 
 export const updateInventorySchema = object({
-  ...payload,
+  ...updatePayload,
   ...params,
 });
 

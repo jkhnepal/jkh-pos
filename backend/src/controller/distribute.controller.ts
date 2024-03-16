@@ -23,28 +23,27 @@ export async function createDistributeHandler(req: Request<{}, {}, CreateDistrib
   }
 }
 
-// export async function getAllDistributeHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
-//   try {
-//     const queryParameters = req.query;
-
-//     const results = await findAllDistribute(queryParameters);
-//     return res.json({
-//       status: "success",
-//       msg: "Get all distribute success",
-//       data: results,
-//     });
-//   } catch (error: any) {
-//     console.error(colors.red("msg:", error.message));
-//     next(new AppError("Internal server error", 500));
-//   }
-// }
-
 export async function getAllDistributeHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
   try {
-    console.log(req.query)
     const queryParameters = req.query;
-    console.log(queryParameters)
-    console.log("loki")
+
+    const results = await findAllDistribute(queryParameters);
+    return res.json({
+      status: "success",
+      msg: "Get all distribute success",
+      data: results,
+    });
+  } catch (error: any) {
+    console.error(colors.red("msg:", error.message));
+    next(new AppError("Internal server error", 500));
+  }
+}
+
+// When admin distribute different product at different time to the branchm,
+// It calculates the total quantity the branch received over the time.
+export async function getAllUniqueProductInventoryOfABranchHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
+  try {
+    const queryParameters = req.query;
     const results = await findAllDistribute(queryParameters);
 
     // Extract unique product IDs

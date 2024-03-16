@@ -124,6 +124,29 @@ export async function getProductHandler(req: Request<UpdateProductInput["params"
   }
 }
 
+export async function getProductBySkuHandler(req: Request<UpdateProductInput["params"]>, res: Response, next: NextFunction) {
+  try {
+    const sku = req.params.productId;
+    const product = await findProduct({ sku });
+
+    if (!product) {
+      return res.status(404).json({
+        status: "failure",
+        msg: "Product does not exist",
+      });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      msg: "Get success",
+      data: product,
+    });
+  } catch (error: any) {
+    console.error(colors.red("msg:", error.message));
+    next(new AppError("Internal server error", 500));
+  }
+}
+
 export async function updateProductHandler(req: Request<UpdateProductInput["params"]>, res: Response, next: NextFunction) {
   try {
     const productId = req.params.productId;

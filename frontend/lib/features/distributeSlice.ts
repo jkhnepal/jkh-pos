@@ -19,8 +19,16 @@ export const distributeApi = createApi({
       },
     }),
 
-
-    
+    getAllInventoryStatsOfABranch: builder.query({
+      query: (options) => {
+        const { branch } = options;
+        const params = branch ? { branch } : {};
+        return {
+          url: "/inventory-of-a-branch/loki",
+          params: params,
+        };
+      },
+    }),
 
     getDistribute: builder.query({
       query: (distributeId) => `/${distributeId}`,
@@ -53,4 +61,4 @@ export const distributeApi = createApi({
   }),
 });
 
-export const { useCreateDistributeMutation, useDeleteDistributeMutation, useGetAllDistributeQuery, useGetDistributeQuery, useUpdateDistributeMutation } = distributeApi;
+export const { useCreateDistributeMutation, useGetAllInventoryStatsOfABranchQuery, useDeleteDistributeMutation, useGetAllDistributeQuery, useGetDistributeQuery, useUpdateDistributeMutation } = distributeApi;

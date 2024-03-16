@@ -7,7 +7,7 @@ export async function createDistribute(input: DistributeInput) {
 }
 
 export async function findAllDistribute(filter: FilterQuery<DistributeDocument> = {}) {
-  const results = await DistributeModel.find(filter).populate("branch product");
+  const results = await DistributeModel.find(filter).populate("branch product").sort({ createdAt: -1 });
   return results;
 }
 

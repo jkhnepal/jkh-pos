@@ -19,6 +19,10 @@ export const productApi = createApi({
       query: (productId) => `/${productId}`,
     }),
 
+    getProductBySku: builder.query({
+      query: (productId) => `/sku/${productId}`, //productId->sku
+    }),
+
     createProduct: builder.mutation({
       query: (newProduct) => ({
         url: ``,
@@ -46,4 +50,4 @@ export const productApi = createApi({
   }),
 });
 
-export const { useCreateProductMutation, useDeleteProductMutation, useGetAllProductQuery, useGetProductQuery, useUpdateProductMutation } = productApi;
+export const { useCreateProductMutation,useGetProductBySkuQuery, useDeleteProductMutation, useGetAllProductQuery, useGetProductQuery, useUpdateProductMutation } = productApi;

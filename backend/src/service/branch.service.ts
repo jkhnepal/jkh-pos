@@ -7,7 +7,7 @@ export async function createBranch(input: BranchInput) {
 }
 
 export async function findAllBranch(filter: FilterQuery<BranchDocument> = {}) {
-  const results = await BranchModel.find(filter).select("-password");
+  const results = await BranchModel.find(filter).select("-password").sort({ createdAt: -1 });
   return results;
 }
 
