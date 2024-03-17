@@ -13,6 +13,8 @@ import distributeRoute from "../src/routes/distribute.route";
 import memberRoute from "../src/routes/member.route";
 import saleRoute from "../src/routes/sale.route";
 import statRoute from "../src/routes/stat.route";
+import authRoute from "../src/routes/auth.route";
+
 
 const app = express();
 // const port = process.env.PORT;
@@ -41,6 +43,7 @@ app.use("/api/distributes", distributeRoute);
 app.use("/api/members", memberRoute);
 app.use("/api/sales", saleRoute);
 app.use("/api/stats", statRoute);
+app.use("/api/auth", authRoute);
 
 // Testing
 app.get("/healthChecker", (req: Request, res: Response, next: NextFunction) => {

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import AppError from "../utils/appError";
-import { createUser, deleteUser, findAllUser, findAndUpdateUser, findUser, validatePassword } from "../service/user.service";
+import { createUser, deleteUser, findAllUser, findAndUpdateUser, findUser } from "../service/user.service";
 import { generateHashedPassword } from "../utils/generateHashedPassword";
 import { CreateUserInput, LoginUserInput, UpdateUserInput } from "../schema/user.schema";
 var colors = require("colors");
@@ -8,6 +8,7 @@ import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import UserModel from "../models/user.model";
 import crypto from "crypto";
+import { validatePassword } from "../utils/validatePassword";
 
 export async function createUserHandler(req: Request<{}, {}, CreateUserInput["body"]>, res: Response, next: NextFunction) {
   try {
@@ -166,6 +167,7 @@ export async function deleteUserHandler(req: Request<UpdateUserInput["params"]>,
 export const authenticateToken = (req: any, res: Response, next: NextFunction) => {
   // my custom header
   const token = req.header("Authorization");
+  // console.log("🚀 ~ authenticateToken ~ token:", token);
 
   if (!token) {
     return res.status(401).json({ error: true, message: "Access token is missing" });

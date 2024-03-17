@@ -1,4 +1,4 @@
-import { coerce, object, string, TypeOf, unknown } from "zod";
+import { array, coerce, object, string, TypeOf, unknown } from "zod";
 
 // Define common schemas
 const payload = {
@@ -23,12 +23,45 @@ const payload = {
       required_error: "discount is required",
     }),
 
+    totalAmount: coerce.number({
+      required_error: "totalAmount is required",
+    }),
+
     sp: coerce.number({
       required_error: "sp is required",
     }),
-
-    note: string().optional(),
   }),
+};
+
+// Define common schemas
+const createPayload = {
+  body: array(
+    object({
+      branch: string({
+        required_error: "branch is required",
+      }),
+
+      product: string({
+        required_error: "product is required",
+      }),
+
+      member: string({
+        required_error: "member is required",
+      }),
+
+      quantity: coerce.number({
+        required_error: "quantity is required",
+      }),
+
+      discount: coerce.number({
+        required_error: "discount is required",
+      }),
+
+      sp: coerce.number({
+        required_error: "sp is required",
+      }),
+    })
+  ),
 };
 
 const params = {
@@ -41,7 +74,7 @@ const params = {
 
 // Define specific schemas
 export const createSaleSchema = object({
-  ...payload,
+  ...createPayload,
 });
 
 export const updateSaleSchema = object({

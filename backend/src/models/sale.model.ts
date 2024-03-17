@@ -10,11 +10,10 @@ export interface SaleInput {
   product: ProductDocument["_id"];
   member: MemberDocument["_id"];
 
-  quantity: number;
-  discount: number; // in %
   sp: number;
-
-  note?: string;
+  discount: number; // in %
+  quantity: number;
+  totalAmount: number;
 }
 
 export interface SaleDocument extends SaleInput, mongoose.Document {
@@ -37,8 +36,7 @@ const saleSchema = new mongoose.Schema(
     quantity: { type: Number, required: true },
     discount: { type: Number, required: true },
     sp: { type: Number, required: true },
-
-    note: { type: String },
+    totalAmount: { type: Number, required: true },
   },
   {
     timestamps: true,

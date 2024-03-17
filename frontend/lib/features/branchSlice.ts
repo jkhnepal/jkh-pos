@@ -1,20 +1,21 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import baseQuery from "./baseQuery";
 
 export const branchApi = createApi({
   reducerPath: "branch",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5008/api/branches" }),
+  baseQuery,
   endpoints: (builder) => ({
     getAllBranch: builder.query({
-      query: () => "/",
+      query: () => "/branches",
     }),
 
     getBranch: builder.query({
-      query: (branchId) => `/${branchId}`,
+      query: (branchId) => `/branches/${branchId}`,
     }),
 
     createBranch: builder.mutation({
       query: (newBranch) => ({
-        url: ``,
+        url: `/branches`,
         method: "POST",
         // headers: { "Content-Type": "application/json" },
         body: newBranch,
@@ -23,7 +24,7 @@ export const branchApi = createApi({
 
     loginBranch: builder.mutation({
       query: (credential) => ({
-        url: `/login`,
+        url: `/branches/login`,
         method: "POST",
         // headers: { "Content-Type": "application/json" },
         body: credential,
@@ -32,7 +33,7 @@ export const branchApi = createApi({
 
     updateBranch: builder.mutation({
       query: ({ branchId, updatedBranch }) => ({
-        url: `/${branchId}`,
+        url: `/branches/${branchId}`,
         method: "PATCH",
         // headers: { "Content-Type": "application/json" },
         body: updatedBranch,
@@ -43,7 +44,7 @@ export const branchApi = createApi({
       query: ({ email_phone }) => {
         console.log("Resetting password for:", email_phone);
         return {
-          url: `/reset-password/${email_phone}`,
+          url: `/branches/reset-password/${email_phone}`,
           method: "PATCH",
           // headers: { "Content-Type": "application/json" },
         };
@@ -52,7 +53,7 @@ export const branchApi = createApi({
 
     deleteBranch: builder.mutation({
       query: (branchId) => ({
-        url: `/${branchId}`,
+        url: `/branches/${branchId}`,
         method: "DELETE",
       }),
     }),

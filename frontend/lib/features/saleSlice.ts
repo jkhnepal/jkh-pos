@@ -4,8 +4,19 @@ export const saleApi = createApi({
   reducerPath: "sale",
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5008/api/sales" }),
   endpoints: (builder) => ({
+    // getAllSale: builder.query({
+    //   query: () => "/",
+    // }),
+
     getAllSale: builder.query({
-      query: () => "/",
+      query: (options) => {
+        const { branch } = options;
+        const params = branch ? { branch } : {};
+        return {
+          url: "/",
+          params: params,
+        };
+      },
     }),
 
     getSale: builder.query({

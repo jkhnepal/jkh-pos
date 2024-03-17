@@ -62,6 +62,27 @@ export async function getMemberHandler(req: Request<UpdateMemberInput["params"]>
   }
 }
 
+export async function getMemberByPhoneHandler(req: Request<UpdateMemberInput["params"]>, res: Response, next: NextFunction) {
+  try {
+    const phone = req.params.memberId;
+    const member = await findMember({ phone });
+
+    if (!member) {
+      next(new AppError("member does not exist", 404));
+    }
+
+    return res.json({
+      status: "success",
+      msg: "Get success",
+      data: member,
+    });
+  } catch (error: any) {
+    console.error(colors.red("msg:", error.message));
+    next(new AppError("Internal server error", 500));
+  }
+}
+
+
 export async function updateMemberHandler(req: Request<UpdateMemberInput["params"]>, res: Response, next: NextFunction) {
   try {
     const memberId = req.params.memberId;

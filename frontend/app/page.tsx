@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -36,8 +36,11 @@ export default function Home() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const res: any = await loginBranch(values);
     console.log(res);
+
     if (res.data) {
+      localStorage.setItem("accessToken", res.data.accessToken); // Corrected the syntax here
       toast.success(res.data.msg);
+
       form.reset();
     }
   };

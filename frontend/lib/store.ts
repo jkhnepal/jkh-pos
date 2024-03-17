@@ -8,6 +8,7 @@ import { memberApi } from "./features/memberSlice";
 import { distributeApi } from "./features/distributeSlice";
 import { saleApi } from "./features/saleSlice";
 import { statApi } from "./features/statSlice";
+import { authApi } from "./features/authSlice";
 
 export const makeStore = () => {
   const store = configureStore({
@@ -20,6 +21,7 @@ export const makeStore = () => {
       [distributeApi.reducerPath]: distributeApi.reducer,
       [saleApi.reducerPath]: saleApi.reducer,
       [statApi.reducerPath]: statApi.reducer,
+      [authApi.reducerPath]: authApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().concat(
@@ -31,6 +33,7 @@ export const makeStore = () => {
         distributeApi.middleware,
         saleApi.middleware,
         statApi.middleware,
+        authApi.middleware,
         
       ),
   });

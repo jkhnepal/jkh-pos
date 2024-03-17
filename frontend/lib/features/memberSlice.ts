@@ -12,6 +12,10 @@ export const memberApi = createApi({
       query: (memberId) => `/${memberId}`,
     }),
 
+    getMemberByPhone: builder.query({
+      query: (memberId) => `/by-phone/${memberId}`, //memberId-->phone
+    }),
+
     createMember: builder.mutation({
       query: (newMember) => ({
         url: ``,
@@ -39,4 +43,4 @@ export const memberApi = createApi({
   }),
 });
 
-export const { useCreateMemberMutation, useDeleteMemberMutation, useGetAllMemberQuery, useGetMemberQuery, useUpdateMemberMutation } = memberApi;
+export const { useCreateMemberMutation,useGetMemberByPhoneQuery, useDeleteMemberMutation, useGetAllMemberQuery, useGetMemberQuery, useUpdateMemberMutation } = memberApi;

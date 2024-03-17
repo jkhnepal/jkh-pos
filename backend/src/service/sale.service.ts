@@ -2,6 +2,7 @@ import { FilterQuery, QueryOptions, UpdateQuery } from "mongoose";
 import SaleModel, { SaleInput, SaleDocument } from "../models/sale.model";
 
 export async function createSale(input: SaleInput) {
+  console.log(input);
   const result = await SaleModel.create(input);
   return result;
 }

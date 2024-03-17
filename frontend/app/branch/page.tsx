@@ -18,16 +18,19 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { useCreateSaleMutation } from "@/lib/features/saleSlice";
+import { useGetMemberByPhoneQuery, useGetMemberQuery } from "@/lib/features/memberSlice";
 
 const formSchema = z.object({
-  sku: z.string().min(2, {
-    message: "SKU name must be at least 4 character long.",
+  sku: z.string().min(5, {
+    message: "SKU name must be at least 5 character long.",
   }),
 });
 
 export default function Page({}: Props) {
   const [showCartDrawer, setSetShowCartDrawer] = useState(true);
-  const branch_id = "65f333f74482d9774195ba8e";
+  // const branch_id = "65f333f74482d9774195ba8e"; //1
+  const branch_id = "65f334184482d9774195ba94"; // 2
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -45,38 +48,56 @@ export default function Page({}: Props) {
 
   const { watch } = form;
   const watchedFields = watch();
-  console.log(watchedFields.sku)
+  console.log(watchedFields.sku);
 
   const { data: product, isSuccess } = useGetProductBySkuQuery(watchedFields.sku);
+
   console.log(product);
-
-  // State to hold selected products
   const [selectedProducts, setSelectedProducts] = useState<any[]>([]);
-
-  // Function to add a product to the selected products array
-  // const addToCart = (product: any) => {
-  //   setSelectedProducts([...selectedProducts, product]);
-  //   setSku(""); // Reset SKU input field
-  // };
 
   console.log(selectedProducts);
 
+  const [userPhoneNumber, setUserPhoneNumber] = useState<any>();
+  console.log(userPhoneNumber);
+
+  const { data: user } = useGetMemberByPhoneQuery(userPhoneNumber);
+  console.log(user?.data);
+
   // Define a submit handler.
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    setSelectedProducts([...selectedProducts, product.data]);
+    const { _id, productId, cp, sp, discount, quantity } = product.data;
+
+    // Calculate the discounted price
+    const discountedPrice = sp * (1 - discount / 100);
+
+    // Calculate the total amount after discount
+    const totalAmount = discountedPrice * 1; // Assuming quantity is always 1 for now
+
+    // Create the selected product object with totalAmount
+    const selectedProduct = {
+      branch: branch_id,
+      product: _id,
+      member: "65f503744ff971d4262d52a8",
+
+      sp,
+      discount,
+      quantity: 1,
+      totalAmount,
+    };
+
+    // Add the selected product to the selectedProducts array
+    setSelectedProducts([...selectedProducts, selectedProduct]);
+
+    // Reset the form
     form.reset();
-    // const res: any = await createCategory(values);
-    // if (res.data) {
-    //   toast.success(res.data.msg);
-    //
-    // }
   };
 
+  const [createSale, { data, error, status, isError, isLoading: isCreating }] = useCreateSaleMutation();
 
-
-  // useEffect(() => {
-  //   console.log(watchedFields.sku);
-  // }, [watchedFields]);
+  const createSaleHandler = async () => {
+    const res = await createSale(selectedProducts);
+    console.log(res);
+  };
 
   return (
     <>
@@ -154,20 +175,19 @@ export default function Page({}: Props) {
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className=" grid grid-cols-2 gap-4">
+              className="flex items-center gap-4">
               <FormField
                 control={form.control}
                 name="sku"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>SKU *</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="SKU"
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage />
+                    {/* <FormMessage /> */}
                   </FormItem>
                 )}
               />
@@ -175,6 +195,19 @@ export default function Page({}: Props) {
             </form>
           </Form>
         </div>
+
+        <Input
+          type="number"
+          value={userPhoneNumber}
+          onChange={(e) => setUserPhoneNumber(e.target.value)}
+          placeholder="Phone number"
+        />
+
+        <Button
+          onClick={createSaleHandler}
+          type="button">
+          Create Sale
+        </Button>
 
         <ScrollArea className="  h-[90vh] w-[500px] rounded-md border   ">
           <Table>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -12,6 +13,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   };
 
   const pathname = usePathname();
+
+  const { data: userData, isLoading, error } = useGetCurrentUserFromTokenQuery({});
+  console.log(userData);
 
   return (
     <div className=" flex">
@@ -77,7 +81,7 @@ const navItems = [
   {
     name: "Sales",
     icon: <Settings size={15} />,
-    href: "/admin/sales",
+    href: "/branch/sales",
   },
 
   //   {

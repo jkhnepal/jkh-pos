@@ -5,7 +5,7 @@ import { findSale, createSale, findAllSale, findAndUpdateSale, deleteSale } from
 
 var colors = require("colors");
 
-export async function createSaleHandler(req: Request<{}, {}, CreateSaleInput["body"]>, res: Response, next: NextFunction) {
+export async function createSaleHandler(req: any, res: Response, next: NextFunction) {
   try {
     const body = req.body;
 

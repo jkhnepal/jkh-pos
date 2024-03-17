@@ -62,6 +62,22 @@ export async function getAllBranchHandler(req: Request<{}, {}, {}>, res: Respons
   }
 }
 
+
+
+export async function getBranchFromTokenHandler(req: any, res: Response, next: NextFunction) {
+  try {
+    const decodedBranch: any = req.user;
+    return res.json({
+      status: "success",
+      msg: "Get user from token success",
+      data: decodedBranch,
+    });
+  } catch (error: any) {
+    console.error(colors.red("msg:", error.message));
+    next(new AppError("Internal server error", 500));
+  }
+}
+
 export async function loginBranchHandler(req: Request<{}, {}, LoginInput["body"]>, res: Response, next: NextFunction) {
   const branch = await validatePassword(req.body);
 
