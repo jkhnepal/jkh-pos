@@ -41,7 +41,6 @@ export default function Page() {
     }
   }
 
-  // const columns: ColumnDef<IMemberOut>[] = [
   const columns: ColumnDef<any>[] = [
     {
       id: "select",

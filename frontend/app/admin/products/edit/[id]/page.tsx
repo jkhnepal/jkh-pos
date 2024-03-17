@@ -19,12 +19,25 @@ import { useGetAllProductQuery, useGetProductQuery, useUpdateProductMutation } f
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const formSchema = z.object({
-  name: z.string(),
-  sku: z.string(),
-  category: z.string(),
+  name: z.string().min(5, {
+    message: "Name must be at least 4 characters.",
+  }),
 
-  cp: z.coerce.number(),
-  sp: z.coerce.number(),
+  sku: z.string().min(5, {
+    message: "SKU must be at least 5 characters.",
+  }),
+  category: z.string().min(5, {
+    message: "Category is required",
+  }),
+
+  cp: z.coerce.number().min(1, {
+    message: "Selling price must be a positive number.",
+  }),
+
+  sp: z.coerce.number().min(1, {
+    message: "Selling price must be a positive number.",
+  }),
+
   discount: z.coerce.number().optional(),
 
   image: z.string().optional(),
@@ -53,7 +66,7 @@ export default function Page() {
     defaultValues: {
       name: "",
       sku: "",
-      category: "",
+      category: product ? product.category : "",
 
       cp: 0,
       sp: 0,
@@ -63,6 +76,8 @@ export default function Page() {
       note: "",
     },
   });
+
+  console.log(product?.category)
 
   useEffect(() => {
     if (product) {
@@ -152,7 +167,9 @@ export default function Page() {
                   <Select
                     {...field}
                     onValueChange={field.onChange}
-                    defaultValue={field.name}>
+                    defaultOpen={product?.category} 
+
+                  >
                     <SelectTrigger className="">
                       <SelectValue placeholder="Select Category" />
                     </SelectTrigger>
@@ -297,9 +314,9 @@ export default function Page() {
             )}
           />
 
-            <div>
-              <Button type="submit"> {isUpdating && <LoaderPre />} Submit</Button>
-            </div>
+          <div>
+            <Button type="submit"> {isUpdating && <LoaderPre />} Submit</Button>
+          </div>
         </form>
       </Form>
       <InventoryAdd product_id={product._id} />

@@ -37,6 +37,6 @@ export async function getTotalDistributedStock(product: string) {
       },
     },
   ]);
-  return totalDistributedStock[0]?.totalStock;
+  return totalDistributedStock[0]?.totalStock | 0;
 }
 

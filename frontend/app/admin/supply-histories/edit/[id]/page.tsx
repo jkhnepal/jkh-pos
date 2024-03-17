@@ -5,23 +5,28 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { toast } from "sonner";
 import { useParams } from "next/navigation";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-
 import { useGetAllDistributeQuery, useGetDistributeQuery, useUpdateDistributeMutation } from "@/lib/features/distributeSlice";
-import useCloudinaryFileUpload from "@/app/hooks/useCloudinaryFileUpload";
 import LoaderPre from "@/app/custom-components/LoaderPre";
 
 const formSchema = z.object({
-  branch: z.string(),
-  product: z.string(),
-  quantity: z.coerce.number(),
+  branch: z.string().min(24, {
+    message: "Branch is required",
+  }),
+  product: z.string().min(24, {
+    message: "Product is required",
+  }),
+  quantity: z.coerce.number().min(1, {
+    message: "Quantity must be a positive number.",
+  }),
 });
 
 export default function Page() {
   const { refetch } = useGetAllDistributeQuery({ name: "" });
+
   const { data: branches } = useGetAllBranchQuery({});
   const { data: products } = useGetAllProductQuery({});
   const params = useParams();
@@ -96,7 +101,7 @@ export default function Page() {
                 <Select
                   {...field}
                   onValueChange={field.onChange}
-                  defaultValue={field.name}>
+                  defaultOpen={distribute.branch}>
                   <SelectTrigger className="">
                     <SelectValue placeholder="Select branch" />
                   </SelectTrigger>
@@ -129,7 +134,7 @@ export default function Page() {
                 <Select
                   {...field}
                   onValueChange={field.onChange}
-                  defaultValue={field.name}>
+                  defaultOpen={distribute.product}>
                   <SelectTrigger className="">
                     <SelectValue placeholder="Select product" />
                   </SelectTrigger>
@@ -175,7 +180,6 @@ export default function Page() {
             </FormItem>
           )}
         />
-
 
         <div className=" flex  flex-col gap-1.5">
           <span className=" opacity-0">.</span>

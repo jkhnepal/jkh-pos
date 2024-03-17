@@ -1,9 +1,12 @@
 "use client";
-import { DatabaseZap, Home, Menu, Settings, User2 } from "lucide-react";
+import { DatabaseZap, Menu, Settings } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import logo from "../../public/logo/logo.png";
+import Image from "next/image";
+import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -12,12 +15,20 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   };
 
   const pathname = usePathname();
+  const { data: currentUser, isLoading, error } = useGetCurrentUserFromTokenQuery({});
+  console.log("🚀 ~ Layout ~ currentUser:", currentUser);
 
   return (
     <div className=" flex">
       {!isFullScreen && (
         <div className={`${isFullScreen ? "" : "w-2/12"}  h-screen overflow-y-scroll bg-primary p-4 text-primary-foreground `}>
-          <p className=" text-3xl font-semibold  mb-8   ">Dashboard</p>
+          <div className=" mb-8">
+            <Image
+              src={logo}
+              alt="img"
+              className=" h-12 w-40"
+            />
+          </div>
           <div className=" space-y-4 tracking-wider   ">
             {navItems.map((item: any, index: number) => (
               <div

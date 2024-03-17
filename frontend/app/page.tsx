@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { useLoginBranchMutation } from "@/lib/features/branchSlice";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import LoaderPre from "./custom-components/LoaderPre";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   email_phone: z.string().min(2, {
@@ -32,16 +33,19 @@ export default function Home() {
 
   const [loginBranch, { data, error, status, isSuccess, isError, isLoading: isLogging }] = useLoginBranchMutation();
 
+  const router = useRouter();
+
   // Define a submit handler.
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const res: any = await loginBranch(values);
-    console.log(res);
+    console.log(res)
 
     if (res.data) {
       localStorage.setItem("accessToken", res.data.accessToken); // Corrected the syntax here
       toast.success(res.data.msg);
-
       form.reset();
+      res.data.branch.type === "headquarter" && router.push("/admin");
+      res.data.branch.type === "branch" && router.push("/branch");
     }
   };
 

@@ -5,32 +5,36 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
 import { toast } from "sonner";
 import { useCreateMemberMutation, useGetAllMemberQuery } from "@/lib/features/memberSlice";
-import useCloudinaryFileUpload from "@/app/hooks/useCloudinaryFileUpload";
 import LoaderPre from "@/app/custom-components/LoaderPre";
-import OptionalLabel from "@/app/custom-components/OptionalLabel";
 
 const formSchema = z.object({
-  name: z.string(),
-  phone: z.coerce.number(),
+  name: z.string().min(5, {
+    message: "Name must be at least 5 characters.",
+  }),
+
+  phone: z.string().length(10, {
+    message: "Phone must be exactly 10 characters.",
+  }),
+
   creatorBranch: z.string(),
 });
 
 export default function Page() {
-  const [createMember, { data, error, status, isSuccess, isError, isLoading: isCreating }] = useCreateMemberMutation();
-  const { refetch } = useGetAllMemberQuery({ name: "" });
+  const [createMember, { error, isLoading: isCreating }] = useCreateMemberMutation();
+  const { refetch } = useGetAllMemberQuery({});
 
-  const branch_id = "123456789012345678809754"; // get branch id
+  const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
+  console.log("🚀 ~ Page ~ currentUser:", currentUser);
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      phone: 0,
-      creatorBranch: branch_id,
+      phone: "",
+      creatorBranch: "65f700776295227cabb71ff5",
     },
   });
 
@@ -83,9 +87,7 @@ export default function Page() {
           name="phone"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>
-                Phone <OptionalLabel />
-              </FormLabel>
+              <FormLabel>Phone</FormLabel>
               <FormControl>
                 <Input
                   type="number"
@@ -98,9 +100,9 @@ export default function Page() {
           )}
         />
 
-       <div>
-       <Button type="submit"> {isCreating && <LoaderPre />} Submit</Button>
-       </div>
+        <div>
+          <Button type="submit"> {isCreating && <LoaderPre />} Submit</Button>
+        </div>
       </form>
     </Form>
   );
@@ -109,6 +111,7 @@ export default function Page() {
 // Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
 
 function Breadcumb() {
   return (

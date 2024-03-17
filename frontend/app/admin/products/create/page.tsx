@@ -15,16 +15,28 @@ import OptionalLabel from "@/app/custom-components/OptionalLabel";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { useCreateProductMutation, useGetAllProductQuery } from "@/lib/features/product.sclice";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { useGetAllCategoryQuery } from "@/lib/features/categorySlice";
 
 const formSchema = z.object({
-  name: z.string(),
-  sku: z.string(),
-  category: z.string(),
+  name: z.string().min(5, {
+    message: "Name must be at least 4 characters.",
+  }),
 
-  cp: z.coerce.number(),
-  sp: z.coerce.number(),
+  sku: z.string().min(5, {
+    message: "SKU must be at least 5 characters.",
+  }),
+  category: z.string().min(5, {
+    message: "Category is required",
+  }),
+
+  cp: z.coerce.number().min(1, {
+    message: "Selling price must be a positive number.",
+  }),
+
+  sp: z.coerce.number().min(1, {
+    message: "Selling price must be a positive number.",
+  }),
+
   discount: z.coerce.number().optional(),
 
   image: z.string().optional(),

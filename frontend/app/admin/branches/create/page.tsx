@@ -24,8 +24,8 @@ const formSchema = z.object({
     message: "Email must be at least 10 characters.",
   }),
 
-  phone: z.coerce.number().min(10, {
-    message: "Phone must be at least 10 characters.",
+  phone: z.string().length(10, {
+    message: "Phone must be exactly 10 characters.",
   }),
 
   address: z.string().min(5, {
@@ -51,7 +51,7 @@ export default function Page() {
     defaultValues: {
       name: "",
       email: "",
-      phone: 0,
+      phone: "",
       address: "",
       password: "",
       image: "",
@@ -210,9 +210,9 @@ export default function Page() {
           )}
         />
 
-       <div className=" flex">
-       <Button type="submit"> {isCreating && <LoaderPre />} Submit</Button>
-       </div>
+        <div className=" flex">
+          <Button type="submit"> {isCreating && <LoaderPre />} Submit</Button>
+        </div>
       </form>
     </Form>
   );

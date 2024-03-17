@@ -38,5 +38,5 @@ export async function getTotalAddedStock(product: string) {
       },
     },
   ]);
-  return totalAddedStock[0]?.totalStock;
+  return totalAddedStock[0]?.totalStock | 0;
 }

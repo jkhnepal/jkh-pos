@@ -13,7 +13,7 @@ import defaultImg from "../../../public/default-images/unit-default-image.png";
 import LoaderPre from "@/app/custom-components/LoaderPre";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useCreateProductMutation, useDeleteProductMutation, useGetAllProductQuery } from "@/lib/features/product.sclice";
+import { useDeleteProductMutation, useGetAllProductQuery } from "@/lib/features/product.sclice";
 
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -22,10 +22,10 @@ export default function Page() {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const [searchText, setsearchText] = React.useState<string>("");
-  const [deleteProduct, { data, isError: isDeleteError, error: deleteError, isLoading: isDeleting }] = useDeleteProductMutation();
-  // const { data: products, isError, isLoading: isFetching, refetch } = useGetAllProductQuery({name:searchText});
+  const [deleteProduct, { error: deleteError, isLoading: isDeleting }] = useDeleteProductMutation();
 
-  const { data: products, isError, isLoading: isFetching, refetch } = useGetAllProductQuery({ name: searchText });
+  const { data: products, isLoading: isFetching, refetch } = useGetAllProductQuery({ name: searchText });
+  console.log("🚀 ~ Page ~ products:", products);
 
   const handleDelete = async (id: string) => {
     const res: any = await deleteProduct(id);
@@ -46,7 +46,6 @@ export default function Page() {
     }
   }
 
-  // const columns: ColumnDef<IProductOut>[] = [
   const columns: ColumnDef<any>[] = [
     {
       id: "select",
@@ -84,9 +83,15 @@ export default function Page() {
     },
 
     {
+      id: "totalAddedStock",
+      header: "Total Added Stock",
+      cell: ({ row }) => <div>{row.original.totalAddedStock} </div>,
+    },
+
+    {
       id: "inStock",
       header: "In Stock",
-      cell: ({ row }) => <div>{row.original.totalAddedStock - row.original.totalDistributedStock}  </div>,
+      cell: ({ row }) => <div>{row.original.totalAddedStock - row.original.totalDistributedStock} </div>,
     },
 
     {

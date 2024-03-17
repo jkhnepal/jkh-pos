@@ -111,6 +111,9 @@ export async function getInventoryStatOfAProductHandler(req: Request<UpdateInven
     const totalAddedStock = await getTotalAddedStock(product);
     const totalDistributedStock = await getTotalDistributedStock(product);
 
+    console.log(totalAddedStock)
+    console.log(totalDistributedStock)
+
     return res.status(200).json({
       status: "success",
       totalAddedStock,

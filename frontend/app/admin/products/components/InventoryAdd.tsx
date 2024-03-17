@@ -9,11 +9,10 @@ import { Button } from "@/components/ui/button";
 import { useCreateInventoryMutation, useDeleteInventoryMutation, useGetAllInventoryQuery, useGetInventoryQuery, useGetInventoryStatOfAProductQuery, useUpdateInventoryMutation } from "@/lib/features/inventorySlice";
 import { toast } from "sonner";
 import LoaderPre from "@/app/custom-components/LoaderPre";
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import moment from "moment";
 import { PencilRuler, Save, SaveIcon, Trash2, X } from "lucide-react";
 import { useState } from "react";
-import { useGetDistributeQuery, useUpdateDistributeMutation } from "@/lib/features/distributeSlice";
 
 type Props = {
   product_id: string;
@@ -21,20 +20,19 @@ type Props = {
 
 const formSchema = z.object({
   product: z.string(),
-  stock: z.coerce.number(),
+  stock: z.coerce.number().min(1, {
+    message: "Stock must be a positive number.",
+  }),
 });
 
 export default function InventoryAdd({ product_id }: Props) {
   const [createInventory, { error, isLoading: isCreating }] = useCreateInventoryMutation();
 
-  const { data: inventoryAddedHistories } = useGetAllInventoryQuery("");
-
   const { data: inventoryAddedHistoriesOfAProduct, refetch: refetchInventoryAddedHistoriesOfAProduct } = useGetAllInventoryQuery({ product: product_id });
-  console.log(inventoryAddedHistoriesOfAProduct);
+  console.log("🚀 ~ InventoryAdd ~ inventoryAddedHistoriesOfAProduct:", inventoryAddedHistoriesOfAProduct);
 
   const { data: inventoryStatOfAProduct, refetch: refetchInventoryStatOfAProduct } = useGetInventoryStatOfAProductQuery(product_id);
-
-  console.log(inventoryStatOfAProduct);
+  console.log("🚀 ~ InventoryAdd ~ inventoryStatOfAProduct:", inventoryStatOfAProduct);
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -68,30 +66,26 @@ export default function InventoryAdd({ product_id }: Props) {
   }
 
   const [readyToEditId, setReadyToEditId] = useState<string>("");
-  console.log(readyToEditId);
-
   const [newStock, setNewStock] = useState<number>(0);
-  console.log(newStock);
+  const [updateInventory] = useUpdateInventoryMutation();
 
-  const [updateInventory, { error: updateError, isError: ab, isLoading: isUpdating }] = useUpdateInventoryMutation();
-
-  // const { data, isFetching } = useGetInventoryQuery(readyToEditId);
-  // console.log(data)
-
-  // Define a submit handler.
   const handleUpdate = async () => {
     const res: any = await updateInventory({ inventoryId: readyToEditId, updatedInventory: { stock: newStock } });
     if (res.data) {
       toast.success(res.data.msg);
+      refetchInventoryAddedHistoriesOfAProduct();
+      refetchInventoryStatOfAProduct();
+      setReadyToEditId("00")
     }
   };
 
   const [deleteInventory] = useDeleteInventoryMutation();
-
   const handleDelete = async (id: string) => {
     const res: any = await deleteInventory(id);
     if (res.data) {
       toast.success(res.data.msg);
+      refetchInventoryAddedHistoriesOfAProduct();
+      refetchInventoryStatOfAProduct();
     }
   };
 
@@ -113,6 +107,8 @@ export default function InventoryAdd({ product_id }: Props) {
                     <Input
                       type="number"
                       readOnly
+                      disabled
+                      className="border border-neutral-800 "
                       placeholder="Stock"
                       value={inventoryStatOfAProduct?.totalAddedStock || 0}
                     />
@@ -124,8 +120,10 @@ export default function InventoryAdd({ product_id }: Props) {
                   <FormLabel>Remaining Stock</FormLabel>
                   <FormControl>
                     <Input
+                      className="border border-neutral-800 "
                       type="number"
                       readOnly
+                      disabled
                       placeholder="Stock"
                       value={inventoryStatOfAProduct?.totalAddedStock - inventoryStatOfAProduct?.totalDistributedStock || 0}
                     />
@@ -212,7 +210,7 @@ export default function InventoryAdd({ product_id }: Props) {
                           className=" text-blue-500 cursor-pointer"
                         />
                         <Trash2
-                        onClick={()=>handleDelete(item.inventoryId)}
+                          onClick={() => handleDelete(item.inventoryId)}
                           size={18}
                           className=" text-red-500 cursor-pointer"
                         />
