@@ -4,7 +4,6 @@ import { BranchDocument } from "./branch.model";
 import { ProductDocument } from "./product.model";
 import { MemberDocument } from "./member.model";
 
-// it track the stock giben to branches
 export interface SaleInput {
   branch: BranchDocument["_id"];
   product: ProductDocument["_id"];
