@@ -36,7 +36,7 @@ export const inventoryApi = createApi({
       query: (newInventory) => ({
         url: ``,
         method: "POST",
-        // headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" },
         body: newInventory,
       }),
     }),

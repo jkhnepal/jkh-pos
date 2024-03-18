@@ -29,6 +29,7 @@ const params = {
   }),
 };
 
+
 // Define specific schemas
 export const createHeadquarterInventorySchema = object({
   ...payload,

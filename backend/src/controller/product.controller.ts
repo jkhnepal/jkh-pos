@@ -3,6 +3,7 @@ import AppError from "../utils/appError";
 import { CreateProductInput, UpdateProductInput } from "../schema/product.schema";
 import { findProduct, createProduct, findAllProduct, findAndUpdateProduct, deleteProduct } from "../service/product.service";
 import ProductModel, { ProductDocument } from "../models/product.model";
+import { createHeadquarterInventory } from "../service/headquarterInventory.service";
 
 var colors = require("colors");
 
@@ -12,11 +13,17 @@ export async function createProductHandler(req: Request<{}, {}, CreateProductInp
     const alreadyExist = await findProduct({ name: body.name });
 
     if (alreadyExist) {
-      next(new AppError(`product with the name (${body.name}) already exist`, 404));
-      return;
+      return res.status(404).json({
+        status: "failure",
+        msg: `product with the name (${body.name}) already exist`,
+      });
     }
 
     const product = await createProduct(body);
+
+    // Also create its headquarterInventory
+    await createHeadquarterInventory({ product: product?._id, stock: 0 });
+
     return res.status(201).json({
       status: "success",
       msg: "Create success",

@@ -13,6 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import moment from "moment";
 import { PencilRuler, Save, SaveIcon, Trash2, X } from "lucide-react";
 import { useState } from "react";
+import { useCreateHeadquarterInventoryMutation, useGetHeadquarterInventoryByProductQuery, useGetHeadquarterInventoryQuery } from "@/lib/features/headquarterInventorySlice";
 
 type Props = {
   product_id: string;
@@ -26,14 +27,10 @@ const formSchema = z.object({
 });
 
 export default function InventoryAdd({ product_id }: Props) {
+  const { data: productInventory } = useGetHeadquarterInventoryByProductQuery(product_id);
+  console.log("🚀 ~ InventoryAdd ~ productInventory:", productInventory);
+
   const [createInventory, { error, isLoading: isCreating }] = useCreateInventoryMutation();
-
-  const { data: inventoryAddedHistoriesOfAProduct, refetch: refetchInventoryAddedHistoriesOfAProduct } = useGetAllInventoryQuery({ product: product_id });
-  console.log("🚀 ~ InventoryAdd ~ inventoryAddedHistoriesOfAProduct:", inventoryAddedHistoriesOfAProduct);
-
-  const { data: inventoryStatOfAProduct, refetch: refetchInventoryStatOfAProduct } = useGetInventoryStatOfAProductQuery(product_id);
-  console.log("🚀 ~ InventoryAdd ~ inventoryStatOfAProduct:", inventoryStatOfAProduct);
-
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -49,10 +46,14 @@ export default function InventoryAdd({ product_id }: Props) {
     if (res.data) {
       toast.success(res.data.msg);
       form.reset();
-      refetchInventoryStatOfAProduct();
-      refetchInventoryAddedHistoriesOfAProduct();
     }
   };
+
+  const { data: inventoryAddedHistoriesOfAProduct, refetch: refetchInventoryAddedHistoriesOfAProduct } = useGetAllInventoryQuery({ product: product_id });
+  console.log("🚀 ~ InventoryAdd ~ inventoryAddedHistoriesOfAProduct:", inventoryAddedHistoriesOfAProduct);
+
+  const { data: inventoryStatOfAProduct, refetch: refetchInventoryStatOfAProduct } = useGetInventoryStatOfAProductQuery(product_id);
+  console.log("🚀 ~ InventoryAdd ~ inventoryStatOfAProduct:", inventoryStatOfAProduct);
 
   if (error) {
     if ("status" in error) {
@@ -75,7 +76,7 @@ export default function InventoryAdd({ product_id }: Props) {
       toast.success(res.data.msg);
       refetchInventoryAddedHistoriesOfAProduct();
       refetchInventoryStatOfAProduct();
-      setReadyToEditId("00")
+      setReadyToEditId("00");
     }
   };
 
@@ -110,7 +111,7 @@ export default function InventoryAdd({ product_id }: Props) {
                       disabled
                       className="border border-neutral-800 "
                       placeholder="Stock"
-                      value={inventoryStatOfAProduct?.totalAddedStock || 0}
+                      value={productInventory?.data.stock || 0}
                     />
                   </FormControl>
                   <FormMessage />
@@ -125,7 +126,7 @@ export default function InventoryAdd({ product_id }: Props) {
                       readOnly
                       disabled
                       placeholder="Stock"
-                      value={inventoryStatOfAProduct?.totalAddedStock - inventoryStatOfAProduct?.totalDistributedStock || 0}
+                      value={productInventory?.data.stock || 0}
                     />
                   </FormControl>
                   <FormMessage />

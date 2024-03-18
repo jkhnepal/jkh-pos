@@ -1,5 +1,5 @@
 import { FilterQuery, QueryOptions, UpdateQuery } from "mongoose";
-import HeadquarterInventoryModel, { HeadquarterInventoryInput, HeadquarterInventoryDocument } from "../models/headquarterInventory";
+import HeadquarterInventoryModel, { HeadquarterInventoryInput, HeadquarterInventoryDocument } from "../models/headquarterInventory.model";
 
 export async function createHeadquarterInventory(input: HeadquarterInventoryInput): Promise<HeadquarterInventoryDocument> {
   const result = await HeadquarterInventoryModel.create(input);

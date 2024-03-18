@@ -8,6 +8,7 @@ export interface HeadquarterInventoryInput {
 }
 
 export interface HeadquarterInventoryDocument extends HeadquarterInventoryInput, mongoose.Document {
+  headquarterInventoryId: any;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -108,3 +108,27 @@ export async function deleteHeadquarterInventoryHandler(req: Request<UpdateHeadq
     next(new AppError("Internal server error", 500));
   }
 }
+
+export async function getHeadquarterInventoryByProductHandler(req: Request<UpdateHeadquarterInventoryInput["params"]>, res: Response, next: NextFunction) {
+  try {
+    const product = req.params.headquarterInventoryId;
+    console.log(product);
+    const headquarterInventory = await findHeadquarterInventory({ product });
+
+    if (!headquarterInventory) {
+      return res.status(404).json({
+        status: "failure",
+        msg: `Headquarter inventory of ptoduct ${product} does not exist`,
+      });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      msg: "Get success",
+      data: headquarterInventory,
+    });
+  } catch (error: any) {
+    console.error(colors.red("msg:", error.message));
+    next(new AppError("Internal server error", 500));
+  }
+}
