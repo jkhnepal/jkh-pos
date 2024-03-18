@@ -5,7 +5,15 @@ export const memberApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5008/api/members" }),
   endpoints: (builder) => ({
     getAllMember: builder.query({
-      query: () => "/",
+      // query: () => "/",
+      query: (options) => {
+        const { phone } = options;
+        const params = phone ? { phone } : {};
+        return {
+          url: "/",
+          params: params,
+        };
+      },
     }),
 
     getMember: builder.query({
@@ -43,4 +51,4 @@ export const memberApi = createApi({
   }),
 });
 
-export const { useCreateMemberMutation,useGetMemberByPhoneQuery, useDeleteMemberMutation, useGetAllMemberQuery, useGetMemberQuery, useUpdateMemberMutation } = memberApi;
+export const { useCreateMemberMutation, useGetMemberByPhoneQuery, useDeleteMemberMutation, useGetAllMemberQuery, useGetMemberQuery, useUpdateMemberMutation } = memberApi;

@@ -103,39 +103,9 @@ const navItems = [
     href: "/admin/members",
   },
 
-  {
-    name: "Sales",
-    icon: <Settings size={15} />,
-    href: "/admin/sales",
-  },
-
-  //   {
-  //     name: "Branch",
-  //     icon: <User2 size={15} />,
-  //     href: "",
-
-  //     subLinks: [
-  //       {
-  //         title: "Sales",
-  //         href: "/dashboard/sales",
-  //       },
-
-  //       {
-  //         title: "Stock History",
-  //         href: "/dashboard/stock-history",
-  //       },
-
-  //       {
-  //         title: "Branch Inventory",
-  //         href: "/dashboard/branch-inventory",
-  //       },
-
-  //       {
-  //         title: "Sales",
-  //         href: "/dashboard/branch_gokvvvrewe/sales",
-  //       },
-  //     ],
-  //   },
-
-  ,
+  // {
+  //   name: "Sales",
+  //   icon: <Settings size={15} />,
+  //   href: "/admin/sales",
+  // },
 ];

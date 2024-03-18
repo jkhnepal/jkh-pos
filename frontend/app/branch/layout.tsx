@@ -16,7 +16,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   };
 
   const { data: currentUser, isLoading, error } = useGetCurrentUserFromTokenQuery({});
-  // console.log("🚀 ~ Layout ~ currentUser:", currentUser?.data.branch.type);
+  console.log("🚀 ~ Layout ~ currentUser:", currentUser)
 
   if (currentUser && currentUser.data.branch.type === "branch") {
     return (

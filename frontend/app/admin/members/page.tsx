@@ -14,7 +14,7 @@ import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
 
 export default function Page() {
-  const { data: members, isLoading: isFetching, refetch } = useGetAllMemberQuery({ name: "" });
+  const { data: members, isLoading: isFetching, refetch } = useGetAllMemberQuery({ phone: "9864755749" });
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
