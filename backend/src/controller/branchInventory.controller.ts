@@ -26,6 +26,7 @@ export async function createBranchInventoryHandler(req: Request<{}, {}, CreateBr
   }
 }
 
+
 export async function getAllBranchInventoryHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
   try {
     const queryParameters = req.query;

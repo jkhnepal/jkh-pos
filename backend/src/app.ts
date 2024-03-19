@@ -15,6 +15,7 @@ import saleRoute from "../src/routes/sale.route";
 import statRoute from "../src/routes/stat.route";
 import authRoute from "../src/routes/auth.route";
 import headquarterInventoryRoute from "../src/routes/headquarterInventory.route";
+import branchInventoryRoute from "../src/routes/branchInventory.route";
 
 
 const app = express();
@@ -47,6 +48,7 @@ app.use("/api/stats", statRoute);
 app.use("/api/auth", authRoute);
 
 app.use("/api/headquarter-inventories", headquarterInventoryRoute);
+app.use("/api/branch-inventories", branchInventoryRoute);
 
 // Testing
 app.get("/healthChecker", (req: Request, res: Response, next: NextFunction) => {

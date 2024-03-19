@@ -6,7 +6,7 @@ import { BranchDocument } from "./branch.model";
 export interface BranchInventoryInput {
   branch: BranchDocument["_id"];
   product: ProductDocument["_id"];
-  stock: number;
+  totalStock: number;
 }
 
 export interface BranchInventoryDocument extends BranchInventoryInput, mongoose.Document {
@@ -24,7 +24,7 @@ const branchInventorySchema = new mongoose.Schema(
     },
     branch: { type: mongoose.Schema.Types.ObjectId, ref: "Branch", required: true },
     product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
-    stock: { type: Number, default: 0 },
+    totalStock: { type: Number, default: 0 },
   },
   {
     timestamps: true,

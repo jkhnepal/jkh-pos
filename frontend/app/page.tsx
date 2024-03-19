@@ -1,7 +1,6 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -62,7 +61,7 @@ export default function Home() {
 
   return (
     <div className=" flex items-center justify-center h-screen ">
-      <Card className=" w-11/12 sm:w-7/12  md:w-6/12 lg:w-5/12 xl:w-3/12 ">
+      <Card className="w-11/12 sm:w-7/12  md:w-6/12 lg:w-5/12 xl:w-3/12">
         <CardHeader>
           <CardTitle>Jacket House </CardTitle>
           <CardDescription>Enter your branch credentials.</CardDescription>

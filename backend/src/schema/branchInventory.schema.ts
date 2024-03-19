@@ -11,8 +11,8 @@ const payload = {
       required_error: "product is required",
     }),
 
-    stock: coerce.number({
-      required_error: "stock  is required",
+    totalStock: coerce.number({
+      required_error: "totalStock  is required",
     }),
   }),
 };
@@ -22,7 +22,7 @@ const updatePayload = {
   body: object({
     branch: string().optional(),
     product: string().optional(),
-    stock: coerce.number().optional(),
+    totalStock: coerce.number().optional(),
   }),
 };
 

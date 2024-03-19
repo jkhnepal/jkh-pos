@@ -17,6 +17,8 @@ const formSchema = z.object({
 });
 
 export default function Page() {
+  // const [createDistribute, { data, error, status, isSuccess, isError, isLoading: isCreating }] = useCreateDistributeMutation();
+  // const [createBranchInventory, { data, error, status, isSuccess, isError, isLoading: isCreating }] = useCreateBranchInventoryMutation();
   const [createDistribute, { data, error, status, isSuccess, isError, isLoading: isCreating }] = useCreateDistributeMutation();
   const { refetch } = useGetAllDistributeQuery({ name: "" });
   const { data: branches } = useGetAllBranchQuery({});
@@ -165,6 +167,7 @@ import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useGetAllBranchQuery } from "@/lib/features/branchSlice";
 import { useGetAllProductQuery } from "@/lib/features/product.sclice";
+import { useCreateBranchInventoryMutation } from "@/lib/features/branchInventorySlice";
 
 function Breadcumb() {
   return (
