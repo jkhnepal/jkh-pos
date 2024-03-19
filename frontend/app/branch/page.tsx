@@ -57,7 +57,7 @@ export default function Page({}: Props) {
           </Card>
         ))}
       </div>
-      {/* <Cart /> */}
+      <Cart />
     </>
   );
 }

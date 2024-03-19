@@ -62,8 +62,6 @@ export async function getAllBranchHandler(req: Request<{}, {}, {}>, res: Respons
   }
 }
 
-
-
 export async function getBranchFromTokenHandler(req: any, res: Response, next: NextFunction) {
   try {
     const decodedBranch: any = req.user;
@@ -177,8 +175,6 @@ export async function resetPasswordHandler(req: Request<UpdateBranchInput["param
     const email = req.params.branchId;
     const branch: any = await findBranch({ email });
 
-   
-
     if (!branch) {
       return res.status(404).json({
         status: "failure",
@@ -187,9 +183,9 @@ export async function resetPasswordHandler(req: Request<UpdateBranchInput["param
     }
 
     const newPassword = generateRandomPassword(10);
-    console.log(newPassword)
-    const re=await sendResetPassword(branch.email, newPassword);
-    console.log(re)
+    console.log(newPassword);
+    const re = await sendResetPassword(branch.email, newPassword);
+    console.log(re);
 
     const hashedPassword = await generateHashedPassword(newPassword);
 

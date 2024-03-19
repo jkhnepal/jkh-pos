@@ -3,7 +3,6 @@ import { nanoid } from "../utils/nanoid";
 import { BranchDocument } from "./branch.model";
 import { ProductDocument } from "./product.model";
 
-// it track the stock giben to branches
 export interface DistributeInput {
   branch: BranchDocument["_id"];
   product: ProductDocument["_id"];

@@ -7,8 +7,7 @@ export async function createMember(input: MemberInput) {
 }
 
 export async function findAllMember(filter: FilterQuery<MemberDocument> = {}) {
-
-  console.log(filter)
+  console.log(filter);
   if (filter.phone) {
     filter.phone = filter.phone.toString();
   }
@@ -18,11 +17,9 @@ export async function findAllMember(filter: FilterQuery<MemberDocument> = {}) {
   }
 
   const results = await MemberModel.find(filter);
-  console.log(results)
+  console.log(results);
   return results;
 }
-
-
 
 export async function findMember(query: FilterQuery<MemberDocument>, options: QueryOptions = { lean: true }) {
   const result = await MemberModel.findOne(query, {}, options);

@@ -1,8 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import AppError from "../utils/appError";
 import { CreateInventoryInput, UpdateInventoryInput } from "../schema/inventory.schema";
-import { findInventory, createInventory, findAllInventory, findAndUpdateInventory, deleteInventory, getTotalAddedStock } from "../service/inventory.service";
-import { getTotalDistributedStock } from "../service/distribute.service";
+import { findInventory, createInventory, findAllInventory, findAndUpdateInventory, deleteInventory } from "../service/inventory.service";
 import { findAndUpdateHeadquarterInventory, findHeadquarterInventory } from "../service/headquarterInventory.service";
 var colors = require("colors");
 
@@ -118,25 +117,5 @@ export async function deleteInventoryHandler(req: Request<UpdateInventoryInput["
   } catch (error: any) {
     console.error(colors.red("msg:", error.message));
     next(new AppError("Internal server error", 500));
-  }
-}
-
-export async function getInventoryStatOfAProductHandler(req: Request<UpdateInventoryInput["params"]>, res: Response, next: NextFunction) {
-  try {
-    const product = req.params.inventoryId;
-    const totalAddedStock = await getTotalAddedStock(product);
-    const totalDistributedStock = await getTotalDistributedStock(product);
-
-    console.log(totalAddedStock);
-    console.log(totalDistributedStock);
-
-    return res.status(200).json({
-      status: "success",
-      totalAddedStock,
-      totalDistributedStock,
-    });
-  } catch (error: any) {
-    console.error(colors.red("msg:", error.message));
-    return next(new AppError("Internal server error", 500));
   }
 }
