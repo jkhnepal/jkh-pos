@@ -1,12 +1,20 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+// Define common headers
+const headers = { "Content-Type": "application/json" };
+
 export const inventoryApi = createApi({
   reducerPath: "inventory",
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5008/api/inventories" }),
   endpoints: (builder) => ({
-    // getAllInventory: builder.query({
-    //   query: () => "/",
-    // }),
+    createInventory: builder.mutation({
+      query: (newInventory) => ({
+        url: ``,
+        method: "POST",
+        headers,
+        body: newInventory,
+      }),
+    }),
 
     getAllInventory: builder.query({
       query: (options) => {
@@ -19,33 +27,19 @@ export const inventoryApi = createApi({
       },
     }),
 
-    getInventoryStatOfAProduct: builder.query({
-      query: (product) => `/inventory-stat-of-a-product/${product}`,
-    }),
-
     getInventory: builder.query({
       query: (inventoryId) => `/${inventoryId}`,
     }),
 
-    // inventoryId->product_id
     getInventoryByProduct: builder.query({
-      query: (inventoryId) => `/product-id/${inventoryId}`,
-    }),
-
-    createInventory: builder.mutation({
-      query: (newInventory) => ({
-        url: ``,
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: newInventory,
-      }),
+      query: (inventoryId) => `/product-id/${inventoryId}`, // inventoryId->product_id
     }),
 
     updateInventory: builder.mutation({
       query: ({ inventoryId, updatedInventory }) => ({
         url: `/${inventoryId}`,
         method: "PATCH",
-        // headers: { "Content-Type": "application/json" },
+        headers,
         body: updatedInventory,
       }),
     }),
@@ -59,4 +53,4 @@ export const inventoryApi = createApi({
   }),
 });
 
-export const { useCreateInventoryMutation, useGetInventoryStatOfAProductQuery, useGetInventoryByProductQuery, useDeleteInventoryMutation, useGetAllInventoryQuery, useGetInventoryQuery, useUpdateInventoryMutation } = inventoryApi;
+export const { useCreateInventoryMutation, useGetInventoryByProductQuery, useDeleteInventoryMutation, useGetAllInventoryQuery, useGetInventoryQuery, useUpdateInventoryMutation } = inventoryApi;

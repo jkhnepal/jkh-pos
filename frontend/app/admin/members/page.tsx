@@ -14,12 +14,12 @@ import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
 
 export default function Page() {
-  const { data: members, isLoading: isFetching, refetch } = useGetAllMemberQuery({ phone: "9864755749" });
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  const { data: members, isLoading: isFetching, refetch } = useGetAllMemberQuery({});
   const [deleteMember, { error: deleteError, isLoading: isDeleting }] = useDeleteMemberMutation();
 
   const handleDelete = async (id: string) => {
@@ -238,7 +238,6 @@ export default function Page() {
             )}
           </TableBody>
         </Table>
-        {/* {isFetching && <p>Loading</p>} */}
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">

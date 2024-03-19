@@ -1,9 +1,21 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+// Define common headers
+const headers = { "Content-Type": "application/json" };
+
 export const productApi = createApi({
   reducerPath: "product",
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5008/api/products" }),
   endpoints: (builder) => ({
+    createProduct: builder.mutation({
+      query: (newProduct) => ({
+        url: ``,
+        method: "POST",
+        headers,
+        body: newProduct,
+      }),
+    }),
+
     getAllProduct: builder.query({
       query: (options) => {
         const { name } = options;
@@ -23,20 +35,11 @@ export const productApi = createApi({
       query: (productId) => `/sku/${productId}`, //productId->sku
     }),
 
-    createProduct: builder.mutation({
-      query: (newProduct) => ({
-        url: ``,
-        method: "POST",
-        // headers: { "Content-Type": "application/json" },
-        body: newProduct,
-      }),
-    }),
-
     updateProduct: builder.mutation({
       query: ({ productId, updatedProduct }) => ({
         url: `/${productId}`,
         method: "PATCH",
-        // headers: { "Content-Type": "application/json" },
+        headers,
         body: updatedProduct,
       }),
     }),
@@ -50,4 +53,4 @@ export const productApi = createApi({
   }),
 });
 
-export const { useCreateProductMutation,useGetProductBySkuQuery, useDeleteProductMutation, useGetAllProductQuery, useGetProductQuery, useUpdateProductMutation } = productApi;
+export const { useCreateProductMutation, useGetProductBySkuQuery, useDeleteProductMutation, useGetAllProductQuery, useGetProductQuery, useUpdateProductMutation } = productApi;

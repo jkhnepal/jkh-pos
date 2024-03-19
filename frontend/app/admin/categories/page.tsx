@@ -20,9 +20,9 @@ export default function Page() {
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const [deleteCategory, { data, isError: isDeleteError, error: deleteError, isLoading: isDeleting }] = useDeleteCategoryMutation();
+  const [deleteCategory, { error: deleteError, isLoading: isDeleting }] = useDeleteCategoryMutation();
   const [searchText, setsearchText] = React.useState<string>("");
-  const { data: categories, isError, isLoading: isFetching, refetch } = useGetAllCategoryQuery({ name: searchText });
+  const { data: categories, isLoading: isFetching, refetch } = useGetAllCategoryQuery({ name: searchText });
 
   const handleDelete = async (id: string) => {
     const res: any = await deleteCategory(id);

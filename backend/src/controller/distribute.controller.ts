@@ -21,7 +21,7 @@ export async function createDistributeHandler(req: Request<{}, {}, CreateDistrib
 
     let updatedBranchInventory;
     if (branchInventory) {
-      const newTotalstock = (branchInventory.totalStock += body.quantity);
+      const newTotalstock = (branchInventory.totalStock += body.stock);
       console.log("🚀 ~ createDistributeHandler ~ newTotalstock:", newTotalstock);
       updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, { totalStock: newTotalstock }, { new: true });
     }
@@ -32,7 +32,7 @@ export async function createDistributeHandler(req: Request<{}, {}, CreateDistrib
     // }
 
     if (!branchInventory) {
-      const res = await createBranchInventory({ ...body, totalStock: body.quantity });
+      const res = await createBranchInventory({ ...body, totalStock: body.stock });
     }
     // // await findAndUpdateBranchInventory({ ...body, totalStock: body.quantity });
     // const updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, req.body, {

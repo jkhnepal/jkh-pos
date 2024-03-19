@@ -10,7 +10,6 @@ import { useEffect, useState } from "react";
 import defaultImage from "../../../../../public/default-images/unit-default-image.png";
 import { toast } from "sonner";
 import { useParams } from "next/navigation";
-
 import useCloudinaryFileUpload from "@/app/hooks/useCloudinaryFileUpload";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import OptionalLabel from "@/app/custom-components/OptionalLabel";
@@ -45,6 +44,7 @@ const formSchema = z.object({
 });
 
 export default function Page() {
+  const [updateProduct, { error: updateError, isLoading: isUpdating }] = useUpdateProductMutation();
   const { refetch } = useGetAllProductQuery({ name: "" });
   const { data: categories } = useGetAllCategoryQuery({});
 
@@ -54,12 +54,9 @@ export default function Page() {
   const { data, isFetching } = useGetProductQuery(productId);
   const product = data?.data;
 
-  console.log(product);
-
   const { uploading, handleFileUpload } = useCloudinaryFileUpload();
   const [imageUrl, setImageUrl] = useState<string>("");
 
-  const [updateProduct, { error: updateError, isError: ab, isLoading: isUpdating }] = useUpdateProductMutation();
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -76,8 +73,6 @@ export default function Page() {
       note: "",
     },
   });
-
-  console.log(product?.category)
 
   useEffect(() => {
     if (product) {
@@ -100,9 +95,6 @@ export default function Page() {
   useEffect(() => {
     form.setValue("image", imageUrl);
   }, [form, imageUrl]);
-
-  // const { data: stat } = useGetHeadquarterStatQuery({ inventoryId: product?._id });
-  // console.log(stat)
 
   // Define a submit handler.
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -167,9 +159,7 @@ export default function Page() {
                   <Select
                     {...field}
                     onValueChange={field.onChange}
-                    defaultOpen={product?.category} 
-
-                  >
+                    defaultOpen={product?.category}>
                     <SelectTrigger className="">
                       <SelectValue placeholder="Select Category" />
                     </SelectTrigger>
@@ -327,11 +317,8 @@ export default function Page() {
 // Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { Textarea } from "@/components/ui/textarea";
 import { useGetAllCategoryQuery } from "@/lib/features/categorySlice";
 import InventoryAdd from "../../components/InventoryAdd";
-import { useGetInventoryByProductQuery } from "@/lib/features/inventorySlice";
-import { useGetHeadquarterStatQuery } from "@/lib/features/statSlice";
 
 function Breadcumb() {
   return (

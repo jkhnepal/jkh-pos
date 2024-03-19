@@ -22,7 +22,7 @@ export async function createProductHandler(req: Request<{}, {}, CreateProductInp
     const product = await createProduct(body);
 
     // Also create its headquarterInventory
-    await createHeadquarterInventory({ product: product?._id, stock: 0 });
+    await createHeadquarterInventory({ product: product?._id, totalStock: 0 });
 
     return res.status(201).json({
       status: "success",

@@ -4,7 +4,7 @@ import { ProductDocument } from "./product.model";
 
 export interface HeadquarterInventoryInput {
   product: ProductDocument["_id"];
-  stock: number;
+  totalStock: number;
 }
 
 export interface HeadquarterInventoryDocument extends HeadquarterInventoryInput, mongoose.Document {
@@ -22,7 +22,7 @@ const headquarterInventorySchema = new mongoose.Schema(
       default: () => `headquarter_inventory_${nanoid()}`,
     },
     product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
-    stock: { type: Number, default: 0 },
+    totalStock: { type: Number, default: 0 },
   },
   {
     timestamps: true,

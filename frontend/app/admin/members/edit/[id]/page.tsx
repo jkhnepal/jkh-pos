@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { useParams } from "next/navigation";
-
 import { useGetAllMemberQuery, useGetMemberQuery, useUpdateMemberMutation } from "@/lib/features/memberSlice";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import LoaderPre from "@/app/custom-components/LoaderPre";
@@ -36,7 +35,6 @@ export default function Page() {
     defaultValues: {
       name: "",
       phone: 0,
-      creatorBranch: branch_id,
     },
   });
 

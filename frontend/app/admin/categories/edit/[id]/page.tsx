@@ -26,6 +26,7 @@ const formSchema = z.object({
 });
 
 export default function Page() {
+  const [updateCategory, { error: updateError, isLoading: isUpdating }] = useUpdateCategoryMutation();
   const { refetch } = useGetAllCategoryQuery({ name: "" });
   const params = useParams();
   const categoryId = params.id;
@@ -36,7 +37,6 @@ export default function Page() {
   const { uploading, handleFileUpload } = useCloudinaryFileUpload();
   const [imageUrl, setImageUrl] = useState<string>("");
 
-  const [updateCategory, { error: updateError, isError: ab, isLoading: isUpdating }] = useUpdateCategoryMutation();
   // 1. Define your form.
   const form = useForm({
     resolver: zodResolver(formSchema),

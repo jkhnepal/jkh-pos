@@ -6,7 +6,7 @@ import { ProductDocument } from "./product.model";
 export interface DistributeInput {
   branch: BranchDocument["_id"];
   product: ProductDocument["_id"];
-  quantity: number;
+  stock: number;
 }
 
 export interface DistributeDocument extends DistributeInput, mongoose.Document {
@@ -24,7 +24,7 @@ const distributeSchema = new mongoose.Schema(
     },
     branch: { type: mongoose.Schema.Types.ObjectId, ref: "Branch", required: true },
     product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
-    quantity: { type: Number, required: true },
+    stock: { type: Number, required: true },
   },
   {
     timestamps: true,

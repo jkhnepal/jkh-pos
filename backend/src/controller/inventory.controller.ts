@@ -14,8 +14,8 @@ export async function createInventoryHandler(req: Request<{}, {}, CreateInventor
 
     let updatedHeadquarterInventory;
     if (headquarterInventory) {
-      const newTotalstock = (headquarterInventory.stock += body.stock);
-      updatedHeadquarterInventory = await findAndUpdateHeadquarterInventory({ headquarterInventoryId: headquarterInventory?.headquarterInventoryId }, { stock: newTotalstock }, { new: true });
+      const newTotalstock = (headquarterInventory.totalStock += body.stock);
+      updatedHeadquarterInventory = await findAndUpdateHeadquarterInventory({ headquarterInventoryId: headquarterInventory?.headquarterInventoryId }, { totalStock: newTotalstock }, { new: true });
     }
 
     return res.status(201).json({
@@ -70,6 +70,7 @@ export async function updateInventoryHandler(req: Request<UpdateInventoryInput["
   try {
     const inventoryId = req.params.inventoryId;
     const inventory = await findInventory({ inventoryId });
+
     const headquarterInventory = await findHeadquarterInventory({ product: inventory?.product });
 
     if (!inventory) {
@@ -83,8 +84,8 @@ export async function updateInventoryHandler(req: Request<UpdateInventoryInput["
 
     let updatedHeadquarterInventory;
     if (headquarterInventory) {
-      const newTotalstock = (headquarterInventory.stock += req.body.stock -= inventory.stock);
-      updatedHeadquarterInventory = await findAndUpdateHeadquarterInventory({ headquarterInventoryId: headquarterInventory?.headquarterInventoryId }, { stock: newTotalstock }, { new: true });
+      const newTotalstock = (headquarterInventory.totalStock += req.body.stock -= inventory.stock);
+      updatedHeadquarterInventory = await findAndUpdateHeadquarterInventory({ headquarterInventoryId: headquarterInventory?.headquarterInventoryId }, { totalStock: newTotalstock }, { new: true });
     }
 
     return res.status(200).json({

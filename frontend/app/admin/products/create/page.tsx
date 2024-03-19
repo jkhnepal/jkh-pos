@@ -44,8 +44,9 @@ const formSchema = z.object({
 });
 
 export default function Page() {
-  const [createProduct, { data, error, status, isSuccess, isError, isLoading: isCreating }] = useCreateProductMutation();
+  const [createProduct, { error, isLoading: isCreating }] = useCreateProductMutation();
   const { data: categories } = useGetAllCategoryQuery({});
+
   const { refetch } = useGetAllProductQuery({ name: "" });
   const { uploading, handleFileUpload } = useCloudinaryFileUpload();
   const [imageUrl, setImageUrl] = useState<string>("");
