@@ -5,7 +5,6 @@ export const memberApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5008/api/members" }),
   endpoints: (builder) => ({
     getAllMember: builder.query({
-      // query: () => "/",
       query: (options) => {
         const { phone } = options;
         const params = phone ? { phone } : {};

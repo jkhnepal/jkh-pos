@@ -1,8 +1,7 @@
 "use client";
 type Props = {};
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
-import { useEffect, useState } from "react";
-import { useGetAllInventoryStatsOfABranchQuery } from "@/lib/features/distributeSlice";
+import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -13,7 +12,8 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCreateSaleMutation } from "@/lib/features/saleSlice";
-import { useGetAllMemberQuery, useGetMemberByPhoneQuery } from "@/lib/features/memberSlice";
+import { useGetMemberByPhoneQuery } from "@/lib/features/memberSlice";
+import { useGetAllBranchInventoryQuery } from "@/lib/features/branchInventorySlice";
 import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
 
 const formSchema = z.object({
@@ -23,8 +23,11 @@ const formSchema = z.object({
 });
 
 export default function Cart({}: Props) {
+  const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
+  const branch_id = currentUser?.data.branch._id;
+
+  const { refetch: refetchBranchInventories } = useGetAllBranchInventoryQuery({ branch: branch_id });
   const [showCartDrawer, setSetShowCartDrawer] = useState(true);
-  const branch_id = "65f9a5496dc1725a5ba238c5";
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -34,96 +37,52 @@ export default function Cart({}: Props) {
     },
   });
 
-  // ------------------------------------------------------->
-
   const { watch } = form;
   const watchedFields = watch();
-  // console.log(watchedFields.sku);
 
   const { data: product, isSuccess } = useGetProductBySkuQuery(watchedFields.sku);
 
   const [selectedProducts, setSelectedProducts] = useState<any[]>([]);
 
-  const [userPhoneNumber, setUserPhoneNumber] = useState<any>();
+  const [userPhoneNumber, setUserPhoneNumber] = useState<string>();
+  console.log("🚀 ~ Cart ~ userPhoneNumber:", userPhoneNumber)
+  
 
   const { data: user } = useGetMemberByPhoneQuery(userPhoneNumber);
 
   // Define a submit handler.
-  // const onSubmit = async (values: z.infer<typeof formSchema>) => {
-  //   const { _id, productId, cp, sp, discount, quantity } = product.data;
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    const { _id, productId, cp, sp, discount, quantity } = product.data;
 
-  //   // Calculate the discounted price
-  //   const discountedPrice = sp * (1 - discount / 100);
+    const discountedPrice = sp * (1 - discount / 100);
+    const totalAmount = discountedPrice * 1;
+    const existingProductIndex = selectedProducts.findIndex((item) => item.product === _id);
 
-  //   // Calculate the total amount after discount
-  //   const totalAmount = discountedPrice * 1; // Assuming quantity is always 1 for now
-
-  //   // Create the selected product object with totalAmount
-  //   const selectedProduct = {
-  //     branch: branch_id,
-  //     product: _id,
-  //     member: "65f9af2c6dc1725a5ba239ad",
-
-  //     sp,
-  //     discount,
-  //     quantity: 1,
-  //     totalAmount,
-  //   };
-
-  //   // Add the selected product to the selectedProducts array
-  //   setSelectedProducts([...selectedProducts, selectedProduct]);
-
-  //   // Reset the form
-  //   form.reset();
-  // };
-
-  // Define a submit handler.
-const onSubmit = async (values: z.infer<typeof formSchema>) => {
-  const { _id, productId, cp, sp, discount, quantity } = product.data;
-
-  // Calculate the discounted price
-  const discountedPrice = sp * (1 - discount / 100);
-
-  // Calculate the total amount after discount
-  const totalAmount = discountedPrice * 1; // Assuming quantity is always 1 for now
-
-  // Check if the selected product already exists in the cart
-  const existingProductIndex = selectedProducts.findIndex(item => item.product === _id);
-
-  if (existingProductIndex !== -1) {
-    // If the product exists, update its quantity
-    const updatedSelectedProducts = [...selectedProducts];
-    updatedSelectedProducts[existingProductIndex].quantity += 1;
-    updatedSelectedProducts[existingProductIndex].totalAmount += totalAmount;
-
-    // Update the state with the updated selected products array
-    setSelectedProducts(updatedSelectedProducts);
-  } else {
-    // If the product doesn't exist, create a new entry
-    const selectedProduct = {
-      branch: branch_id,
-      product: _id,
-      member: "65f9af2c6dc1725a5ba239ad",
-      sp,
-      discount,
-      quantity: 1,
-      totalAmount,
-    };
-
-    // Add the selected product to the selectedProducts array
-    setSelectedProducts([...selectedProducts, selectedProduct]);
-  }
-
-  // Reset the form
-  form.reset();
-};
-
+    if (existingProductIndex !== -1) {
+      const updatedSelectedProducts = [...selectedProducts];
+      updatedSelectedProducts[existingProductIndex].quantity += 1;
+      updatedSelectedProducts[existingProductIndex].totalAmount += totalAmount;
+      setSelectedProducts(updatedSelectedProducts);
+    } else {
+      const selectedProduct = {
+        branch: branch_id,
+        product: _id,
+        member: "65f9af2c6dc1725a5ba239ad",
+        sp,
+        discount,
+        quantity: 1,
+        totalAmount,
+      };
+      setSelectedProducts([...selectedProducts, selectedProduct]);
+    }
+    form.reset();
+  };
 
   const [createSale] = useCreateSaleMutation();
-
   const createSaleHandler = async () => {
     const res = await createSale(selectedProducts);
     console.log(res);
+    refetchBranchInventories();
   };
 
   return (
@@ -183,19 +142,23 @@ const onSubmit = async (values: z.infer<typeof formSchema>) => {
             <TableCaption>A list of your recent invoices.</TableCaption>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[100px]">Invoice</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Method</TableHead>
+                <TableHead className="w-[100px]">S.N</TableHead>
+                <TableHead>SP</TableHead>
+                <TableHead>Discount</TableHead>
+                <TableHead>Qty</TableHead>
                 <TableHead className="text-right">Amount</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow>
-                <TableCell className="font-medium">INV001</TableCell>
-                <TableCell>Paid</TableCell>
-                <TableCell>Credit Card</TableCell>
-                <TableCell className="text-right">$250.00</TableCell>
-              </TableRow>
+              {selectedProducts?.map((item, index) => (
+                <TableRow key={index}>
+                  <TableCell className="font-medium">{index + 1}.</TableCell>
+                  <TableCell>{item.sp}</TableCell>
+                  <TableCell>{item.discount}</TableCell>
+                  <TableCell>{item.quantity}</TableCell>
+                  <TableCell className="text-right">{item.totalAmount}</TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </ScrollArea>
@@ -208,7 +171,6 @@ const onSubmit = async (values: z.infer<typeof formSchema>) => {
 // type Props = {};
 // import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 // import { useEffect, useState } from "react";
-// import { useGetAllInventoryStatsOfABranchQuery } from "@/lib/features/distributeSlice";
 // import { ScrollArea } from "@/components/ui/scroll-area";
 // import { Input } from "@/components/ui/input";
 // import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -244,7 +206,6 @@ const onSubmit = async (values: z.infer<typeof formSchema>) => {
 //     });
 
 //     // Inventories of a branch
-//     const { data: inventories } = useGetAllInventoryStatsOfABranchQuery({ branch: branch_id });
 //     console.log("🚀 ~ Page ~ inventories:", inventories);
 
 //     // ------------------------------------------------------->

@@ -2,7 +2,6 @@
 type Props = {};
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
-import { useGetAllInventoryStatsOfABranchQuery } from "@/lib/features/distributeSlice";
 import { Separator } from "@/components/ui/separator";
 import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
 import Cart from "./(components)/Cart";
@@ -10,20 +9,9 @@ import { useGetAllBranchInventoryQuery } from "@/lib/features/branchInventorySli
 
 export default function Page({}: Props) {
   const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
-  console.log("🚀 ~ Page ~ currentUser:", currentUser?.data.branch._id);
-  // const branch_id = "65f700a46295227cabb71ffc"; //ktm
-  const branch_id = "65f9a5496dc1725a5ba238c5"; //biratnage
-
-  // Inventories of a branch
-  const { data: inventories } = useGetAllInventoryStatsOfABranchQuery({ branch: branch_id });
-  console.log("🚀 ~ Page ~ inventories:", inventories);
-
-
+  const branch_id = currentUser?.data.branch._id;
 
   const { data: branchInventories } = useGetAllBranchInventoryQuery({ branch: branch_id });
-  console.log("🚀 ~ Page ~ branchInventories:", branchInventories)
-
-
 
   return (
     <>

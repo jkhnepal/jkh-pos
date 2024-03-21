@@ -19,7 +19,8 @@ export default function Page() {
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { data: members, isLoading: isFetching, refetch } = useGetAllMemberQuery({});
+  const [searchPhone, setSearchPhone] = React.useState<number>();
+  const { data: members, isLoading: isFetching, refetch } = useGetAllMemberQuery({ phone: searchPhone });
   const [deleteMember, { error: deleteError, isLoading: isDeleting }] = useDeleteMemberMutation();
 
   const handleDelete = async (id: string) => {
@@ -168,9 +169,10 @@ export default function Page() {
       <Breadcumb />
       <div className="flex justify-between items-center py-4">
         <Input
-          placeholder="Filter by name..."
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-          onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}
+          placeholder="Filter by name / phone..."
+          type="number"
+          value={searchPhone}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchPhone(parseFloat(e.target.value))}
           className="max-w-sm"
         />
 

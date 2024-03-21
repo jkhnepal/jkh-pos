@@ -4,7 +4,7 @@ import { BranchDocument } from "./branch.model";
 import { ProductDocument } from "./product.model";
 import { MemberDocument } from "./member.model";
 
-export interface SaleInput {
+export interface ReturnInput {
   branch: BranchDocument["_id"];
   product: ProductDocument["_id"];
   member: MemberDocument["_id"];
@@ -13,21 +13,23 @@ export interface SaleInput {
   discount: number; // in %
   quantity: number;
   totalAmount: number;
-  
+
+  newProduct: ProductDocument["_id"][];
+  extraAddedAmount: number;
 }
 
-export interface SaleDocument extends SaleInput, mongoose.Document {
+export interface ReturnDocument extends ReturnInput, mongoose.Document {
   createdAt: Date;
   updatedAt: Date;
 }
 
-const saleSchema = new mongoose.Schema(
+const returnSchema = new mongoose.Schema(
   {
-    saleId: {
+    returnId: {
       type: String,
       required: true,
       unique: true,
-      default: () => `sale_${nanoid()}`,
+      default: () => `return_${nanoid()}`,
     },
     branch: { type: mongoose.Schema.Types.ObjectId, ref: "Branch", required: true },
     product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
@@ -37,12 +39,15 @@ const saleSchema = new mongoose.Schema(
     discount: { type: Number, required: true },
     sp: { type: Number, required: true },
     totalAmount: { type: Number, required: true },
+
+    newProduct: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
+    extraAddedAmount: { type: Number, default: 0 },
   },
   {
     timestamps: true,
   }
 );
 
-const SaleModel = mongoose.model<SaleDocument>("Sale", saleSchema);
+const ReturnModel = mongoose.model<ReturnDocument>("Return", returnSchema);
 
-export default SaleModel;
+export default ReturnModel;

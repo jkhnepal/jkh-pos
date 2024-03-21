@@ -1,6 +1,6 @@
 "use client";
-import { DatabaseZap, Menu, Settings } from "lucide-react";
-import { useState } from "react";
+import { DatabaseZap, LayoutDashboard, Menu, SendToBack, Settings, Store, Users } from "lucide-react";
+import { Component, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -36,8 +36,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 className="flex flex-col  hover:bg-muted/5 rounded-md">
                 <Link
                   href={item.href}
-                  className={`link ${pathname === item.href ? "bg-foreground" : ""} py-1.5 px-6 rounded-md `}>
-                  {item.name}
+                  className={`link ${pathname === item.href ? "bg-foreground" : ""} py-1.5 px-2 rounded-md flex items-center gap-1.5 `}>
+             {item.icon}     {item.name}
                 </Link>
               </div>
             ))}
@@ -69,43 +69,37 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 const navItems = [
   {
     name: "Dashboard",
-    icon: <Settings size={15} />,
+    icon: <LayoutDashboard size={18} />,
     href: "/admin",
   },
 
   {
     name: "Branches",
-    icon: <Settings size={15} />,
+    icon: <Store size={18} />,
     href: "/admin/branches",
   },
 
   {
     name: "Categories",
-    icon: <Settings size={15} />,
+    icon: <Settings size={15}  />,
     href: "/admin/categories",
   },
 
   {
     name: "Products",
-    icon: <Settings size={15} />,
+    icon: <SendToBack size={18} />,
     href: "/admin/products",
   },
 
   {
-    name: "Supply Histories",
-    icon: <Settings size={15} />,
-    href: "/admin/supply-histories",
+    name: "Distribute Histories",
+    icon: <SendToBack size={18} />,
+    href: "/admin/distribute-histories",
   },
 
   {
     name: "Members",
-    icon: <Settings size={15} />,
+    icon: <Users  size={18} />,
     href: "/admin/members",
   },
-
-  // {
-  //   name: "Sales",
-  //   icon: <Settings size={15} />,
-  //   href: "/admin/sales",
-  // },
 ];

@@ -7,19 +7,17 @@ export async function createMember(input: MemberInput) {
 }
 
 export async function findAllMember(filter: FilterQuery<MemberDocument> = {}) {
-  console.log(filter);
-  if (filter.phone) {
-    filter.phone = filter.phone.toString();
-  }
-
-  if (filter.name) {
-    filter.name = { $regex: new RegExp(filter.name, "i") };
-  }
-
+  
   const results = await MemberModel.find(filter);
   console.log(results);
   return results;
 }
+
+// export async function findAllMember(filter: FilterQuery<MemberDocument> = {}) {
+//   const regex = new RegExp(filter.phone, 'i'); // 'i' flag for case-insensitive matching
+//   const results = await MemberModel.find({ phone: { $regex: regex } });
+//   return results;
+// }
 
 export async function findMember(query: FilterQuery<MemberDocument>, options: QueryOptions = { lean: true }) {
   const result = await MemberModel.findOne(query, {}, options);

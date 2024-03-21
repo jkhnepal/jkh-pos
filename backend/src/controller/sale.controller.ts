@@ -9,23 +9,23 @@ var colors = require("colors");
 export async function createSaleHandler(req: Request<{}, {}, CreateSaleInput["body"]>, res: Response, next: NextFunction) {
   try {
     const body = req.body;
-    console.log("🚀 ~ createSaleHandler ~ body:", body);
 
-    // Assuming body is an array of sale objects
     body.forEach(async (saleObject: any) => {
       const sale = await createSale(saleObject);
       const branchInventory: any = await BranchInventoryModel.findOne({ branch: saleObject.branch, product: saleObject.product });
 
       let updatedBranchInventory;
       if (branchInventory) {
-        const newTotalstock = branchInventory.totalStock - saleObject.quantity; // Calculate new total stock
+        const newTotalstock = branchInventory.totalStock - saleObject.quantity;
         updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, { totalStock: newTotalstock }, { new: true });
       }
 
-      console.log(updatedBranchInventory);
+      return res.status(201).json({
+        status: "success",
+        msg: "sales created success",
+        data: updatedBranchInventory,
+      });
     });
-
-    // Send response or perform additional operations after processing all sale objects
   } catch (error: any) {
     console.error(colors.red("msg:", error.message));
     next(new AppError("Internal server error", 500));

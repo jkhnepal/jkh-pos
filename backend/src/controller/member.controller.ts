@@ -29,7 +29,6 @@ export async function createMemberHandler(req: Request<{}, {}, CreateMemberInput
 export async function getAllMemberHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
   try {
     const queryParameters = req.query;
-
     const results = await findAllMember(queryParameters);
     return res.json({
       status: "success",

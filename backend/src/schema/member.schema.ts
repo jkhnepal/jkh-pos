@@ -7,7 +7,7 @@ const payload = {
       required_error: "name is required",
     }),
 
-    phone: coerce.number({
+    phone: string({
       required_error: "phone is required",
     }),
 
