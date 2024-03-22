@@ -4,6 +4,8 @@ import { CreateDistributeInput, UpdateDistributeInput } from "../schema/distribu
 import { createDistribute, findAllDistribute, findDistribute, findAndUpdateDistribute, deleteDistribute } from "../service/distribute.service";
 import mongoose from "mongoose";
 import DistributeModel from "../models/distribute.model";
+import { createBranchInventory, findAndUpdateBranchInventory, findBranchInventory } from "../service/branchInventory.service";
+import BranchInventoryModel from "../models/branchInventory.model";
 
 var colors = require("colors");
 
@@ -11,7 +13,33 @@ export async function createDistributeHandler(req: Request<{}, {}, CreateDistrib
   try {
     const body = req.body;
 
-    const distribute = await createDistribute(body);
+    const distribute = await createDistribute(body); //history
+    console.log("🚀 ~ createDistributeHandler ~ distribute:", distribute);
+
+    const branchInventory: any = await BranchInventoryModel.findOne({ branch: body.branch, product: body.product });
+    console.log("🚀 ~ createDistributeHandler ~ branchInventory:", branchInventory);
+
+    let updatedBranchInventory;
+    if (branchInventory) {
+      const newTotalstock = (branchInventory.totalStock += body.stock);
+      console.log("🚀 ~ createDistributeHandler ~ newTotalstock:", newTotalstock);
+      updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, { totalStock: newTotalstock }, { new: true });
+    }
+
+    // if (branchInventory) {
+    //   const res=await createBranchInventory({ ...body, totalStock: body.quantity });
+    //   console.log(res)
+    // }
+
+    if (!branchInventory) {
+      const res = await createBranchInventory({ ...body, totalStock: body.stock });
+    }
+    // // await findAndUpdateBranchInventory({ ...body, totalStock: body.quantity });
+    // const updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, req.body, {
+    //   new: true,
+    // });
+    console.log(updatedBranchInventory);
+
     return res.status(201).json({
       status: "success",
       msg: "Create success",
@@ -39,38 +67,7 @@ export async function getAllDistributeHandler(req: Request<{}, {}, {}>, res: Res
   }
 }
 
-// When admin distribute different product at different time to the branchm,
-// It calculates the total quantity the branch received over the time.
-// export async function getAllUniqueProductInventoryOfABranchHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
-//   try {
-//     const queryParameters = req.query;
-//     const results = await findAllDistribute(queryParameters);
 
-//     console.log(results)
-
-//     // Extract unique product IDs
-//     const uniqueProductIds = results.map((result) => result.product._id).filter((value, index, self) => self.indexOf(value) === index);
-
-//     const uniqueProducts = await Promise.all(
-//       uniqueProductIds.map(async (productId) => {
-//         const totalQuantity = await getTotalStock(productId);
-//         const productResult: any = results.find((result: any) => result.product._id === productId);
-//         const { _id, branch, product, quantity, distributeId, createdAt, updatedAt, __v } = productResult?._doc;
-//         return { _id, branch, product, quantity, distributeId, createdAt, updatedAt, __v, totalQuantity };
-//       })
-//     );
-
-//     console.log(uniqueProducts);
-//     return res.json({
-//       status: "success",
-//       msg: "Get all distribute success",
-//       data: uniqueProducts,
-//     });
-//   } catch (error: any) {
-//     console.error(colors.red("msg:", error.message));
-//     next(new AppError("Internal server error", 500));
-//   }
-// }
 
 export async function getAllUniqueProductInventoryOfABranchHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
   try {
@@ -140,19 +137,32 @@ export async function getDistributeHandler(req: Request<UpdateDistributeInput["p
   }
 }
 
+
+
 export async function updateDistributeHandler(req: Request<UpdateDistributeInput["params"]>, res: Response, next: NextFunction) {
   try {
     const distributeId = req.params.distributeId;
     const distribute: any = await findDistribute({ distributeId });
+    const branchInventory: any = await BranchInventoryModel.findOne({ branch: distribute.branch, product: distribute.product });
 
     if (!distribute) {
-      next(new AppError("Distribute does not exist", 404));
-      return;
+      return res.status(404).json({
+        status: "success",
+        msg: "Distribute does not exist",
+      });
     }
 
     const updatedDistribute = await findAndUpdateDistribute({ distributeId }, req.body, {
       new: true,
     });
+
+    let updatedBranchInventory;
+    if (branchInventory) {
+      const newTotalstock = (branchInventory.totalStock += req.body.quantity -= distribute.quantity);
+      updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, { totalStock: newTotalstock }, { new: true });
+    }
+
+    console.log(updatedBranchInventory)
 
     return res.status(200).json({
       status: "success",

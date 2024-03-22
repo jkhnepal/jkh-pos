@@ -21,12 +21,18 @@ export default function Page() {
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const [searchText, setsearchText] = React.useState<string>("");
+  const [searchName, setSearchName] = React.useState<string>("");
+  const [debounceValue] = useDebounce(searchName, 1000);
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [sort, setSort] = React.useState("latest");
+  const itemsPerPage = 5;
+
+  const { data: products, isError, isLoading: isFetching, refetch } = useGetAllProductQuery({ sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
+  let totalItem = products?.data.count;
+  const pageCount = Math.ceil(totalItem / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+
   const [deleteProduct, { error: deleteError, isLoading: isDeleting }] = useDeleteProductMutation();
-
-  const { data: products, isLoading: isFetching, refetch } = useGetAllProductQuery({ name: searchText });
-  console.log("🚀 ~ Page ~ products:", products);
-
   const handleDelete = async (id: string) => {
     const res: any = await deleteProduct(id);
     if (res.data) {
@@ -45,6 +51,14 @@ export default function Page() {
       toast.error(errorMsg);
     }
   }
+
+  const goToPreviousPage = () => {
+    setCurrentPage((prevPage) => prevPage - 1);
+  };
+
+  const goToNextPage = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
 
   const columns: ColumnDef<any>[] = [
     {
@@ -172,7 +186,7 @@ export default function Page() {
 
   const table = useReactTable({
     // data,
-    data: products?.data || [],
+    data: products?.data.results || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -205,7 +219,8 @@ export default function Page() {
       <div className="flex justify-between items-center py-4">
         <Input
           placeholder="Search by product name..."
-          onChange={(e) => setsearchText(e.target.value)}
+          value={searchName}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
           className="max-w-sm"
         />
 
@@ -273,25 +288,24 @@ export default function Page() {
             )}
           </TableBody>
         </Table>
-        {/* {isFetching && <p>Loading</p>} */}
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
+        {startIndex} of {totalItem} row(s) selected.
         </div>
         <div className="space-x-2">
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}>
+            disabled={startIndex === 0}
+            onClick={goToPreviousPage}>
             Previous
           </Button>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}>
+            disabled={startIndex + itemsPerPage >= totalItem}
+            onClick={goToNextPage}>
             Next
           </Button>
         </div>
@@ -300,16 +314,10 @@ export default function Page() {
   );
 }
 
-// "use client"
-// export default function page() {
-//   return (
-//     <div>page</div>
-//   )
-// }
-
 // Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { useDebounce } from "use-debounce";
 
 function Breadcumb() {
   return (

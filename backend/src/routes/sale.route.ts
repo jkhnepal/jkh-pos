@@ -6,9 +6,9 @@ import { createSaleSchema, updateSaleSchema, getSaleSchema, getAllSaleSchema, de
 const router = express.Router();
 
 router.post("/", [validate(createSaleSchema)], createSaleHandler);
-router.patch("/:saleId", [validate(updateSaleSchema)], updateSaleHandler);
-router.get("/:saleId", [validate(getSaleSchema)], getSaleHandler);
 router.get("/", [validate(getAllSaleSchema)], getAllSaleHandler);
+router.get("/:saleId", [validate(getSaleSchema)], getSaleHandler);
+router.patch("/:saleId", [validate(updateSaleSchema)], updateSaleHandler);
 router.delete("/:saleId", [validate(deleteSaleSchema)], deleteSaleHandler);
 
 export default router;

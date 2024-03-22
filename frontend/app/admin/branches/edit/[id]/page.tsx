@@ -10,7 +10,6 @@ import { useEffect, useState } from "react";
 import defaultImage from "../../../../../public/default-images/unit-default-image.png";
 import { toast } from "sonner";
 import { useParams } from "next/navigation";
-
 import useCloudinaryFileUpload from "@/app/hooks/useCloudinaryFileUpload";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import OptionalLabel from "@/app/custom-components/OptionalLabel";
@@ -44,7 +43,8 @@ export default function Page() {
   const { uploading, handleFileUpload } = useCloudinaryFileUpload();
   const [imageUrl, setImageUrl] = useState<string>("");
 
-  const [updateBranch, { error: updateError, isError: ab, isLoading: isUpdating }] = useUpdateBranchMutation();
+  const [updateBranch, { error: updateError, isLoading: isUpdating }] = useUpdateBranchMutation();
+
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

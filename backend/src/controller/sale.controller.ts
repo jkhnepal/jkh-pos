@@ -2,18 +2,29 @@ import { NextFunction, Request, Response } from "express";
 import AppError from "../utils/appError";
 import { CreateSaleInput, UpdateSaleInput } from "../schema/sale.schema";
 import { findSale, createSale, findAllSale, findAndUpdateSale, deleteSale } from "../service/sale.service";
-
+import BranchInventoryModel from "../models/branchInventory.model";
+import { findAndUpdateBranchInventory } from "../service/branchInventory.service";
 var colors = require("colors");
 
-export async function createSaleHandler(req: any, res: Response, next: NextFunction) {
+export async function createSaleHandler(req: Request<{}, {}, CreateSaleInput["body"]>, res: Response, next: NextFunction) {
   try {
     const body = req.body;
 
-    const sale = await createSale(body);
-    return res.status(201).json({
-      status: "success",
-      msg: "Create success",
-      data: sale,
+    body.forEach(async (saleObject: any) => {
+      const sale = await createSale(saleObject);
+      const branchInventory: any = await BranchInventoryModel.findOne({ branch: saleObject.branch, product: saleObject.product });
+
+      let updatedBranchInventory;
+      if (branchInventory) {
+        const newTotalstock = branchInventory.totalStock - saleObject.quantity;
+        updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, { totalStock: newTotalstock }, { new: true });
+      }
+
+      return res.status(201).json({
+        status: "success",
+        msg: "sales created success",
+        data: updatedBranchInventory,
+      });
     });
   } catch (error: any) {
     console.error(colors.red("msg:", error.message));

@@ -1,27 +1,25 @@
 "use client";
 import * as React from "react";
 import { ColumnDef, ColumnFiltersState, SortingState, VisibilityState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
-import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
-
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { ChevronDown, MoreHorizontal } from "lucide-react";
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const branchId = "branch_gokvvvrewe";
-  const branch_id = "65f333f74482d9774195ba8e";
+  const branch_id = "65f9a5496dc1725a5ba238c5";
   const [searchText, setsearchText] = React.useState<string>("");
 
-  // Inventories of a branch
-  const { data: inventories, refetch, isFetching } = useGetAllInventoryStatsOfABranchQuery({ branch: branch_id });
+  const { data: branchInventories, isFetching } = useGetAllBranchInventoryQuery({ branch: branch_id });
+  console.log("🚀 ~ Page ~ branchInventories:", branchInventories);
 
-  const columns: ColumnDef<ICategoryOut>[] = [
+  const columns: ColumnDef<any>[] = [
     {
       id: "select",
       header: ({ table }) => (
@@ -43,16 +41,10 @@ export default function Page() {
     },
 
     {
-      accessorKey: "totalQuantity",
+      accessorKey: "totalStock",
       header: "Received Quantity",
-      cell: ({ row }: any) => <div>{row.getValue("totalQuantity")}</div>,
+      cell: ({ row }: any) => <div>{row.getValue("totalStock")}</div>,
     },
-
-    // {
-    //   accessorKey: "createdAt",
-    //   header: "Sent Date",
-    //   cell: ({ row }: any) => <div> {moment(row.getValue("createdAt")).format("MMM Do YY")}</div>,
-    // },
 
     {
       accessorKey: "product",
@@ -61,28 +53,50 @@ export default function Page() {
     },
 
     {
-      accessorKey: "product",
-      header: "CP(Rs)",
-      cell: ({ row }: any) => <div>{row.getValue("product").cp}</div>,
+      accessorKey: "createdAt",
+      header: "Sent Date",
+      cell: ({ row }: any) => <div> {moment(row.getValue("createdAt")).format("MMM Do YY")}</div>,
     },
 
     {
-      accessorKey: "product",
-      header: "SP(Rs)",
-      cell: ({ row }: any) => <div>{row.getValue("product").sp}</div>,
-    },
+      id: "actions",
+      enableHiding: false,
+      cell: ({ row }) => {
+        const item = row.original;
 
-    {
-      accessorKey: "product",
-      header: "Discount(%)",
-      cell: ({ row }: any) => <div>{row.getValue("product").discount}</div>,
-    },
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => {
+                  navigator.clipboard.writeText(item.branchInventoryId);
+                  toast.success("Copy success");
+                }}>
+                Copy id
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
 
-   
+              <Link href={`/branch/products/view/${item.product.productId}`}>
+                <DropdownMenuItem>View</DropdownMenuItem>
+              </Link>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
   ];
 
   const table = useReactTable({
-    data: inventories?.data || [],
+    data: branchInventories?.data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -180,8 +194,8 @@ export default function Page() {
             )}
           </TableBody>
         </Table>
-        {/* {isFetching && <p>Loading</p>} */}
       </div>
+
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
@@ -211,9 +225,10 @@ export default function Page() {
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Input } from "@/components/ui/input";
-import { ICategoryOut } from "@/interfaces/category";
-import { useGetAllInventoryStatsOfABranchQuery } from "@/lib/features/distributeSlice";
 import moment from "moment";
+import { useGetAllBranchInventoryQuery } from "@/lib/features/branchInventorySlice";
+import { toast } from "sonner";
+import Link from "next/link";
 
 function Breadcumb() {
   return (

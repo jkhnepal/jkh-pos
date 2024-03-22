@@ -1,18 +1,19 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { useCreateInventoryMutation, useDeleteInventoryMutation, useGetAllInventoryQuery, useGetInventoryQuery, useGetInventoryStatOfAProductQuery, useUpdateInventoryMutation } from "@/lib/features/inventorySlice";
+import { useCreateInventoryMutation, useDeleteInventoryMutation, useGetAllInventoryQuery, useUpdateInventoryMutation } from "@/lib/features/inventorySlice";
 import { toast } from "sonner";
 import LoaderPre from "@/app/custom-components/LoaderPre";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import moment from "moment";
-import { PencilRuler, Save, SaveIcon, Trash2, X } from "lucide-react";
+import { PencilRuler, SaveIcon, Trash2, X } from "lucide-react";
 import { useState } from "react";
+import { useGetHeadquarterInventoryByProductQuery } from "@/lib/features/headquarterInventorySlice";
 
 type Props = {
   product_id: string;
@@ -26,13 +27,9 @@ const formSchema = z.object({
 });
 
 export default function InventoryAdd({ product_id }: Props) {
-  const [createInventory, { error, isLoading: isCreating }] = useCreateInventoryMutation();
-
   const { data: inventoryAddedHistoriesOfAProduct, refetch: refetchInventoryAddedHistoriesOfAProduct } = useGetAllInventoryQuery({ product: product_id });
-  console.log("🚀 ~ InventoryAdd ~ inventoryAddedHistoriesOfAProduct:", inventoryAddedHistoriesOfAProduct);
-
-  const { data: inventoryStatOfAProduct, refetch: refetchInventoryStatOfAProduct } = useGetInventoryStatOfAProductQuery(product_id);
-  console.log("🚀 ~ InventoryAdd ~ inventoryStatOfAProduct:", inventoryStatOfAProduct);
+  const { data: productInventory, refetch: productInventoryRefetch } = useGetHeadquarterInventoryByProductQuery(product_id);
+  const [createInventory, { error, isLoading: isCreating }] = useCreateInventoryMutation();
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -49,7 +46,7 @@ export default function InventoryAdd({ product_id }: Props) {
     if (res.data) {
       toast.success(res.data.msg);
       form.reset();
-      refetchInventoryStatOfAProduct();
+      productInventoryRefetch();
       refetchInventoryAddedHistoriesOfAProduct();
     }
   };
@@ -74,8 +71,8 @@ export default function InventoryAdd({ product_id }: Props) {
     if (res.data) {
       toast.success(res.data.msg);
       refetchInventoryAddedHistoriesOfAProduct();
-      refetchInventoryStatOfAProduct();
-      setReadyToEditId("00")
+      productInventoryRefetch();
+      setReadyToEditId("00");
     }
   };
 
@@ -85,7 +82,6 @@ export default function InventoryAdd({ product_id }: Props) {
     if (res.data) {
       toast.success(res.data.msg);
       refetchInventoryAddedHistoriesOfAProduct();
-      refetchInventoryStatOfAProduct();
     }
   };
 
@@ -110,7 +106,7 @@ export default function InventoryAdd({ product_id }: Props) {
                       disabled
                       className="border border-neutral-800 "
                       placeholder="Stock"
-                      value={inventoryStatOfAProduct?.totalAddedStock || 0}
+                      value={productInventory?.data.totalStock || 0}
                     />
                   </FormControl>
                   <FormMessage />
@@ -125,7 +121,7 @@ export default function InventoryAdd({ product_id }: Props) {
                       readOnly
                       disabled
                       placeholder="Stock"
-                      value={inventoryStatOfAProduct?.totalAddedStock - inventoryStatOfAProduct?.totalDistributedStock || 0}
+                      value={productInventory?.data.totalStock || 0}
                     />
                   </FormControl>
                   <FormMessage />

@@ -8,7 +8,14 @@ export async function createSale(input: SaleInput) {
 }
 
 export async function findAllSale(filter: FilterQuery<SaleDocument> = {}) {
-  const results = await SaleModel.find(filter);
+  const results = await SaleModel.find(filter).populate({
+    path: "product",
+    select: "name image" 
+  })
+  .populate({
+    path: "member",
+    select: "name phone" 
+  });
   return results;
 }
 

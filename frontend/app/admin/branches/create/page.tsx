@@ -40,7 +40,7 @@ const formSchema = z.object({
 });
 
 export default function Page() {
-  const [createBranch, { data, error, status, isSuccess, isError, isLoading: isCreating }] = useCreateBranchMutation();
+  const [createBranch, { error, isLoading: isCreating }] = useCreateBranchMutation();
   const { refetch } = useGetAllBranchQuery({ name: "" });
   const { uploading, handleFileUpload } = useCloudinaryFileUpload();
   const [imageUrl, setImageUrl] = useState<string>("");

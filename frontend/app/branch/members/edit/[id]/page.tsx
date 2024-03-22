@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { useParams } from "next/navigation";
-
 import { useGetAllMemberQuery, useGetMemberQuery, useUpdateMemberMutation } from "@/lib/features/memberSlice";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import LoaderPre from "@/app/custom-components/LoaderPre";
@@ -20,6 +19,7 @@ const formSchema = z.object({
 });
 
 export default function Page() {
+  const [updateMember, { error: updateError, isLoading: isUpdating }] = useUpdateMemberMutation();
   const { refetch } = useGetAllMemberQuery({ name: "" });
   const params = useParams();
   const memberId = params.id;
@@ -27,16 +27,13 @@ export default function Page() {
   const { data, isFetching } = useGetMemberQuery(memberId);
   const member = data?.data;
 
-  const branch_id = "123456789012345678809754"; // get branch id
-
-  const [updateMember, { error: updateError, isError: ab, isLoading: isUpdating }] = useUpdateMemberMutation();
   // 1. Define your form.
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       phone: 0,
-      creatorBranch: branch_id,
+      creatorBranch: "123456789012345678809754",
     },
   });
 
@@ -120,9 +117,9 @@ export default function Page() {
           )}
         />
 
-       <div>
-       <Button type="submit"> {isUpdating && <LoaderPre />} Submit</Button> 
-       </div>
+        <div>
+          <Button type="submit"> {isUpdating && <LoaderPre />} Submit</Button>
+        </div>
       </form>
     </Form>
   );

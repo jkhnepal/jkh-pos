@@ -1,16 +1,18 @@
 "use client";
 import * as React from "react";
 import { ColumnDef, ColumnFiltersState, SortingState, VisibilityState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal, Search } from "lucide-react";
+import { ArrowDown01, ArrowDown10, ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Link from "next/link";
 import { toast } from "sonner";
-import { useDeleteCategoryMutation, useGetAllCategoryQuery } from "@/lib/features/categorySlice";
+import { useDeleteDistributeMutation, useGetAllDistributeQuery } from "@/lib/features/distributeSlice";
 import LoaderPre from "@/app/custom-components/LoaderPre";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
+import moment from "moment";
 
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -18,19 +20,20 @@ export default function Page() {
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const branchId = "branch_gokvvvrewe";
-  const branch_id = "65f333f74482d9774195ba8e";
-  const [deleteCategory, { data, isError: isDeleteError, error: deleteError, isLoading: isDeleting }] = useDeleteCategoryMutation();
-  const [searchText, setsearchText] = React.useState<string>("");
-  const { data: categories, isError, isLoading: isFetching, refetch } = useGetAllCategoryQuery({ name: searchText });
+  const [searchName, setSearchName] = React.useState<string>("");
+  const [debounceValue] = useDebounce(searchName, 1000);
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [sort, setSort] = React.useState("latest");
+  const itemsPerPage = 5;
 
-  const { data: histories } = useGetAllDistributeQuery({ branch: branch_id });
-  console.log(histories);
+  const { data: distributes, isError, isLoading: isFetching, refetch } = useGetAllDistributeQuery({ sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
+  let totalItem = distributes?.data.count;
+  const pageCount = Math.ceil(totalItem / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
 
-
-
+  const [deleteDistribute, { data, isError: isDeleteError, error: deleteError, isLoading: isDeleting }] = useDeleteDistributeMutation();
   const handleDelete = async (id: string) => {
-    const res: any = await deleteCategory(id);
+    const res: any = await deleteDistribute(id);
     if (res.data) {
       toast.success(res.data.msg);
       refetch();
@@ -47,8 +50,15 @@ export default function Page() {
       toast.error(errorMsg);
     }
   }
+  const goToPreviousPage = () => {
+    setCurrentPage((prevPage) => prevPage - 1);
+  };
 
-  const columns: ColumnDef<ICategoryOut>[] = [
+  const goToNextPage = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
+
+  const columns: ColumnDef<any>[] = [
     {
       id: "select",
       header: ({ table }) => (
@@ -70,76 +80,91 @@ export default function Page() {
     },
 
     {
-      accessorKey: "quantity",
+      accessorKey: "branch",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+            Branch Name
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }: any) => <div>{row.getValue("branch")?.name}</div>,
+    },
+
+    {
+      accessorKey: "product",
+      header: "Product Name",
+      cell: ({ row }: any) => <div>{row.getValue("product")?.name}</div>,
+    },
+
+    {
+      accessorKey: "stock",
       header: "Quantity",
-      cell: ({ row }: any) => <div>{row.getValue("quantity")}</div>,
+      cell: ({ row }: any) => <div>{row.getValue("stock")}</div>,
     },
 
     {
       accessorKey: "createdAt",
-      header: "Sent Date",
-      cell: ({ row }: any) => <div>{row.getValue("createdAt")}</div>,
+      header: "Initiated Date",
+      cell: ({ row }: any) => <div>{moment(row.getValue("createdAt")).format("MMM Do YY")}</div>,
     },
 
     {
-      accessorKey: "updatedAt",
-      header: "Updated Date",
-      cell: ({ row }: any) => <div>{row.getValue("updatedAt")}</div>,
+      id: "actions",
+      enableHiding: false,
+      cell: ({ row }) => {
+        const item = row.original;
+
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              {isDeleting ? (
+                <Button
+                  variant="ghost"
+                  className="h-8 w-8 p-0">
+                  <span className="sr-only">Open menu</span>
+                  <LoaderPre />
+                </Button>
+              ) : (
+                <Button
+                  variant="ghost"
+                  className="h-8 w-8 p-0">
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              )}
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => {
+                  navigator.clipboard.writeText(item.distributeId);
+                  toast.success("Copy success");
+                }}>
+                Copy id
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+
+              <Link href={`/admin/supply-histories/edit/${item.distributeId}`}>
+                <DropdownMenuItem>View/Edit</DropdownMenuItem>
+              </Link>
+              <DropdownMenuItem
+                onClick={() => handleDelete(item.distributeId)}
+                className=" text-destructive">
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
     },
-
-    // {
-    //   id: "actions",
-    //   enableHiding: false,
-    //   cell: ({ row }) => {
-    //     const item = row.original;
-
-    //     return (
-    //       <DropdownMenu>
-    //         <DropdownMenuTrigger asChild>
-    //           {isDeleting ? (
-    //             <Button
-    //               variant="ghost"
-    //               className="h-8 w-8 p-0">
-    //               <span className="sr-only">Open menu</span>
-    //               <LoaderPre />
-    //             </Button>
-    //           ) : (
-    //             <Button
-    //               variant="ghost"
-    //               className="h-8 w-8 p-0">
-    //               <span className="sr-only">Open menu</span>
-    //               <MoreHorizontal className="h-4 w-4" />
-    //             </Button>
-    //           )}
-    //         </DropdownMenuTrigger>
-    //         <DropdownMenuContent align="end">
-    //           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-    //           <DropdownMenuItem
-    //             onClick={() => {
-    //               navigator.clipboard.writeText(item.categoryId);
-    //               toast.success("Copy success");
-    //             }}>
-    //             Copy id
-    //           </DropdownMenuItem>
-    //           <DropdownMenuSeparator />
-
-    //           <Link href={`/dashboard/categories/edit/${item.categoryId}`}>
-    //             <DropdownMenuItem>View/Edit</DropdownMenuItem>
-    //           </Link>
-    //           <DropdownMenuItem
-    //             onClick={() => handleDelete(item.categoryId)}
-    //             className=" text-destructive">
-    //             Delete
-    //           </DropdownMenuItem>
-    //         </DropdownMenuContent>
-    //       </DropdownMenu>
-    //     );
-    //   },
-    // },
   ];
 
   const table = useReactTable({
-    data: histories?.data || [],
+    data: distributes?.data.results || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -160,7 +185,6 @@ export default function Page() {
   if (isFetching) {
     return (
       <div>
-        {" "}
         <LoaderSpin />
       </div>
     );
@@ -170,14 +194,16 @@ export default function Page() {
     <div className="w-full">
       <Breadcumb />
       <div className="flex justify-between items-center py-4">
+        {/* Opacity-0 */}
         <Input
-          placeholder="Search by category name..."
-          onChange={(e) => setsearchText(e.target.value)}
-          className="max-w-sm"
+          placeholder="Filter by name..."
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+          onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}
+          className="max-w-sm opacity-0"
         />
 
-        <div className=" space-x-2">
-          <Link href={"/dashboard/categories/create"}>
+        <div className="flex  space-x-2">
+          <Link href={"/admin/distribute-histories/create"}>
             <Button>Add New</Button>
           </Link>
           <DropdownMenu>
@@ -205,6 +231,24 @@ export default function Page() {
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
+
+          <div className=" flex items-center gap-2">
+            {sort === "latest" ? (
+              <Button>
+                <ArrowDown10
+                  size={18}
+                  onClick={() => setSort("oldest")}
+                />
+              </Button>
+            ) : (
+              <Button>
+                <ArrowDown01
+                  size={18}
+                  onClick={() => setSort("latest")}
+                />
+              </Button>
+            )}
+          </div>
         </div>
       </div>
       <div className="rounded-md border">
@@ -244,21 +288,21 @@ export default function Page() {
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
+          {startIndex} of {totalItem} row(s) selected.
         </div>
         <div className="space-x-2">
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}>
+            disabled={startIndex === 0}
+            onClick={goToPreviousPage}>
             Previous
           </Button>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}>
+            disabled={startIndex + itemsPerPage >= totalItem}
+            onClick={goToNextPage}>
             Next
           </Button>
         </div>
@@ -270,23 +314,21 @@ export default function Page() {
 // Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { Input } from "@/components/ui/input";
-import { ICategoryOut } from "@/interfaces/category";
-import { useGetAllDistributeQuery } from "@/lib/features/distributeSlice";
+import { useDebounce } from "use-debounce";
 
 function Breadcumb() {
   return (
     <Breadcrumb className=" mb-8">
       <BreadcrumbList>
         <BreadcrumbItem>
-          <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+          <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator>
           <SlashIcon />
         </BreadcrumbSeparator>
 
         <BreadcrumbItem>
-          <BreadcrumbPage>Categories</BreadcrumbPage>
+          <BreadcrumbPage>Distributes</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>

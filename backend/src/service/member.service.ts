@@ -6,23 +6,46 @@ export async function createMember(input: MemberInput) {
   return result;
 }
 
+// static getAll = async (query: ProductQuerySchemaType) => {
+//   const search = query.search || "";
+//   const sort = query.sort || "";
+
+//   const country = query.country || "";
+//   const page = query.page || 1;
+//   const limit = query.limit || 5;
+//   const skip = (page - 1) * limit;
+
+//   const searchQuery: SearchQuery = {
+//     name: { $regex: search, $options: "i" },
+//   };
+
+//   const count = await ProductModel.countDocuments();
+//   const products = await ProductModel.find(searchQuery)
+//     .skip(skip)
+//     .limit(limit)
+//     .sort({ createdAt: sort == "latest" ? -1 : 1 });
+//   return { count, products };
+// };
+
 export async function findAllMember(filter: FilterQuery<MemberDocument> = {}) {
+  const search = filter.search || "";
+  const sort = filter.sort || "";
+  const page: any = filter.page || 1;
+  const limit: any = filter.limit || 5;
+  const skip = (page - 1) * limit;
 
-  console.log(filter)
-  if (filter.phone) {
-    filter.phone = filter.phone.toString();
-  }
-
-  if (filter.name) {
-    filter.name = { $regex: new RegExp(filter.name, "i") };
-  }
-
-  const results = await MemberModel.find(filter);
-  console.log(results)
-  return results;
+  const searchQuery: any = {
+    name: { $regex: search, $options: "i" },
+  };
+  const count = await MemberModel.countDocuments();
+  const results = await MemberModel.find(searchQuery)
+    .skip(skip)
+    .limit(limit)
+    .sort({ createdAt: sort == "latest" ? -1 : 1 });
+  console.log("🚀 ~ findAllMember ~ results:", results);
+  // return results;
+  return { count, results };
 }
-
-
 
 export async function findMember(query: FilterQuery<MemberDocument>, options: QueryOptions = { lean: true }) {
   const result = await MemberModel.findOne(query, {}, options);

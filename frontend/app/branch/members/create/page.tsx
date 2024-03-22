@@ -5,10 +5,8 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
 import { toast } from "sonner";
 import { useCreateMemberMutation, useGetAllMemberQuery } from "@/lib/features/memberSlice";
-import useCloudinaryFileUpload from "@/app/hooks/useCloudinaryFileUpload";
 import LoaderPre from "@/app/custom-components/LoaderPre";
 import OptionalLabel from "@/app/custom-components/OptionalLabel";
 
@@ -19,10 +17,8 @@ const formSchema = z.object({
 });
 
 export default function Page() {
-  const [createMember, { data, error, status, isSuccess, isError, isLoading: isCreating }] = useCreateMemberMutation();
+  const [createMember, { error, isLoading: isCreating }] = useCreateMemberMutation();
   const { refetch } = useGetAllMemberQuery({ name: "" });
-
-  const branch_id = "123456789012345678809754"; // get branch id
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -30,7 +26,7 @@ export default function Page() {
     defaultValues: {
       name: "",
       phone: 0,
-      creatorBranch: branch_id,
+      creatorBranch: "123456789012345678809754",
     },
   });
 
@@ -98,9 +94,9 @@ export default function Page() {
           )}
         />
 
-       <div>
-       <Button type="submit"> {isCreating && <LoaderPre />} Submit</Button>
-       </div>
+        <div>
+          <Button type="submit"> {isCreating && <LoaderPre />} Submit</Button>
+        </div>
       </form>
     </Form>
   );

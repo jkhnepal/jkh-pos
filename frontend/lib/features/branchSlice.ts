@@ -1,42 +1,68 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import baseQuery from "./baseQuery";
 
+// Define common headers
+const headers = { "Content-Type": "application/json" };
+
 export const branchApi = createApi({
   reducerPath: "branch",
   baseQuery,
   endpoints: (builder) => ({
+    createBranch: builder.mutation({
+      query: (newBranch) => ({
+        url: `/branches`,
+        method: "POST",
+        headers,
+        body: newBranch,
+      }),
+    }),
+
+    // getAllBranch: builder.query({
+    //   query: () => "/branches",
+    // }),
+
     getAllBranch: builder.query({
-      query: () => "/branches",
+      query: ({ page = 1, limit = 5, search, sort }) => {
+        const params = {
+          page,
+          limit,
+          search,
+          sort,
+        };
+        return {
+          url: "/branches",
+          params: params,
+        };
+      },
     }),
 
     getBranch: builder.query({
       query: (branchId) => `/branches/${branchId}`,
     }),
 
-    createBranch: builder.mutation({
-      query: (newBranch) => ({
-        url: `/branches`,
-        method: "POST",
-        // headers: { "Content-Type": "application/json" },
-        body: newBranch,
-      }),
-    }),
-
-    loginBranch: builder.mutation({
-      query: (credential) => ({
-        url: `/branches/login`,
-        method: "POST",
-        // headers: { "Content-Type": "application/json" },
-        body: credential,
-      }),
-    }),
-
     updateBranch: builder.mutation({
       query: ({ branchId, updatedBranch }) => ({
         url: `/branches/${branchId}`,
         method: "PATCH",
-        // headers: { "Content-Type": "application/json" },
+        headers,
         body: updatedBranch,
+      }),
+    }),
+
+    deleteBranch: builder.mutation({
+      query: (branchId) => ({
+        url: `/branches/${branchId}`,
+        method: "DELETE",
+      }),
+    }),
+
+    // Auth
+    loginBranch: builder.mutation({
+      query: (credential) => ({
+        url: `/branches/login`,
+        method: "POST",
+        headers,
+        body: credential,
       }),
     }),
 
@@ -46,16 +72,9 @@ export const branchApi = createApi({
         return {
           url: `/branches/reset-password/${email_phone}`,
           method: "PATCH",
-          // headers: { "Content-Type": "application/json" },
+          headers,
         };
       },
-    }),
-
-    deleteBranch: builder.mutation({
-      query: (branchId) => ({
-        url: `/branches/${branchId}`,
-        method: "DELETE",
-      }),
     }),
   }),
 });

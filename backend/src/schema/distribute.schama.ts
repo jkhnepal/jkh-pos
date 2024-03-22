@@ -11,8 +11,8 @@ const payload = {
       required_error: "product is required",
     }),
 
-    quantity: coerce.number({
-      required_error: "quantity is required",
+    stock: coerce.number({
+      required_error: "stock is required",
     }),
   }),
 };

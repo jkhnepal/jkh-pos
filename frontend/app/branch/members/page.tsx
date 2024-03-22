@@ -14,13 +14,13 @@ import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
 
 export default function Page() {
-  const { data: members, isError, isLoading: isFetching, refetch } = useGetAllMemberQuery({ name: "" });
+  const { data: members, isLoading: isFetching, refetch } = useGetAllMemberQuery({ name: "" });
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const [deleteMember, { data, isError: isDeleteError, error: deleteError, isLoading: isDeleting }] = useDeleteMemberMutation();
+  const [deleteMember, { error: deleteError, isLoading: isDeleting }] = useDeleteMemberMutation();
 
   const handleDelete = async (id: string) => {
     const res: any = await deleteMember(id);
@@ -135,7 +135,6 @@ export default function Page() {
   ];
 
   const table = useReactTable({
-    // data,
     data: members?.data || [],
     columns,
     onSortingChange: setSorting,
@@ -238,7 +237,6 @@ export default function Page() {
             )}
           </TableBody>
         </Table>
-        {/* {isFetching && <p>Loading</p>} */}
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">

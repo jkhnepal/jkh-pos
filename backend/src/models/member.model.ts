@@ -4,7 +4,7 @@ import { BranchDocument } from "./branch.model";
 
 export interface MemberInput {
   name: string;
-  phone: number;
+  phone: string; 
   creatorBranch: BranchDocument["_id"];
 }
 
@@ -22,7 +22,7 @@ const memberSchema = new mongoose.Schema(
       default: () => `member_${nanoid()}`,
     },
     name: { type: String, required: true },
-    phone: { type: Number, required: true },
+    phone: { type: String, required: true },
     creatorBranch: { type: mongoose.Schema.Types.ObjectId, ref: "Branch", required: true },
   },
   {
