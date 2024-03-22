@@ -1,7 +1,7 @@
 "use client";
 import * as React from "react";
 import { ColumnDef, ColumnFiltersState, SortingState, VisibilityState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { ArrowDown01, ArrowDown10, ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -15,14 +15,23 @@ import { Checkbox } from "@/components/ui/checkbox";
 import moment from "moment";
 
 export default function Page() {
-  const { data: distributes, isError, isLoading: isFetching, refetch } = useGetAllDistributeQuery({ name: "" });
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const [deleteDistribute, { data, isError: isDeleteError, error: deleteError, isLoading: isDeleting }] = useDeleteDistributeMutation();
+  const [searchName, setSearchName] = React.useState<string>("");
+  const [debounceValue] = useDebounce(searchName, 1000);
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [sort, setSort] = React.useState("latest");
+  const itemsPerPage = 5;
 
+  const { data: distributes, isError, isLoading: isFetching, refetch } = useGetAllDistributeQuery({ sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
+  let totalItem = distributes?.data.count;
+  const pageCount = Math.ceil(totalItem / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+
+  const [deleteDistribute, { data, isError: isDeleteError, error: deleteError, isLoading: isDeleting }] = useDeleteDistributeMutation();
   const handleDelete = async (id: string) => {
     const res: any = await deleteDistribute(id);
     if (res.data) {
@@ -41,8 +50,14 @@ export default function Page() {
       toast.error(errorMsg);
     }
   }
+  const goToPreviousPage = () => {
+    setCurrentPage((prevPage) => prevPage - 1);
+  };
 
-  // const columns: ColumnDef<IDistributeOut>[] = [
+  const goToNextPage = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
+
   const columns: ColumnDef<any>[] = [
     {
       id: "select",
@@ -86,9 +101,9 @@ export default function Page() {
     },
 
     {
-      accessorKey: "quantity",
+      accessorKey: "stock",
       header: "Quantity",
-      cell: ({ row }: any) => <div>{row.getValue("quantity")}</div>,
+      cell: ({ row }: any) => <div>{row.getValue("stock")}</div>,
     },
 
     {
@@ -149,8 +164,7 @@ export default function Page() {
   ];
 
   const table = useReactTable({
-    // data,
-    data: distributes?.data || [],
+    data: distributes?.data.results || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -171,7 +185,6 @@ export default function Page() {
   if (isFetching) {
     return (
       <div>
-        {" "}
         <LoaderSpin />
       </div>
     );
@@ -181,15 +194,16 @@ export default function Page() {
     <div className="w-full">
       <Breadcumb />
       <div className="flex justify-between items-center py-4">
+        {/* Opacity-0 */}
         <Input
           placeholder="Filter by name..."
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}
-          className="max-w-sm"
+          className="max-w-sm opacity-0"
         />
 
-        <div className=" space-x-2">
-          <Link href={"/admin/supply-histories/create"}>
+        <div className="flex  space-x-2">
+          <Link href={"/admin/distribute-histories/create"}>
             <Button>Add New</Button>
           </Link>
           <DropdownMenu>
@@ -217,6 +231,24 @@ export default function Page() {
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
+
+          <div className=" flex items-center gap-2">
+            {sort === "latest" ? (
+              <Button>
+                <ArrowDown10
+                  size={18}
+                  onClick={() => setSort("oldest")}
+                />
+              </Button>
+            ) : (
+              <Button>
+                <ArrowDown01
+                  size={18}
+                  onClick={() => setSort("latest")}
+                />
+              </Button>
+            )}
+          </div>
         </div>
       </div>
       <div className="rounded-md border">
@@ -256,21 +288,21 @@ export default function Page() {
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
+          {startIndex} of {totalItem} row(s) selected.
         </div>
         <div className="space-x-2">
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}>
+            disabled={startIndex === 0}
+            onClick={goToPreviousPage}>
             Previous
           </Button>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}>
+            disabled={startIndex + itemsPerPage >= totalItem}
+            onClick={goToNextPage}>
             Next
           </Button>
         </div>
@@ -282,6 +314,7 @@ export default function Page() {
 // Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { useDebounce } from "use-debounce";
 
 function Breadcumb() {
   return (

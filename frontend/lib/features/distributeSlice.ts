@@ -4,16 +4,32 @@ export const distributeApi = createApi({
   reducerPath: "distribute",
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5008/api/distributes" }),
   endpoints: (builder) => ({
+    // getAllDistribute: builder.query({
+    //   query: (options) => {
+    //     const { branch } = options;
+    //     const params = branch ? { branch } : {};
+    //     return {
+    //       url: "/",
+    //       params: params,
+    //     };
+    //   },
+    // }),
+
     getAllDistribute: builder.query({
-      query: (options) => {
-        const { branch } = options;
-        const params = branch ? { branch } : {};
+      query: ({ page = 1, limit = 5, search, sort }) => {
+        const params = {
+          page,
+          limit,
+          search,
+          sort,
+        };
         return {
           url: "/",
           params: params,
         };
       },
     }),
+
 
     getDistribute: builder.query({
       query: (distributeId) => `/${distributeId}`,

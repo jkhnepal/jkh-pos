@@ -16,10 +16,25 @@ export const productApi = createApi({
       }),
     }),
 
+    // getAllProduct: builder.query({
+    //   query: (options) => {
+    //     const { name } = options;
+    //     const params = name ? { name } : {};
+    //     return {
+    //       url: "/",
+    //       params: params,
+    //     };
+    //   },
+    // }),
+
     getAllProduct: builder.query({
-      query: (options) => {
-        const { name } = options;
-        const params = name ? { name } : {};
+      query: ({ page = 1, limit = 5, search, sort }) => {
+        const params = {
+          page,
+          limit,
+          search,
+          sort,
+        };
         return {
           url: "/",
           params: params,

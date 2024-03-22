@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 const formSchema = z.object({
   branch: z.string(),
   product: z.string(),
-  quantity: z.coerce.number(),
+  stock: z.coerce.number(),
 });
 
 export default function Page() {
@@ -30,7 +30,7 @@ export default function Page() {
     defaultValues: {
       branch: "",
       product: "",
-      quantity: 0,
+      stock: 0,
     },
   });
 
@@ -135,14 +135,14 @@ export default function Page() {
 
         <FormField
           control={form.control}
-          name="quantity"
+          name="stock"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Quantity</FormLabel>
+              <FormLabel>stock</FormLabel>
               <FormControl>
                 <Input
                   type="number"
-                  placeholder="Quantity"
+                  placeholder="stock"
                   {...field}
                 />
               </FormControl>
@@ -151,7 +151,7 @@ export default function Page() {
           )}
         />
 
-<div className=" flex  flex-col gap-1.5">
+        <div className=" flex  flex-col gap-1.5">
           <span className=" opacity-0">.</span>
           <div>
             <Button type="submit"> {isCreating && <LoaderPre />} Submit</Button>
@@ -167,7 +167,6 @@ import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useGetAllBranchQuery } from "@/lib/features/branchSlice";
 import { useGetAllProductQuery } from "@/lib/features/product.sclice";
-import { useCreateBranchInventoryMutation } from "@/lib/features/branchInventorySlice";
 
 function Breadcumb() {
   return (
@@ -181,7 +180,7 @@ function Breadcumb() {
         </BreadcrumbSeparator>
 
         <BreadcrumbItem>
-          <BreadcrumbLink href="/admin/supply-histories">Supply Histories</BreadcrumbLink>
+          <BreadcrumbLink href="/admin/distribute-histories">Supply Histories</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator>
           <SlashIcon />
