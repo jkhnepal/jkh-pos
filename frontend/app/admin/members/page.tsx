@@ -27,7 +27,7 @@ export default function Page() {
   const itemsPerPage = 5;
 
   const { data: members, isLoading: isFetching, refetch } = useGetAllMemberQuery({ sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
-  let totalItem = members?.data.count;
+  let totalItem:number = members?.data.count;
   const pageCount = Math.ceil(totalItem / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
 
