@@ -1,7 +1,7 @@
 "use client";
 import * as React from "react";
 import { ColumnDef, ColumnFiltersState, SortingState, VisibilityState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
-import { ChevronDown, MoreHorizontal } from "lucide-react";
+import { ArrowDown01, ArrowDown10, ChevronDown, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -18,9 +18,29 @@ export default function Page() {
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const branch_id = "65f9a5496dc1725a5ba238c5";
-  const { data: salesOfABranch, isLoading: isFetching, refetch } = useGetAllSaleQuery({ branch: branch_id });
-  console.log("🚀 ~ Page ~ salesOfABranch:", salesOfABranch);
+  const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
+  const branch_id = currentUser?.data.branch._id;
+
+  const [searchName, setSearchName] = React.useState<string>("");
+  const [debounceValue] = useDebounce(searchName, 1000);
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [sort, setSort] = React.useState("latest");
+  const itemsPerPage = 5;
+
+  const { data: salesOfABranch, isLoading: isFetching, refetch } = useGetAllSaleQuery({ branch: branch_id, sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
+  console.log("🚀 ~ Page ~ salesOfABranch:", salesOfABranch)
+  let totalItem: number = salesOfABranch?.data.count;
+  const pageCount = Math.ceil(totalItem / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+
+
+  const goToPreviousPage = () => {
+    setCurrentPage((prevPage) => prevPage - 1);
+  };
+
+  const goToNextPage = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
 
   const columns: ColumnDef<any>[] = [
     {
@@ -103,7 +123,7 @@ export default function Page() {
   ];
 
   const table = useReactTable({
-    data: salesOfABranch?.data || [],
+    data: salesOfABranch?.data.results || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -134,14 +154,14 @@ export default function Page() {
     <div className="w-full">
       <Breadcumb />
       <div className="flex justify-between items-center py-4">
-        <Input
-          placeholder="Filter by name..."
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-          onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}
+      <Input
+          placeholder="Filter by name ..."
+          value={searchName}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
           className="max-w-sm"
         />
 
-        <div className=" space-x-2">
+        <div className=" flex space-x-2">
           <Link href={"/dashboard/sales/create"}>
             <Button>Add New</Button>
           </Link>
@@ -170,6 +190,24 @@ export default function Page() {
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
+
+          <div className=" flex items-center gap-2">
+            {sort === "latest" ? (
+              <Button>
+                <ArrowDown10
+                  size={18}
+                  onClick={() => setSort("oldest")}
+                />
+              </Button>
+            ) : (
+              <Button>
+                <ArrowDown01
+                  size={18}
+                  onClick={() => setSort("latest")}
+                />
+              </Button>
+            )}
+          </div>
         </div>
       </div>
       <div className="rounded-md border">
@@ -210,19 +248,21 @@ export default function Page() {
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-        <div className="space-x-2">
+      
+
+          <div className="space-x-2">
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}>
+            disabled={startIndex === 0}
+            onClick={goToPreviousPage}>
             Previous
           </Button>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}>
+            disabled={startIndex + itemsPerPage >= totalItem}
+            onClick={goToNextPage}>
             Next
           </Button>
         </div>
@@ -234,6 +274,8 @@ export default function Page() {
 // Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
+import { useDebounce } from "use-debounce";
 
 function Breadcumb() {
   return (

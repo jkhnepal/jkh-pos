@@ -25,6 +25,9 @@ const payload = {
 
     image: string().optional(),
     note: string().optional(),
+
+    totalAddedStock: coerce.number().optional(),
+    availableStock: coerce.number().optional(),
   }),
 };
 

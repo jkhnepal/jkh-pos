@@ -31,11 +31,8 @@ const payload = {
       required_error: "totalAmount is required",
     }),
 
-    newProduct: array(string()),
-
-    extraAddedAmount: coerce.number({
-      required_error: "extraAddedAmount is required",
-    }),
+    newProduct: array(string()).optional(),
+    extraAddedAmount: coerce.number().optional(),
   }),
 };
 

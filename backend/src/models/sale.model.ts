@@ -13,7 +13,6 @@ export interface SaleInput {
   discount: number; // in %
   quantity: number;
   totalAmount: number;
-  
 }
 
 export interface SaleDocument extends SaleInput, mongoose.Document {

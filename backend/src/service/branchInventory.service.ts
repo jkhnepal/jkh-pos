@@ -9,12 +9,12 @@ export async function createBranchInventory(input: BranchInventoryInput): Promis
 export async function findAllBranchInventory(filter: FilterQuery<BranchInventoryDocument> = {}): Promise<BranchInventoryDocument[]> {
   const results = await BranchInventoryModel.find(filter) .populate({
     path: "product",
-    select: "name image productId" 
+    select: "name image productId sku" 
   })
-  .populate({
-    path: "branch",
-    select: "name" 
-  });
+  // .populate({
+  //   path: "branch",
+  //   select: "name" 
+  // });
   return results;
 }
 

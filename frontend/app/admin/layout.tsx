@@ -37,7 +37,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <Link
                   href={item.href}
                   className={`link ${pathname === item.href ? "bg-foreground" : ""} py-1.5 px-2 rounded-md flex items-center gap-1.5 `}>
-             {item.icon}     {item.name}
+                  {item.icon} {item.name}
                 </Link>
               </div>
             ))}
@@ -52,11 +52,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             variant="outline">
             <Menu className=" cursor-pointer " />
           </Button>
-          <div className=" flex space-x-4">
-            <DatabaseZap />
-            <DatabaseZap />
-            <DatabaseZap />
-          </div>
+
+          {/* <DatabaseZap /> */}
         </div>
         <div>
           <div className=" px-4 mt-8 ">{children}</div>
@@ -81,7 +78,7 @@ const navItems = [
 
   {
     name: "Categories",
-    icon: <Settings size={15}  />,
+    icon: <Settings size={15} />,
     href: "/admin/categories",
   },
 
@@ -99,7 +96,7 @@ const navItems = [
 
   {
     name: "Members",
-    icon: <Users  size={18} />,
+    icon: <Users size={18} />,
     href: "/admin/members",
   },
 ];

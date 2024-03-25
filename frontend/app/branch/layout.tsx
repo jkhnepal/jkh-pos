@@ -106,9 +106,9 @@ const navItems = [
     href: "/branch/sales",
   },
 
-  {
-    name: "Returns",
-    icon:     <CornerDownLeft size={18} />,
-    href: "/branch/returns",
-  },
+  // {
+  //   name: "Returns",
+  //   icon:     <CornerDownLeft size={18} />,
+  //   href: "/branch/returns",
+  // },
 ];

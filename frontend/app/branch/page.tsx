@@ -12,6 +12,7 @@ export default function Page({}: Props) {
   const branch_id = currentUser?.data.branch._id;
 
   const { data: branchInventories } = useGetAllBranchInventoryQuery({ branch: branch_id });
+  console.log("🚀 ~ Page ~ branchInventories:", branchInventories)
 
   return (
     <>
@@ -31,6 +32,7 @@ export default function Page({}: Props) {
               <Separator />
               <CardDescription className=" p-3 flex justify-between">
                 <div>
+                  <p> Name : Rs. {item.product.name}</p>
                   <p> CP : Rs. {item.product.cp}</p>
                   <p> SP : Rs. {item.product.sp}</p>
                   <p> SKU : {item.product.sku}</p>

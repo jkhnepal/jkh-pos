@@ -45,7 +45,10 @@ const formSchema = z.object({
 
 export default function Page() {
   const [updateProduct, { error: updateError, isLoading: isUpdating }] = useUpdateProductMutation();
-  const { refetch } = useGetAllProductQuery({ name: "" });
+
+  // For refreshing the table list with new data
+  const { refetch } = useGetAllProductQuery({ page: 1, limit: 1 });
+
   const { data: categories } = useGetAllCategoryQuery({});
 
   const params = useParams();
@@ -53,6 +56,7 @@ export default function Page() {
 
   const { data, isFetching } = useGetProductQuery(productId);
   const product = data?.data;
+  console.log("🚀 ~ Page ~ product:", product);
 
   const { uploading, handleFileUpload } = useCloudinaryFileUpload();
   const [imageUrl, setImageUrl] = useState<string>("");
@@ -166,7 +170,7 @@ export default function Page() {
                     <SelectContent>
                       <SelectGroup>
                         <SelectLabel>Categories (Expense)</SelectLabel>
-                        {categories?.data.map((item: any) => (
+                        {categories?.data.results.map((item: any) => (
                           <SelectItem
                             key={item._id}
                             value={item._id}>
@@ -309,7 +313,7 @@ export default function Page() {
           </div>
         </form>
       </Form>
-      <InventoryAdd product_id={product._id} />
+      <InventoryAdd product={product} />
     </div>
   );
 }

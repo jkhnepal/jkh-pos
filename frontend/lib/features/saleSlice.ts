@@ -8,10 +8,26 @@ export const saleApi = createApi({
     //   query: () => "/",
     // }),
 
+    // getAllSale: builder.query({
+    //   query: (options) => {
+    //     const { branch } = options;
+    //     const params = branch ? { branch } : {};
+    //     return {
+    //       url: "/",
+    //       params: params,
+    //     };
+    //   },
+    // }),
+
     getAllSale: builder.query({
-      query: (options) => {
-        const { branch } = options;
-        const params = branch ? { branch } : {};
+      query: ({ branch, page = 1, limit = 5, search, sort }) => {
+        const params = {
+          branch,
+          page,
+          limit,
+          search,
+          sort,
+        };
         return {
           url: "/",
           params: params,

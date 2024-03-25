@@ -13,7 +13,10 @@ export default function Page() {
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const branch_id = "65f9a5496dc1725a5ba238c5";
+  const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
+  const branch_id = currentUser?.data.branch._id;
+
+  // const branch_id = "65f9a5496dc1725a5ba238c5";
   const [searchText, setsearchText] = React.useState<string>("");
 
   const { data: branchInventories, isFetching } = useGetAllBranchInventoryQuery({ branch: branch_id });
@@ -229,6 +232,7 @@ import moment from "moment";
 import { useGetAllBranchInventoryQuery } from "@/lib/features/branchInventorySlice";
 import { toast } from "sonner";
 import Link from "next/link";
+import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
 
 function Breadcumb() {
   return (
