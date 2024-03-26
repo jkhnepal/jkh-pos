@@ -37,6 +37,9 @@ const formSchema = z.object({
     message: "Selling price must be a positive number.",
   }),
 
+  // totalAddedStock:z.coerce.number().optional(),
+  // availableStock:z.coerce.number().optional(),
+
   discount: z.coerce.number().optional(),
 
   image: z.string().optional(),
@@ -135,7 +138,7 @@ export default function Page() {
                   <SelectContent>
                     <SelectGroup>
                       <SelectLabel>Categories (Expense)</SelectLabel>
-                      {categories?.data.map((item: any) => (
+                      {categories?.data.results.map((item: any) => (
                         <SelectItem
                           key={item._id}
                           value={item._id}>
@@ -203,6 +206,42 @@ export default function Page() {
             </FormItem>
           )}
         />
+
+        {/* <FormField
+          control={form.control}
+          name="totalAddedStock"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Add Stock </FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  placeholder="Add Stock"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        /> */}
+
+        {/* <FormField
+          control={form.control}
+          name="availableStock"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Available Stock </FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  placeholder="Available Stock"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        /> */}
 
         <FormField
           control={form.control}

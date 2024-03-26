@@ -1,4 +1,4 @@
-import { coerce, object, string, TypeOf, unknown } from "zod";
+import { boolean, coerce, object, string, TypeOf, unknown } from "zod";
 
 // Define common schemas
 const payload = {
@@ -25,6 +25,11 @@ const payload = {
 
     image: string().optional(),
     note: string().optional(),
+
+    totalAddedStock: coerce.number().default(0),
+    availableStock: coerce.number().default(0),
+
+    isReturned: boolean().optional(),
   }),
 };
 

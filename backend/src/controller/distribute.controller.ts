@@ -6,15 +6,19 @@ import mongoose from "mongoose";
 import DistributeModel from "../models/distribute.model";
 import { createBranchInventory, findAndUpdateBranchInventory, findBranchInventory } from "../service/branchInventory.service";
 import BranchInventoryModel from "../models/branchInventory.model";
+import { findAndUpdateProduct } from "../service/product.service";
 
 var colors = require("colors");
 
 export async function createDistributeHandler(req: Request<{}, {}, CreateDistributeInput["body"]>, res: Response, next: NextFunction) {
   try {
     const body = req.body;
+    console.log("🚀 ~ createDistributeHandler ~ body:", body);
 
-    const distribute = await createDistribute(body); //history
-    console.log("🚀 ~ createDistributeHandler ~ distribute:", distribute);
+    const distribute = await createDistribute(body);
+    const updatedProduct = await findAndUpdateProduct({ _id: body.product }, { $inc: { availableStock: -body.stock } }, { new: true });
+    // const updatedProduct = await findAndUpdateProduct({ _id: body.product }, { $inc: { availableStock: -body.stock, totalAddedStock: +body.stock } }, { new: true });
+    console.log("🚀 ~ createDistributeHandler ~ updatedProduct:", updatedProduct);
 
     const branchInventory: any = await BranchInventoryModel.findOne({ branch: body.branch, product: body.product });
     console.log("🚀 ~ createDistributeHandler ~ branchInventory:", branchInventory);
@@ -25,11 +29,6 @@ export async function createDistributeHandler(req: Request<{}, {}, CreateDistrib
       console.log("🚀 ~ createDistributeHandler ~ newTotalstock:", newTotalstock);
       updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, { totalStock: newTotalstock }, { new: true });
     }
-
-    // if (branchInventory) {
-    //   const res=await createBranchInventory({ ...body, totalStock: body.quantity });
-    //   console.log(res)
-    // }
 
     if (!branchInventory) {
       const res = await createBranchInventory({ ...body, totalStock: body.stock });
@@ -66,8 +65,6 @@ export async function getAllDistributeHandler(req: Request<{}, {}, {}>, res: Res
     next(new AppError("Internal server error", 500));
   }
 }
-
-
 
 export async function getAllUniqueProductInventoryOfABranchHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
   try {
@@ -137,8 +134,6 @@ export async function getDistributeHandler(req: Request<UpdateDistributeInput["p
   }
 }
 
-
-
 export async function updateDistributeHandler(req: Request<UpdateDistributeInput["params"]>, res: Response, next: NextFunction) {
   try {
     const distributeId = req.params.distributeId;
@@ -162,7 +157,7 @@ export async function updateDistributeHandler(req: Request<UpdateDistributeInput
       updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, { totalStock: newTotalstock }, { new: true });
     }
 
-    console.log(updatedBranchInventory)
+    console.log(updatedBranchInventory);
 
     return res.status(200).json({
       status: "success",

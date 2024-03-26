@@ -13,6 +13,11 @@ export interface ProductInput {
 
   image?: string;
   note?: string;
+
+  totalAddedStock?: number;
+  availableStock?: number;
+
+  isReturned?: boolean;
 }
 
 export interface ProductDocument extends ProductInput, mongoose.Document {
@@ -38,6 +43,11 @@ const productSchema = new mongoose.Schema(
 
     image: { type: String },
     note: { type: String },
+
+    totalAddedStock: { type: Number, default: 0 },
+    availableStock: { type: Number, default: 0 },
+
+    isReturned: { type: Boolean, default: false },
   },
   {
     timestamps: true,

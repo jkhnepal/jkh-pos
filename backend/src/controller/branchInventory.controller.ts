@@ -30,7 +30,6 @@ export async function createBranchInventoryHandler(req: Request<{}, {}, CreateBr
 export async function getAllBranchInventoryHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
   try {
     const queryParameters = req.query;
-
     const results = await findAllBranchInventory(queryParameters);
     return res.status(200).json({
       status: "success",

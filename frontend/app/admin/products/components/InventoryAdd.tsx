@@ -16,7 +16,7 @@ import { useState } from "react";
 import { useGetHeadquarterInventoryByProductQuery } from "@/lib/features/headquarterInventorySlice";
 
 type Props = {
-  product_id: string;
+  product: any;
 };
 
 const formSchema = z.object({
@@ -26,16 +26,16 @@ const formSchema = z.object({
   }),
 });
 
-export default function InventoryAdd({ product_id }: Props) {
-  const { data: inventoryAddedHistoriesOfAProduct, refetch: refetchInventoryAddedHistoriesOfAProduct } = useGetAllInventoryQuery({ product: product_id });
-  const { data: productInventory, refetch: productInventoryRefetch } = useGetHeadquarterInventoryByProductQuery(product_id);
+export default function InventoryAdd({ product }: Props) {
+  const { data: inventoryAddedHistoriesOfAProduct, refetch: refetchInventoryAddedHistoriesOfAProduct } = useGetAllInventoryQuery({ product: product._id });
+  // const { data: productInventory, refetch: productInventoryRefetch } = useGetHeadquarterInventoryByProductQuery(product._id);
   const [createInventory, { error, isLoading: isCreating }] = useCreateInventoryMutation();
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      product: product_id,
+      product: product._id,
       stock: 0,
     },
   });
@@ -46,7 +46,7 @@ export default function InventoryAdd({ product_id }: Props) {
     if (res.data) {
       toast.success(res.data.msg);
       form.reset();
-      productInventoryRefetch();
+      // productInventoryRefetch();
       refetchInventoryAddedHistoriesOfAProduct();
     }
   };
@@ -71,7 +71,7 @@ export default function InventoryAdd({ product_id }: Props) {
     if (res.data) {
       toast.success(res.data.msg);
       refetchInventoryAddedHistoriesOfAProduct();
-      productInventoryRefetch();
+      // productInventoryRefetch();
       setReadyToEditId("00");
     }
   };
@@ -106,7 +106,7 @@ export default function InventoryAdd({ product_id }: Props) {
                       disabled
                       className="border border-neutral-800 "
                       placeholder="Stock"
-                      value={productInventory?.data.totalStock || 0}
+                      value={product?.totalAddedStock || 0}
                     />
                   </FormControl>
                   <FormMessage />
@@ -121,7 +121,7 @@ export default function InventoryAdd({ product_id }: Props) {
                       readOnly
                       disabled
                       placeholder="Stock"
-                      value={productInventory?.data.totalStock || 0}
+                      value={product?.availableStock || 0}
                     />
                   </FormControl>
                   <FormMessage />

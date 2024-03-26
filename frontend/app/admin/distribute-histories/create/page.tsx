@@ -1,4 +1,5 @@
 "use client";
+import * as React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -17,12 +18,14 @@ const formSchema = z.object({
 });
 
 export default function Page() {
-  // const [createDistribute, { data, error, status, isSuccess, isError, isLoading: isCreating }] = useCreateDistributeMutation();
-  // const [createBranchInventory, { data, error, status, isSuccess, isError, isLoading: isCreating }] = useCreateBranchInventoryMutation();
-  const [createDistribute, { data, error, status, isSuccess, isError, isLoading: isCreating }] = useCreateDistributeMutation();
+  const [createDistribute, { error, isLoading: isCreating }] = useCreateDistributeMutation();
   const { refetch } = useGetAllDistributeQuery({ name: "" });
   const { data: branches } = useGetAllBranchQuery({});
-  const { data: products } = useGetAllProductQuery({});
+
+  const [searchName, setSearchName] = React.useState<string>("");
+  const [debounceValue] = useDebounce(searchName, 1000);
+
+  const { data: products } = useGetAllProductQuery({ sort: "latest", page: 1, limit: 5, search: debounceValue });
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -33,6 +36,19 @@ export default function Page() {
       stock: 0,
     },
   });
+
+  const { watch } = form;
+  const watchedFields = watch();
+  const priduct_id = watchedFields.product;
+
+  const { data } = useGetProductQuery({ productId: priduct_id });
+  console.log("🚀 ~ Page ~ data:", data)
+  // const product = data?.data;
+  // console.log(product);
+
+  React.useEffect(() => {
+    console.log(watchedFields);
+  }, [watchedFields]);
 
   // Define a submit handler.
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -78,7 +94,7 @@ export default function Page() {
                   <SelectContent>
                     <SelectGroup>
                       <SelectLabel>Branches</SelectLabel>
-                      {branches?.data.map((item: any) => (
+                      {branches?.data.results.map((item: any) => (
                         <SelectItem
                           key={item._id}
                           value={item._id}>
@@ -115,9 +131,11 @@ export default function Page() {
                         <Input
                           className="my-2"
                           placeholder="Select product"
+                          value={searchName}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
                         />
                       </SelectLabel>
-                      {products?.data.map((item: any) => (
+                      {products?.data.results.map((item: any) => (
                         <SelectItem
                           key={item._id}
                           value={item._id}>
@@ -166,7 +184,8 @@ export default function Page() {
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useGetAllBranchQuery } from "@/lib/features/branchSlice";
-import { useGetAllProductQuery } from "@/lib/features/product.sclice";
+import { useGetAllProductQuery, useGetProductQuery } from "@/lib/features/product.sclice";
+import { useDebounce } from "use-debounce";
 
 function Breadcumb() {
   return (

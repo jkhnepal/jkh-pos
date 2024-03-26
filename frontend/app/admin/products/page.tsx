@@ -1,7 +1,7 @@
 "use client";
 import * as React from "react";
 import { ColumnDef, ColumnFiltersState, SortingState, VisibilityState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { ArrowDown01, ArrowDown10, ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -103,9 +103,9 @@ export default function Page() {
     },
 
     {
-      id: "inStock",
+      id: "availableStock",
       header: "In Stock",
-      cell: ({ row }) => <div>{row.original.totalAddedStock - row.original.totalDistributedStock} </div>,
+      cell: ({ row }) => <div>{row.original.availableStock} </div>,
     },
 
     {
@@ -185,7 +185,6 @@ export default function Page() {
   ];
 
   const table = useReactTable({
-    // data,
     data: products?.data.results || [],
     columns,
     onSortingChange: setSorting,
@@ -224,7 +223,7 @@ export default function Page() {
           className="max-w-sm"
         />
 
-        <div className=" space-x-2">
+        <div className="flex space-x-2">
           <Link href={"/admin/products/create"}>
             <Button>Add New</Button>
           </Link>
@@ -253,6 +252,24 @@ export default function Page() {
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
+
+          <div className=" flex items-center gap-2">
+            {sort === "latest" ? (
+              <Button>
+                <ArrowDown10
+                  size={18}
+                  onClick={() => setSort("oldest")}
+                />
+              </Button>
+            ) : (
+              <Button>
+                <ArrowDown01
+                  size={18}
+                  onClick={() => setSort("latest")}
+                />
+              </Button>
+            )}
+          </div>
         </div>
       </div>
       <div className="rounded-md border">
