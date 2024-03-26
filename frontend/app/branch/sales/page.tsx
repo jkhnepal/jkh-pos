@@ -11,6 +11,12 @@ import { toast } from "sonner";
 import { useGetAllSaleQuery } from "@/lib/features/saleSlice";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
+import { addDays, format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { DateRange } from "react-day-picker";
+import { cn } from "@/lib/utils";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -28,11 +34,10 @@ export default function Page() {
   const itemsPerPage = 5;
 
   const { data: salesOfABranch, isLoading: isFetching, refetch } = useGetAllSaleQuery({ branch: branch_id, sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
-  console.log("🚀 ~ Page ~ salesOfABranch:", salesOfABranch)
+  console.log("🚀 ~ Page ~ salesOfABranch:", salesOfABranch);
   let totalItem: number = salesOfABranch?.data.count;
   const pageCount = Math.ceil(totalItem / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-
 
   const goToPreviousPage = () => {
     setCurrentPage((prevPage) => prevPage - 1);
@@ -41,6 +46,16 @@ export default function Page() {
   const goToNextPage = () => {
     setCurrentPage((prevPage) => prevPage + 1);
   };
+
+  const [date, setDate] = React.useState<DateRange | undefined>({
+    from: new Date(2022, 2, 18),
+    to: addDays(new Date(2022, 2, 20), 2),
+  });
+
+  console.log(date);
+
+  const { data: testData } = useGetAllSaleQuery({ branch: branch_id, sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue, date:date });
+  console.log("🚀 ~ Page ~ testData:", testData);
 
   const columns: ColumnDef<any>[] = [
     {
@@ -83,6 +98,12 @@ export default function Page() {
       accessorKey: "quantity",
       header: "Quantity",
       cell: ({ row }: any) => <div>{row.getValue("quantity")}</div>,
+    },
+
+    {
+      accessorKey: "createdAt",
+      header: "Date",
+      cell: ({ row }: any) => <div>{moment(row.getValue("createdAt")).format("MMM Do YY")}</div>,
     },
 
     {
@@ -154,7 +175,7 @@ export default function Page() {
     <div className="w-full">
       <Breadcumb />
       <div className="flex justify-between items-center py-4">
-      <Input
+        <Input
           placeholder="Filter by name ..."
           value={searchName}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
@@ -162,9 +183,42 @@ export default function Page() {
         />
 
         <div className=" flex space-x-2">
-          <Link href={"/dashboard/sales/create"}>
-            <Button>Add New</Button>
-          </Link>
+          <div className={cn("grid gap-2")}>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  id="date"
+                  variant={"outline"}
+                  className={cn("w-[300px] justify-start text-left font-normal", !date && "text-muted-foreground")}>
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {date?.from ? (
+                    date.to ? (
+                      <>
+                        {format(date.from, "LLL dd, y")} - {format(date.to, "LLL dd, y")}
+                      </>
+                    ) : (
+                      format(date.from, "LLL dd, y")
+                    )
+                  ) : (
+                    <span>Pick a date</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="w-auto p-0"
+                align="start">
+                <Calendar
+                  initialFocus
+                  mode="range"
+                  defaultMonth={date?.from}
+                  selected={date}
+                  onSelect={setDate}
+                  numberOfMonths={2}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -248,9 +302,8 @@ export default function Page() {
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-      
 
-          <div className="space-x-2">
+        <div className="space-x-2">
           <Button
             variant="outline"
             size="sm"
@@ -276,6 +329,7 @@ import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
 import { useDebounce } from "use-debounce";
+import moment from "moment";
 
 function Breadcumb() {
   return (

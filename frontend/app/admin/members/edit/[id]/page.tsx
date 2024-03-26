@@ -26,7 +26,10 @@ export default function Page() {
   const { data, isFetching } = useGetMemberQuery(memberId);
   const member = data?.data;
 
-  const branch_id = "123456789012345678809754"; // get branch id
+  // console.log(member)
+
+  const { data: sales } = useGetAllSalesOfAMemberQuery({ member_id: member?._id });
+  console.log("🚀 ~ Page ~ sales:", sales);
 
   const [updateMember, { error: updateError, isError: ab, isLoading: isUpdating }] = useUpdateMemberMutation();
   // 1. Define your form.
@@ -118,9 +121,9 @@ export default function Page() {
           )}
         />
 
-       <div>
-       <Button type="submit"> {isUpdating && <LoaderPre />} Submit</Button> 
-       </div>
+        <div>
+          <Button type="submit"> {isUpdating && <LoaderPre />} Submit</Button>
+        </div>
       </form>
     </Form>
   );
@@ -129,6 +132,7 @@ export default function Page() {
 // Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { useGetAllSaleQuery, useGetAllSalesOfAMemberQuery } from "@/lib/features/saleSlice";
 
 function Breadcumb() {
   return (

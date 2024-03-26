@@ -1,19 +1,30 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import baseQuery from "./baseQuery";
 
 export const statApi = createApi({
   reducerPath: "stat",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5008/api/stats" }),
+  baseQuery,
   endpoints: (builder) => ({
     getHeadquarterStat: builder.query({
-      query: (inventoryId) => `/headquarter/${inventoryId}`,
+      query: () => "/stats/headquarter",
+    }),
+
+    // getBranchStat: builder.query({
+    //   query: () => "/stats/branch",
+    // }),
+
+    getBranchStat: builder.query({
+      query: ({ branch }) => {
+        const params = {
+          branch,
+        };
+        return {
+          url: "/stats/branch",
+          params: params,
+        };
+      },
     }),
   }),
 });
 
-export const { useGetHeadquarterStatQuery } = statApi;
-
-
-    // // inventoryId->product_id
-    // getInventoryByProduct: builder.query({
-    //   query: (inventoryId) => `/product-id/${inventoryId}`,
-    // }),
+export const { useGetHeadquarterStatQuery, useGetBranchStatQuery } = statApi;

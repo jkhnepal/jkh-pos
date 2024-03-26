@@ -185,7 +185,6 @@ export default function Page() {
   ];
 
   const table = useReactTable({
-    // data,
     data: products?.data.results || [],
     columns,
     onSortingChange: setSorting,

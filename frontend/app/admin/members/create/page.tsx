@@ -90,7 +90,7 @@ export default function Page() {
               <FormLabel>Phone</FormLabel>
               <FormControl>
                 <Input
-                  type="number"
+                  // type="number"
                   placeholder="Phone"
                   {...field}
                 />

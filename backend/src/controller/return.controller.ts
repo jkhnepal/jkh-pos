@@ -10,22 +10,34 @@ export async function createReturnHandler(req: Request<{}, {}, CreateReturnInput
   try {
     const body = req.body;
 
-    body.forEach(async (returnHistoryObject: any) => {
-      const returnHistory = await createReturn(returnHistoryObject);
-      const branchInventory: any = await BranchInventoryModel.findOne({ branch: returnHistoryObject.branch, product: returnHistoryObject.product });
+    const category = await createReturn(body);
 
-      let updatedBranchInventory;
-      if (branchInventory) {
-        const newTotalstock = branchInventory.totalStock - returnHistoryObject.quantity;
-        updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, { totalStock: newTotalstock }, { new: true });
-      }
 
-      return res.status(201).json({
-        status: "success",
-        msg: "returnHistorys created success",
-        data: updatedBranchInventory,
-      });
-    });
+
+
+
+
+
+
+
+
+    // body.forEach(async (returnHistoryObject: any) => {
+    //   const returnHistory = await createReturn(returnHistoryObject);
+    //   const branchInventory: any = await BranchInventoryModel.findOne({ branch: returnHistoryObject.branch, product: returnHistoryObject.product });
+
+    //   let updatedBranchInventory;
+    //   if (branchInventory) {
+    //     const newTotalstock = branchInventory.totalStock - returnHistoryObject.quantity;
+    //     updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, { totalStock: newTotalstock }, { new: true });
+    //   }
+
+    //   return res.status(201).json({
+    //     status: "success",
+    //     msg: "returnHistorys created success",
+    //     data: updatedBranchInventory,
+    //   });
+      
+    // });
   } catch (error: any) {
     console.error(colors.red("msg:", error.message));
     next(new AppError("Internal server error", 500));

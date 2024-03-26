@@ -7,19 +7,8 @@ export async function createSale(input: SaleInput) {
   return result;
 }
 
-// export async function findAllSale(filter: FilterQuery<SaleDocument> = {}) {
-//   const results = await SaleModel.find(filter).populate({
-//     path: "product",
-//     select: "name image"
-//   })
-//   .populate({
-//     path: "member",
-//     select: "name phone"
-//   });
-//   return results;
-// }
-
 export async function findAllSale(filter: FilterQuery<SaleDocument> = {}) {
+  console.log("🚀 ~ findAllSale ~ filter:", filter);
   const branch = filter.branch || "";
   const search = filter.search || "";
   const sort = filter.sort || "";
@@ -29,7 +18,7 @@ export async function findAllSale(filter: FilterQuery<SaleDocument> = {}) {
 
   const searchQuery: any = {
     name: { $regex: search, $options: "i" },
-    branchId: branch,
+    branch: branch,
   };
   const count = await SaleModel.countDocuments({ branch: branch });
   const results = await SaleModel.find(searchQuery)
@@ -39,11 +28,21 @@ export async function findAllSale(filter: FilterQuery<SaleDocument> = {}) {
     .populate({
       path: "product",
       select: "name image",
-    }).populate({
+    })
+    .populate({
       path: "member",
       select: "name phone",
     });
+  console.log(results);
   return { count, results };
+}
+
+export async function findAllSaleOfAMember(filter: FilterQuery<SaleDocument> = {}) {
+  console.log("🚀 ~ findAllSaleOfAMember ~ filter:", filter)
+  const results = await SaleModel.find({member:filter.member_id});
+
+  // console.log(results);
+  return results;
 }
 
 export async function findSale(query: FilterQuery<SaleDocument>, options: QueryOptions = { lean: true }) {

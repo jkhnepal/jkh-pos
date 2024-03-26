@@ -40,7 +40,7 @@ export async function getAllProductHandler(req: Request<{}, {}, {}>, res: Respon
     const queryParameters = req.query;
 
     const results = await findAllProduct(queryParameters);
-    console.log(results)
+    console.log(results);
     return res.json({
       status: "success",
       msg: "Get all product success",

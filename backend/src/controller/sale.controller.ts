@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import AppError from "../utils/appError";
 import { CreateSaleInput, UpdateSaleInput } from "../schema/sale.schema";
-import { findSale, createSale, findAllSale, findAndUpdateSale, deleteSale } from "../service/sale.service";
+import { findSale, createSale, findAllSale, findAndUpdateSale, deleteSale, findAllSaleOfAMember } from "../service/sale.service";
 import BranchInventoryModel from "../models/branchInventory.model";
 import { findAndUpdateBranchInventory } from "../service/branchInventory.service";
 var colors = require("colors");
@@ -35,7 +35,6 @@ export async function createSaleHandler(req: Request<{}, {}, CreateSaleInput["bo
 export async function getAllSaleHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
   try {
     const queryParameters = req.query;
-
     const results = await findAllSale(queryParameters);
     return res.json({
       status: "success",
@@ -47,6 +46,26 @@ export async function getAllSaleHandler(req: Request<{}, {}, {}>, res: Response,
     next(new AppError("Internal server error", 500));
   }
 }
+
+export async function getAllSaleOfAMemberHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
+  try {
+    const queryParameters = req.query;
+    console.log("🚀 ~ getAllSaleOfAMemberHandler ~ queryParameters:", queryParameters)
+    const results = await findAllSaleOfAMember(queryParameters);
+    return res.json({
+      status: "success",
+      msg: "Get all sale success",
+      data: results,
+    });
+  } catch (error: any) {
+    console.error(colors.red("msg:", error.message));
+    next(new AppError("Internal server error", 500));
+  }
+}
+
+
+
+
 
 export async function getSaleHandler(req: Request<UpdateSaleInput["params"]>, res: Response, next: NextFunction) {
   try {

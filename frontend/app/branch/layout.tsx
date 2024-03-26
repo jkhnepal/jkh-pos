@@ -25,13 +25,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <div className=" flex">
         {!isFullScreen && (
           <div className={`${isFullScreen ? "" : "w-2/12"}  h-screen overflow-y-scroll bg-primary p-4 text-primary-foreground `}>
-         <div className=" mb-8">
-            <Image
-              src={logo}
-              alt="img"
-              className=" h-12 w-40"
-            />
-          </div>
+            <div className=" mb-8">
+              <Image
+                src={logo}
+                alt="img"
+                className=" h-12 w-40"
+              />
+            </div>
             <div className=" space-y-4 tracking-wider   ">
               {navItems.map((item: any, index: number) => (
                 <div
@@ -40,7 +40,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   <Link
                     href={item.href}
                     className={`link ${pathname === item.href ? "bg-foreground" : ""} py-1.5 px-2 rounded-md flex  items-center gap-1.5  `}>
-                  {item.icon}   {item.name}
+                    {item.icon} {item.name}
                   </Link>
                 </div>
               ))}
@@ -56,8 +56,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <Menu className=" cursor-pointer " />
             </Button>
             <div className=" flex space-x-4">
-              <DatabaseZap />
-              <DatabaseZap />
               <DatabaseZap />
             </div>
           </div>
@@ -78,13 +76,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 const navItems = [
   {
     name: "Dashboard",
-    icon:  <LayoutDashboard  size={18} />,
+    icon: <LayoutDashboard size={18} />,
     href: "/branch",
   },
 
   {
     name: "Statistics",
-    icon: <BarChartBig  size={18} />,
+    icon: <BarChartBig size={18} />,
     href: "/branch/statistics",
   },
 
@@ -106,9 +104,9 @@ const navItems = [
     href: "/branch/sales",
   },
 
-  // {
-  //   name: "Returns",
-  //   icon:     <CornerDownLeft size={18} />,
-  //   href: "/branch/returns",
-  // },
+  {
+    name: "Returns",
+    icon: <CornerDownLeft size={18} />,
+    href: "/branch/returns",
+  },
 ];

@@ -20,16 +20,29 @@ export const saleApi = createApi({
     // }),
 
     getAllSale: builder.query({
-      query: ({ branch, page = 1, limit = 5, search, sort }) => {
+      query: ({ branch, page = 1, limit = 5, search, sort, date = {} }) => {
         const params = {
           branch,
           page,
           limit,
           search,
           sort,
+          date: JSON.stringify(date),
         };
         return {
           url: "/",
+          params: params,
+        };
+      },
+    }),
+
+    getAllSalesOfAMember: builder.query({
+      query: ({ member_id }) => {
+        const params = {
+          member_id,
+        };
+        return {
+          url: "/loki/sales-of-a-member",
           params: params,
         };
       },
@@ -66,4 +79,4 @@ export const saleApi = createApi({
   }),
 });
 
-export const { useCreateSaleMutation, useDeleteSaleMutation, useGetAllSaleQuery, useGetSaleQuery, useUpdateSaleMutation } = saleApi;
+export const { useCreateSaleMutation,useGetAllSalesOfAMemberQuery, useDeleteSaleMutation, useGetAllSaleQuery, useGetSaleQuery, useUpdateSaleMutation } = saleApi;

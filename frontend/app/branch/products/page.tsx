@@ -6,21 +6,40 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ChevronDown, MoreHorizontal } from "lucide-react";
+import { ArrowDown01, ArrowDown10, ChevronDown, MoreHorizontal } from "lucide-react";
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  const [searchName, setSearchName] = React.useState<string>("");
+  const [debounceValue] = useDebounce(searchName, 1000);
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [sort, setSort] = React.useState("latest");
+  const itemsPerPage = 5;
+
   const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
   const branch_id = currentUser?.data.branch._id;
 
-  // const branch_id = "65f9a5496dc1725a5ba238c5";
-  const [searchText, setsearchText] = React.useState<string>("");
+ 
 
-  const { data: branchInventories, isFetching } = useGetAllBranchInventoryQuery({ branch: branch_id });
-  console.log("🚀 ~ Page ~ branchInventories:", branchInventories);
+  const { data: branchInventories, isLoading: isFetching } = useGetAllBranchInventoryQuery({ branch: branch_id, sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
+  
+  let totalItem = branchInventories?.data.count;
+  const pageCount = Math.ceil(totalItem / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+
+  console.log("🚀 ~ Page ~ branchInventories:", searchName);
+
+
+  const goToPreviousPage = () => {
+    setCurrentPage((prevPage) => prevPage - 1);
+  };
+
+  const goToNextPage = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
 
   const columns: ColumnDef<any>[] = [
     {
@@ -99,7 +118,7 @@ export default function Page() {
   ];
 
   const table = useReactTable({
-    data: branchInventories?.data || [],
+    data: branchInventories?.data.results || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -130,13 +149,14 @@ export default function Page() {
     <div className="w-full">
       <Breadcumb />
       <div className="flex justify-between items-center py-4">
-        <Input
-          placeholder="Search by category name..."
-          onChange={(e) => setsearchText(e.target.value)}
+      <Input
+          placeholder="Search by product name..."
+          value={searchName}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
           className="max-w-sm"
         />
 
-        <div className=" space-x-2">
+        <div className="flex  space-x-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -162,7 +182,27 @@ export default function Page() {
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
+
+          <div className=" flex items-center gap-2">
+            {sort === "latest" ? (
+              <Button>
+                <ArrowDown10
+                  size={18}
+                  onClick={() => setSort("oldest")}
+                />
+              </Button>
+            ) : (
+              <Button>
+                <ArrowDown01
+                  size={18}
+                  onClick={() => setSort("latest")}
+                />
+              </Button>
+            )}
+          </div>
         </div>
+
+
       </div>
       <div className="rounded-md border">
         <Table>
@@ -204,18 +244,18 @@ export default function Page() {
           {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
         <div className="space-x-2">
-          <Button
+        <Button
             variant="outline"
             size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}>
+            disabled={startIndex === 0}
+            onClick={goToPreviousPage}>
             Previous
           </Button>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}>
+            disabled={startIndex + itemsPerPage >= totalItem}
+            onClick={goToNextPage}>
             Next
           </Button>
         </div>
@@ -233,6 +273,7 @@ import { useGetAllBranchInventoryQuery } from "@/lib/features/branchInventorySli
 import { toast } from "sonner";
 import Link from "next/link";
 import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
+import { useDebounce } from "use-debounce";
 
 function Breadcumb() {
   return (

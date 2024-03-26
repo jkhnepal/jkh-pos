@@ -27,6 +27,11 @@ export default function Page() {
   const { data, isFetching } = useGetMemberQuery(memberId);
   const member = data?.data;
 
+  const { data: sales } = useGetAllSaleQuery({ sort: "latest", page: 1, limit: 100, search: "" });
+  console.log("🚀 ~ Page ~ sales:", sales)
+
+  
+
   // 1. Define your form.
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -128,6 +133,7 @@ export default function Page() {
 // Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { useGetAllSaleQuery } from "@/lib/features/saleSlice";
 
 function Breadcumb() {
   return (
