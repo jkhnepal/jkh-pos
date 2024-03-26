@@ -4,7 +4,7 @@ import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ShoppingCart, X } from "lucide-react";
 import { useGetProductBySkuQuery } from "@/lib/features/product.sclice";
 import { Button } from "@/components/ui/button";
@@ -48,6 +48,7 @@ export default function Cart({}: Props) {
   console.log("🚀 ~ Cart ~ userPhoneNumber:", userPhoneNumber);
 
   const { data: user } = useGetMemberByPhoneQuery(userPhoneNumber);
+  const member_id = user?.data._id;
 
   // Define a submit handler.
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -66,7 +67,7 @@ export default function Cart({}: Props) {
       const selectedProduct = {
         branch: branch_id,
         product: _id,
-        member: "65f9af2c6dc1725a5ba239ad",
+        member: "65fd236e1159f125e723ceb9",
         sp,
         discount,
         quantity: 1,
@@ -75,13 +76,6 @@ export default function Cart({}: Props) {
       setSelectedProducts([...selectedProducts, selectedProduct]);
     }
     form.reset();
-  };
-
-  const [createSale] = useCreateSaleMutation();
-  const createSaleHandler = async () => {
-    const res = await createSale(selectedProducts);
-    console.log(res);
-    refetchBranchInventories();
   };
 
   const { data: members, isLoading: isFetching, refetch } = useGetAllMemberQuery({ sort: "latest", page: 1, limit: 2, search: userPhoneNumber });
@@ -93,8 +87,23 @@ export default function Cart({}: Props) {
   const { data: selectedMember } = useGetMemberQuery(selectedMemberId);
   console.log("🚀 ~ Cart ~ selectedMember:", selectedMember);
 
+  const [createSale] = useCreateSaleMutation();
+  const createSaleHandler = async () => {
+    const res = await createSale(selectedProducts);
+    console.log(res);
+    refetchBranchInventories();
+  };
+
+  const [isClaimed, setisClaimed] = useState(false);
+
+  console.log(selectedProducts);
+
+  const totalAmountSum = selectedProducts.reduce((total, product) => total + product.totalAmount, 0);
+
+  const totalAfterRewardClaim = totalAmountSum - selectedMember?.data.point;
+
   return (
-    <div >
+    <div>
       <ShoppingCart
         size={40}
         className="fixed right-12 top-16 bg-neutral-50 rounded-full p-2 cursor-pointer text-neutral-700 hover:bg-neutral-100"
@@ -177,8 +186,36 @@ export default function Cart({}: Props) {
                 </TableRow>
               ))}
             </TableBody>
+
+            <TableFooter>
+              <TableRow>
+                <TableCell colSpan={4}>Total</TableCell>
+                <TableCell className="text-right">Rs.{totalAmountSum}</TableCell>
+              </TableRow>
+
+              {/* {isClaimed && (
+                <>
+                  <TableRow>
+                    <TableCell colSpan={4}>Reward amount</TableCell>
+                    <TableCell className="text-right">Rs. -{selectedMember?.data.point}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell colSpan={4}>Total after reward claim</TableCell>
+                    <TableCell className="text-right">Rs.{totalAfterRewardClaim}</TableCell>
+                  </TableRow>
+                </>
+              )} */}
+            </TableFooter>
           </Table>
-          <div className=" mt-4 flex justify-end">
+          <div className=" mt-4 flex justify-end gap-4">
+            {/* <Button
+              onClick={() => setisClaimed(!isClaimed)}
+              type="button"
+              variant={"outline"}
+              className=" p-2 text-xs">
+              {isClaimed ? "Unclaim" : `Claim Rs. ${selectedMember?.data.point}`}
+            </Button> */}
+
             <Button
               onClick={createSaleHandler}
               type="button"

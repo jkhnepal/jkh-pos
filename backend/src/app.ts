@@ -17,6 +17,7 @@ import headquarterInventoryRoute from "../src/routes/headquarterInventory.route"
 import branchInventoryRoute from "../src/routes/branchInventory.route";
 import statRoute from "../src/routes/stat.route";
 import returnRoute from "../src/routes/return.route";
+import pointClaimRoute from "../src/routes/pointClaim.route";
 
 const app = express();
 // const port = process.env.PORT;
@@ -52,6 +53,7 @@ app.use("/api/branch-inventories", branchInventoryRoute);
 app.use("/api/returns", returnRoute);
 
 app.use("/api/stats", statRoute);
+app.use("/api/point-claims", pointClaimRoute);
 
 // Testing
 app.get("/healthChecker", (req: Request, res: Response, next: NextFunction) => {

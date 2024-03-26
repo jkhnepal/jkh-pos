@@ -11,6 +11,8 @@ const payload = {
       required_error: "phone is required",
     }),
 
+    point: coerce.number().optional(),
+
     creatorBranch: string({
       required_error: "creatorBranch is required",
     }),

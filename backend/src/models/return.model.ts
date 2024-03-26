@@ -16,6 +16,7 @@ export interface ReturnInput {
 
   newProduct: ProductDocument["_id"][];
   extraAddedAmount: number;
+  
 }
 
 export interface ReturnDocument extends ReturnInput, mongoose.Document {

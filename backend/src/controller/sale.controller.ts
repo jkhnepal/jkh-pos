@@ -4,27 +4,81 @@ import { CreateSaleInput, UpdateSaleInput } from "../schema/sale.schema";
 import { findSale, createSale, findAllSale, findAndUpdateSale, deleteSale, findAllSaleOfAMember } from "../service/sale.service";
 import BranchInventoryModel from "../models/branchInventory.model";
 import { findAndUpdateBranchInventory } from "../service/branchInventory.service";
+import { findAndUpdateMember, findMember } from "../service/member.service";
 var colors = require("colors");
+
+// export async function createSaleHandler(req: Request<{}, {}, CreateSaleInput["body"]>, res: Response, next: NextFunction) {
+//   try {
+//     const body = req.body;
+
+//     body.forEach(async (saleObject: any) => {
+//       const sale = await createSale(saleObject);
+//       console.log("🚀 ~ body.forEach ~ sale:", sale);
+//       const branchInventory: any = await BranchInventoryModel.findOne({ branch: saleObject.branch, product: saleObject.product });
+
+//       let updatedBranchInventory;
+//       if (branchInventory) {
+//         const newTotalstock = branchInventory.totalStock - saleObject.quantity;
+//         updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, { totalStock: newTotalstock }, { new: true });
+//       }
+
+//       return res.status(201).json({
+//         status: "success",
+//         msg: "sales created success",
+//         data: updatedBranchInventory,
+//       });
+//     });
+//   } catch (error: any) {
+//     console.error(colors.red("msg:", error.message));
+//     next(new AppError("Internal server error", 500));
+//   }
+// }
 
 export async function createSaleHandler(req: Request<{}, {}, CreateSaleInput["body"]>, res: Response, next: NextFunction) {
   try {
     const body = req.body;
+    let totalPointsToAdd: number = 0; // Initialize totalPointsToAdd outside the loop
 
-    body.forEach(async (saleObject: any) => {
-      const sale = await createSale(saleObject);
-      const branchInventory: any = await BranchInventoryModel.findOne({ branch: saleObject.branch, product: saleObject.product });
+    // Use Promise.all to await all asynchronous operations inside the loop
+    let updatedBranchInventory;
+    await Promise.all(
+      body.map(async (saleObject: any) => {
+        const sale = await createSale(saleObject);
+        // console.log("🚀 ~ body.forEach ~ sale:", sale);
+        const branchInventory: any = await BranchInventoryModel.findOne({ branch: saleObject.branch, product: saleObject.product });
 
-      let updatedBranchInventory;
-      if (branchInventory) {
-        const newTotalstock = branchInventory.totalStock - saleObject.quantity;
-        updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, { totalStock: newTotalstock }, { new: true });
-      }
+        if (branchInventory) {
+          const newTotalstock = branchInventory.totalStock - saleObject.quantity;
+          updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, { totalStock: newTotalstock }, { new: true });
+        }
 
-      return res.status(201).json({
-        status: "success",
-        msg: "sales created success",
-        data: updatedBranchInventory,
-      });
+        const pointsToAdd = saleObject.totalAmount * 0.1;
+        totalPointsToAdd += pointsToAdd; // Accumulate pointsToAdd for each sale
+      })
+    );
+
+    console.log(totalPointsToAdd,"{{{{{{{{{{{{{{{{{{{{{{{{{{{{{");
+
+    const member = await findMember({ _id: body[0].member });
+    console.log("🚀 ~ createSaleHandler ~ member:", member, "/////////////");
+
+    if (!member) {
+      next(new AppError("Member does not exist", 404));
+      return;
+    }
+
+    const updatedMember = await findAndUpdateMember(
+      { _id: member._id },
+      { $inc: { point: totalPointsToAdd } }, // Increment member's points by totalPointsToAdd
+      { new: true }
+    );
+    console.log(updatedMember)
+
+    // Respond with the total points to add for all sales collectively
+    return res.status(201).json({
+      status: "success",
+      msg: "sales created success",
+      updatedBranchInventory: updatedBranchInventory,
     });
   } catch (error: any) {
     console.error(colors.red("msg:", error.message));
@@ -50,7 +104,6 @@ export async function getAllSaleHandler(req: Request<{}, {}, {}>, res: Response,
 export async function getAllSaleOfAMemberHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
   try {
     const queryParameters = req.query;
-    console.log("🚀 ~ getAllSaleOfAMemberHandler ~ queryParameters:", queryParameters)
     const results = await findAllSaleOfAMember(queryParameters);
     return res.json({
       status: "success",
@@ -62,10 +115,6 @@ export async function getAllSaleOfAMemberHandler(req: Request<{}, {}, {}>, res: 
     next(new AppError("Internal server error", 500));
   }
 }
-
-
-
-
 
 export async function getSaleHandler(req: Request<UpdateSaleInput["params"]>, res: Response, next: NextFunction) {
   try {

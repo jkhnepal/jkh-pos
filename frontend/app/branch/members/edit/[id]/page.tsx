@@ -11,6 +11,7 @@ import { useParams } from "next/navigation";
 import { useGetAllMemberQuery, useGetMemberQuery, useUpdateMemberMutation } from "@/lib/features/memberSlice";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import LoaderPre from "@/app/custom-components/LoaderPre";
+import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const formSchema = z.object({
   name: z.string(),
@@ -27,10 +28,13 @@ export default function Page() {
   const { data, isFetching } = useGetMemberQuery(memberId);
   const member = data?.data;
 
-  const { data: sales } = useGetAllSaleQuery({ sort: "latest", page: 1, limit: 100, search: "" });
-  console.log("🚀 ~ Page ~ sales:", sales)
+  console.log(member?._id);
 
-  
+  // const { data: sales } = useGetAllSalesOfAMemberQuery({ sort: "latest", page: 1, limit: 100, search: "" });
+  // console.log("🚀 ~ Page ~ sales:", sales)
+
+  const { data: sales } = useGetAllSalesOfAMemberQuery({ member_id: member?._id });
+  console.log("🚀 ~ Page ~ sales:", sales);
 
   // 1. Define your form.
   const form = useForm({
@@ -50,6 +54,16 @@ export default function Page() {
       });
     }
   }, [form, member]);
+
+  // Function to calculate total amount
+  const calculateTotalAmount = () => {
+    if (!sales || !sales.data || sales.data.length === 0) {
+      return 0; // Return 0 if sales data is empty
+    }
+
+    // Sum up totalAmount of each item in sales data
+    return sales.data.reduce((total: any, item: any) => total + item.totalAmount, 0);
+  };
 
   // Define a submit handler.
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -82,58 +96,93 @@ export default function Page() {
   }
 
   return (
-    <Form {...form}>
-      <Breadcumb />
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className=" grid grid-cols-2 gap-4">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Full Name *</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Loki Chaulagain"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <div>
+      <Form {...form}>
+        <Breadcumb />
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className=" grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Full Name *</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Loki Chaulagain"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="phone"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Phone</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  placeholder="Phone"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="Phone"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <div>
-          <Button type="submit"> {isUpdating && <LoaderPre />} Submit</Button>
-        </div>
-      </form>
-    </Form>
+          <div>
+            <Button type="submit"> {isUpdating && <LoaderPre />} Submit</Button>
+          </div>
+        </form>
+      </Form>
+
+      <Table className=" mt-12">
+        <TableCaption>A list of your recent invoices.</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-[100px]">S.N</TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>SP</TableHead>
+            <TableHead>Quantity</TableHead>
+            <TableHead>Discount (%)</TableHead>
+            <TableHead className="text-right">Total Amount</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {sales?.data.map((item: any, index: number) => (
+            <TableRow key={item.item}>
+              <TableCell className="font-medium">{index + 1}</TableCell>
+              <TableCell>{item.product.name}</TableCell>
+
+              <TableCell>{item.sp}</TableCell>
+              <TableCell>{item.discount}</TableCell>
+              <TableCell>{item.quantity}</TableCell>
+              <TableCell className="text-right">{item.totalAmount}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+        <TableFooter>
+          <TableRow>
+            <TableCell colSpan={5}>Total</TableCell>
+            <TableCell className="text-right"> Rs.{calculateTotalAmount().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
+          </TableRow>
+        </TableFooter>
+      </Table>
+    </div>
   );
 }
 
 // Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { useGetAllSaleQuery } from "@/lib/features/saleSlice";
+import { useGetAllSaleQuery, useGetAllSalesOfAMemberQuery } from "@/lib/features/saleSlice";
 
 function Breadcumb() {
   return (

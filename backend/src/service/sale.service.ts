@@ -2,7 +2,6 @@ import { FilterQuery, QueryOptions, UpdateQuery } from "mongoose";
 import SaleModel, { SaleInput, SaleDocument } from "../models/sale.model";
 
 export async function createSale(input: SaleInput) {
-  console.log(input);
   const result = await SaleModel.create(input);
   return result;
 }
@@ -38,10 +37,10 @@ export async function findAllSale(filter: FilterQuery<SaleDocument> = {}) {
 }
 
 export async function findAllSaleOfAMember(filter: FilterQuery<SaleDocument> = {}) {
-  console.log("🚀 ~ findAllSaleOfAMember ~ filter:", filter)
-  const results = await SaleModel.find({member:filter.member_id});
-
-  // console.log(results);
+  const results = await SaleModel.find({ member: filter.member_id }).populate({
+    path: "product",
+    select: "name image",
+  })
   return results;
 }
 

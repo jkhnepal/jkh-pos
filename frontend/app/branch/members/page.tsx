@@ -137,7 +137,7 @@ export default function Page() {
               </DropdownMenuItem>
               <DropdownMenuSeparator />
 
-              <Link href={`/admin/members/edit/${item.memberId}`}>
+              <Link href={`/branch/members/edit/${item.memberId}`}>
                 <DropdownMenuItem>View/Edit</DropdownMenuItem>
               </Link>
               <DropdownMenuItem
@@ -306,7 +306,7 @@ function Breadcumb() {
     <Breadcrumb className=" mb-8">
       <BreadcrumbList>
         <BreadcrumbItem>
-          <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+          <BreadcrumbLink href="/branch">Dashboard</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator>
           <SlashIcon />
