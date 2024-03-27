@@ -13,6 +13,8 @@ export interface SaleInput {
   discount: number; // in %
   quantity: number;
   totalAmount: number;
+
+  isReturned?: boolean;
 }
 
 export interface SaleDocument extends SaleInput, mongoose.Document {
@@ -36,6 +38,8 @@ const saleSchema = new mongoose.Schema(
     discount: { type: Number, required: true },
     sp: { type: Number, required: true },
     totalAmount: { type: Number, required: true },
+
+    isReturned: { type: Boolean, default: false },
   },
   {
     timestamps: true,

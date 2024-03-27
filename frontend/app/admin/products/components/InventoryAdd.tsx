@@ -11,9 +11,8 @@ import { toast } from "sonner";
 import LoaderPre from "@/app/custom-components/LoaderPre";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import moment from "moment";
-import { PencilRuler, SaveIcon, Trash2, X } from "lucide-react";
+import { PencilRuler, SaveIcon, X } from "lucide-react";
 import { useState } from "react";
-import { useGetHeadquarterInventoryByProductQuery } from "@/lib/features/headquarterInventorySlice";
 
 type Props = {
   product: any;
@@ -28,7 +27,6 @@ const formSchema = z.object({
 
 export default function InventoryAdd({ product }: Props) {
   const { data: inventoryAddedHistoriesOfAProduct, refetch: refetchInventoryAddedHistoriesOfAProduct } = useGetAllInventoryQuery({ product: product._id });
-  // const { data: productInventory, refetch: productInventoryRefetch } = useGetHeadquarterInventoryByProductQuery(product._id);
   const [createInventory, { error, isLoading: isCreating }] = useCreateInventoryMutation();
 
   // 1. Define your form.
@@ -46,7 +44,6 @@ export default function InventoryAdd({ product }: Props) {
     if (res.data) {
       toast.success(res.data.msg);
       form.reset();
-      // productInventoryRefetch();
       refetchInventoryAddedHistoriesOfAProduct();
     }
   };
@@ -71,7 +68,6 @@ export default function InventoryAdd({ product }: Props) {
     if (res.data) {
       toast.success(res.data.msg);
       refetchInventoryAddedHistoriesOfAProduct();
-      // productInventoryRefetch();
       setReadyToEditId("00");
     }
   };
@@ -205,11 +201,11 @@ export default function InventoryAdd({ product }: Props) {
                           onClick={() => setReadyToEditId(item.inventoryId)}
                           className=" text-blue-500 cursor-pointer"
                         />
-                        <Trash2
+                        {/* <Trash2
                           onClick={() => handleDelete(item.inventoryId)}
                           size={18}
                           className=" text-red-500 cursor-pointer"
-                        />
+                        /> */}
                       </TableCell>
                     </TableRow>
                   ))}

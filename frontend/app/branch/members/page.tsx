@@ -27,7 +27,7 @@ export default function Page() {
   const itemsPerPage = 5;
 
   const { data: members, isLoading: isFetching, refetch } = useGetAllMemberQuery({ sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
-  let totalItem:number = members?.data.count;
+  let totalItem: number = members?.data.count;
   const pageCount = Math.ceil(totalItem / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
 
@@ -58,6 +58,12 @@ export default function Page() {
   const goToNextPage = () => {
     setCurrentPage((prevPage) => prevPage + 1);
   };
+
+
+  // const [createSale] = useCreateSaleMutation();
+  // const handleClaimPoint=async()=>{
+  //   const res = await createSale(selectedProducts);
+  // }
 
   const columns: ColumnDef<any>[] = [
     {
@@ -99,6 +105,22 @@ export default function Page() {
       accessorKey: "phone",
       header: "Phone",
       cell: ({ row }: any) => <div>{row.getValue("phone")}</div>,
+    },
+
+    {
+      accessorKey: "point",
+      header: "point",
+      cell: ({ row }: any) => <div>{row.getValue("point")}</div>,
+    },
+
+    {
+      accessorKey: "point",
+      header: "Claim",
+      cell: ({ row }: any) => (
+        <div>
+        {row.getValue("point") >=900 &&  <Button className=""> Claim</Button>}
+        </div>
+      ),
     },
 
     {

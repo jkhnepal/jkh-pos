@@ -29,7 +29,7 @@ const payload = {
     totalAddedStock: coerce.number().default(0),
     availableStock: coerce.number().default(0),
 
-    isReturned: boolean().optional(),
+    // isReturned: boolean().optional(),
   }),
 };
 

@@ -5,7 +5,6 @@ import { Shapes, Shirt, Store, UsersRound } from "lucide-react";
 
 export default function Component() {
   const { data: stats } = useGetHeadquarterStatQuery({});
-  console.log("🚀 ~ Component ~ stats:", stats);
 
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -14,7 +13,7 @@ export default function Component() {
           <StatCard
             title=" Branches"
             description="Total branches"
-            value={34}
+            value={stats.data.branches}
             icon={<Store />}
           />
           <StatCard

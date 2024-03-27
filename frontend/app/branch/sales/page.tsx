@@ -133,7 +133,7 @@ export default function Page() {
               </DropdownMenuItem>
               <DropdownMenuSeparator />
 
-              <Link href={`/dashboard/sales/edit/${item.saleId}`}>
+              <Link href={`/branch/sales/return/${item.saleId}`}>
                 <DropdownMenuItem>View/Edit</DropdownMenuItem>
               </Link>
             </DropdownMenuContent>

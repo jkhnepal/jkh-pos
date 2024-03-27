@@ -1,4 +1,4 @@
-import { array, coerce, object, string, TypeOf, unknown } from "zod";
+import { array, boolean, coerce, object, string, TypeOf, unknown } from "zod";
 
 // Define common schemas
 const payload = {
@@ -30,6 +30,9 @@ const payload = {
     sp: coerce.number({
       required_error: "sp is required",
     }),
+
+
+    isReturned: boolean().optional(),
   }),
 };
 

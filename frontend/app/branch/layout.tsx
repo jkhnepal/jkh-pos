@@ -1,5 +1,5 @@
 "use client";
-import { BarChartBig, CornerDownLeft, DatabaseZap, Home, LayoutDashboard, LayoutList, Menu, Settings, TrendingUp, User2, Users } from "lucide-react";
+import { BarChartBig, CornerDownLeft, LayoutDashboard, LayoutList, LogOut, Menu, TrendingUp, Users } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -17,10 +17,27 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     setIsFullScreen(!isFullScreen);
   };
 
-  const { data: currentUser, isLoading, error } = useGetCurrentUserFromTokenQuery({});
-  console.log("🚀 ~ Layout ~ currentUser:", currentUser);
+  const { data: currentUserData, isLoading, error } = useGetCurrentUserFromTokenQuery({});
+  const currentBranch = currentUserData?.data.branch;
 
-  if (currentUser && currentUser.data.branch.type === "branch") {
+  // Redirect to the login page if accessToken is not present in localStorage
+  const accessToken = localStorage.getItem("accessToken");
+  if (!accessToken) {
+    router.push("/");
+    return null;
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    router.push("/");
+    return null;
+  };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (currentBranch && currentBranch.type === "branch") {
     return (
       <div className=" flex">
         {!isFullScreen && (
@@ -56,7 +73,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <Menu className=" cursor-pointer " />
             </Button>
             <div className=" flex space-x-4">
-              <DatabaseZap />
+              <Button onClick={handleLogout}>
+                <LogOut />
+              </Button>
             </div>
           </div>
           <div>
@@ -66,10 +85,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </div>
     );
   } else {
-    if (!isLoading && !error) {
-      router.push("/");
+    if (!isLoading && currentBranch && currentBranch.type === "branch") {
+      router.push("/branch");
     }
-    return null;
   }
 }
 

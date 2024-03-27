@@ -14,7 +14,9 @@ import { Button } from "@/components/ui/button";
 
 export default function Page({}: Props) {
   const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
+  console.log("🚀 ~ Page ~ currentUser:", currentUser)
   const branch_id = currentUser?.data.branch._id;
+  
 
   const [searchName, setSearchName] = React.useState<string>("");
   const [debounceValue] = useDebounce(searchName, 1000);
@@ -22,7 +24,6 @@ export default function Page({}: Props) {
   const [sort, setSort] = React.useState("latest");
   const itemsPerPage = 10;
 
-  // const { data: branchInventories } = useGetAllBranchInventoryQuery({ branch: branch_id });
   const { data: branchInventories, isLoading: isFetching } = useGetAllBranchInventoryQuery({ branch: branch_id, sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
   console.log("🚀 ~ Page ~ branchInventories:", branchInventories);
 
@@ -39,6 +40,7 @@ export default function Page({}: Props) {
   };
 
 
+  
 
   return (
     <>

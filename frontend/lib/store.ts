@@ -11,6 +11,7 @@ import { authApi } from "./features/authSlice";
 import { headquarterInventoryApi } from "./features/headquarterInventorySlice";
 import { branchInventoryApi } from "./features/branchInventorySlice";
 import { statApi } from "./features/statSlice";
+import { returnApi } from "./features/returnSlice";
 
 export const makeStore = () => {
   const store = configureStore({
@@ -27,6 +28,7 @@ export const makeStore = () => {
       [headquarterInventoryApi.reducerPath]: headquarterInventoryApi.reducer,
       [branchInventoryApi.reducerPath]: branchInventoryApi.reducer,
       [statApi.reducerPath]: statApi.reducer,
+      [returnApi.reducerPath]: returnApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().concat(
@@ -42,6 +44,8 @@ export const makeStore = () => {
         headquarterInventoryApi.middleware,
       branchInventoryApi.middleware,
       statApi.middleware,
+      returnApi.middleware,
+
         
       ),
   });

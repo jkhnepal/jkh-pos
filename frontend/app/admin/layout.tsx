@@ -14,17 +14,29 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     setIsFullScreen(!isFullScreen);
   };
   const router = useRouter();
-
   const pathname = usePathname();
-  const { data: currentUser, isLoading, error } = useGetCurrentUserFromTokenQuery({});
-  console.log("🚀 ~ Layout ~ currentUser:", currentUser);
+
+  const { data: currentUserData, isLoading, error } = useGetCurrentUserFromTokenQuery({});
+  const currentBranch = currentUserData?.data.branch;
+
+  // Redirect to the login page if accessToken is not present in localStorage
+  const accessToken = localStorage.getItem("accessToken");
+  if (!accessToken) {
+    router.push("/");
+    return null;
+  }
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
-    window.location.href = "http://localhost:3000";
+    router.push("/");
+    return null;
   };
 
-  // if (currentUser && currentUser.data.branch.type === "headquarter") {
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (currentBranch && currentBranch.type === "headquarter") {
     return (
       <div className=" flex">
         {!isFullScreen && (
@@ -70,9 +82,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
     );
-  // } else {
-  //   router.push("/");
-  // }
+  } else {
+    if (!isLoading && currentBranch && currentBranch.type === "branch") {
+      router.push("/branch");
+    }
+  }
 }
 
 const navItems = [

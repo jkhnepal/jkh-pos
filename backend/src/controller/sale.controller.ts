@@ -34,6 +34,7 @@ var colors = require("colors");
 //   }
 // }
 
+// Perfectly working without point feature
 export async function createSaleHandler(req: Request<{}, {}, CreateSaleInput["body"]>, res: Response, next: NextFunction) {
   try {
     const body = req.body;
@@ -57,7 +58,7 @@ export async function createSaleHandler(req: Request<{}, {}, CreateSaleInput["bo
       })
     );
 
-    console.log(totalPointsToAdd,"{{{{{{{{{{{{{{{{{{{{{{{{{{{{{");
+    console.log(totalPointsToAdd, "{{{{{{{{{{{{{{{{{{{{{{{{{{{{{");
 
     const member = await findMember({ _id: body[0].member });
     console.log("🚀 ~ createSaleHandler ~ member:", member, "/////////////");
@@ -72,7 +73,7 @@ export async function createSaleHandler(req: Request<{}, {}, CreateSaleInput["bo
       { $inc: { point: totalPointsToAdd } }, // Increment member's points by totalPointsToAdd
       { new: true }
     );
-    console.log(updatedMember)
+    console.log(updatedMember);
 
     // Respond with the total points to add for all sales collectively
     return res.status(201).json({

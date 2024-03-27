@@ -50,6 +50,13 @@ export default function Cart({}: Props) {
   const { data: user } = useGetMemberByPhoneQuery(userPhoneNumber);
   const member_id = user?.data._id;
 
+  const [selectedMemberId, setSelectedMemberId] = useState<string>("0");
+  const { data: selectedMember } = useGetMemberQuery(selectedMemberId);
+  console.log("🚀 ~ Cart ~ selectedMember:", selectedMember);
+
+  const member_Id=selectedMember?.data?._id
+  console.log("🚀 ~ Cart ~ member_Id:", member_Id)
+
   // Define a submit handler.
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const { _id, productId, cp, sp, discount, quantity } = product.data;
@@ -67,7 +74,7 @@ export default function Cart({}: Props) {
       const selectedProduct = {
         branch: branch_id,
         product: _id,
-        member: "65fd236e1159f125e723ceb9",
+        member: "6603b2cdfcf3e782cae83f5a", //ak
         sp,
         discount,
         quantity: 1,
@@ -81,11 +88,10 @@ export default function Cart({}: Props) {
   const { data: members, isLoading: isFetching, refetch } = useGetAllMemberQuery({ sort: "latest", page: 1, limit: 2, search: userPhoneNumber });
   console.log("🚀 ~ Cart ~ members:", members);
 
-  const [selectedMemberId, setSelectedMemberId] = useState<string>("0");
+
   console.log("🚀 ~ Cart ~ selectedMemberId:", selectedMemberId);
 
-  const { data: selectedMember } = useGetMemberQuery(selectedMemberId);
-  console.log("🚀 ~ Cart ~ selectedMember:", selectedMember);
+
 
   const [createSale] = useCreateSaleMutation();
   const createSaleHandler = async () => {
@@ -97,9 +103,7 @@ export default function Cart({}: Props) {
   const [isClaimed, setisClaimed] = useState(false);
 
   console.log(selectedProducts);
-
   const totalAmountSum = selectedProducts.reduce((total, product) => total + product.totalAmount, 0);
-
   const totalAfterRewardClaim = totalAmountSum - selectedMember?.data.point;
 
   return (

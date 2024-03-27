@@ -19,6 +19,7 @@ export async function createBranchInventory(input: BranchInventoryInput): Promis
 // }
 
 export async function findAllBranchInventory(filter: FilterQuery<BranchInventoryDocument> = {}) {
+  const branch = filter.branch || "";
   const search = filter.search || "";
   const sort = filter.sort || "";
   const page: any = filter.page || 1;
@@ -27,8 +28,9 @@ export async function findAllBranchInventory(filter: FilterQuery<BranchInventory
 
   const searchQuery: any = {
     name: { $regex: search, $options: "i" },
+    branch: branch,
   };
-  const count = await BranchInventoryModel.countDocuments();
+  const count = await BranchInventoryModel.countDocuments(searchQuery);
   const results = await BranchInventoryModel.find(searchQuery)
     .skip(skip)
     .limit(limit)
@@ -37,8 +39,6 @@ export async function findAllBranchInventory(filter: FilterQuery<BranchInventory
       path: "product",
       select: "name image productId sku cp sp",
     });
-  console.log("🚀 ~ findAllBranchInventory ~ results:", results);
-  console.log("🚀 ~ findAllBranchInventory ~ count:", count);
   return { count, results };
 }
 
