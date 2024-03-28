@@ -1,15 +1,13 @@
 "use client";
 import * as React from "react";
 import { ColumnDef, ColumnFiltersState, SortingState, VisibilityState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
-import { ArrowDown01, ArrowDown10, ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { ArrowDown01, ArrowDown10, ArrowUpDown, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Link from "next/link";
-import { toast } from "sonner";
-import { useDeleteDistributeMutation, useGetAllDistributeQuery } from "@/lib/features/distributeSlice";
-import LoaderPre from "@/app/custom-components/LoaderPre";
+import { useGetAllDistributeQuery } from "@/lib/features/distributeSlice";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
 import moment from "moment";
@@ -31,25 +29,6 @@ export default function Page() {
   const pageCount = Math.ceil(totalItem / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
 
-  const [deleteDistribute, { data, isError: isDeleteError, error: deleteError, isLoading: isDeleting }] = useDeleteDistributeMutation();
-  const handleDelete = async (id: string) => {
-    const res: any = await deleteDistribute(id);
-    if (res.data) {
-      toast.success(res.data.msg);
-      refetch();
-    }
-  };
-
-  if (deleteError) {
-    if ("status" in deleteError) {
-      const errMsg = "error" in deleteError ? deleteError.error : JSON.stringify(deleteError.data);
-      const errorMsg = JSON.parse(errMsg).msg;
-      toast.error(errorMsg);
-    } else {
-      const errorMsg = deleteError.message;
-      toast.error(errorMsg);
-    }
-  }
   const goToPreviousPage = () => {
     setCurrentPage((prevPage) => prevPage - 1);
   };
@@ -110,56 +89,6 @@ export default function Page() {
       accessorKey: "createdAt",
       header: "Initiated Date",
       cell: ({ row }: any) => <div>{moment(row.getValue("createdAt")).format("MMM Do YY")}</div>,
-    },
-
-    {
-      id: "actions",
-      enableHiding: false,
-      cell: ({ row }) => {
-        const item = row.original;
-
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              {isDeleting ? (
-                <Button
-                  variant="ghost"
-                  className="h-8 w-8 p-0">
-                  <span className="sr-only">Open menu</span>
-                  <LoaderPre />
-                </Button>
-              ) : (
-                <Button
-                  variant="ghost"
-                  className="h-8 w-8 p-0">
-                  <span className="sr-only">Open menu</span>
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              )}
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => {
-                  navigator.clipboard.writeText(item.distributeId);
-                  toast.success("Copy success");
-                }}>
-                Copy id
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-
-              <Link href={`/admin/supply-histories/edit/${item.distributeId}`}>
-                <DropdownMenuItem>View/Edit</DropdownMenuItem>
-              </Link>
-              <DropdownMenuItem
-                onClick={() => handleDelete(item.distributeId)}
-                className=" text-destructive">
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        );
-      },
     },
   ];
 

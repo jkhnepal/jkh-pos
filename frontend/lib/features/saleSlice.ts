@@ -56,7 +56,7 @@ export const saleApi = createApi({
       query: (newSale) => ({
         url: ``,
         method: "POST",
-        // headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" },
         body: newSale,
       }),
     }),
@@ -79,4 +79,4 @@ export const saleApi = createApi({
   }),
 });
 
-export const { useCreateSaleMutation,useGetAllSalesOfAMemberQuery, useDeleteSaleMutation, useGetAllSaleQuery, useGetSaleQuery, useUpdateSaleMutation } = saleApi;
+export const { useCreateSaleMutation, useGetAllSalesOfAMemberQuery, useDeleteSaleMutation, useGetAllSaleQuery, useGetSaleQuery, useUpdateSaleMutation } = saleApi;

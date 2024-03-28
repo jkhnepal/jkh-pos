@@ -112,7 +112,7 @@ export async function deleteHeadquarterInventoryHandler(req: Request<UpdateHeadq
 export async function getHeadquarterInventoryByProductHandler(req: Request<UpdateHeadquarterInventoryInput["params"]>, res: Response, next: NextFunction) {
   try {
     const product = req.params.headquarterInventoryId;
-    console.log(product);
+    // console.log(product);
     const headquarterInventory = await findHeadquarterInventory({ product });
 
     if (!headquarterInventory) {

@@ -15,7 +15,7 @@ export async function findAllBranch(filter: FilterQuery<BranchDocument> = {}) {
   const limit: any = filter.limit || 5;
   const skip = (page - 1) * limit;
 
-  console.log(search)
+  // console.log(search)
 
   const searchQuery: any = {
     name: { $regex: search, $options: "i" },

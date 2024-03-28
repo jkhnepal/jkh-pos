@@ -5,7 +5,7 @@ import { BranchDocument } from "./branch.model";
 export interface MemberInput {
   name: string;
   phone: string;
-  point?: number;
+  point?: number; // amount
   creatorBranch: BranchDocument["_id"];
 }
 

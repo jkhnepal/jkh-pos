@@ -30,7 +30,6 @@ export const distributeApi = createApi({
       },
     }),
 
-
     getDistribute: builder.query({
       query: (distributeId) => `/${distributeId}`,
     }),
@@ -39,7 +38,7 @@ export const distributeApi = createApi({
       query: (newDistribute) => ({
         url: ``,
         method: "POST",
-        // headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" },
         body: newDistribute,
       }),
     }),

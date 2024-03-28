@@ -14,10 +14,6 @@ const payload = {
     claimPoint: coerce.number({
       required_error: "claimPoint  is required",
     }),
-
-    claimAmount: coerce.number({
-      required_error: "claimAmount  is required",
-    }),
   }),
 };
 

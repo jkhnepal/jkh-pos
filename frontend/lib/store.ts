@@ -12,6 +12,7 @@ import { headquarterInventoryApi } from "./features/headquarterInventorySlice";
 import { branchInventoryApi } from "./features/branchInventorySlice";
 import { statApi } from "./features/statSlice";
 import { returnApi } from "./features/returnSlice";
+import { pointClaimApi } from "./features/pointClaimSlice";
 
 export const makeStore = () => {
   const store = configureStore({
@@ -23,12 +24,12 @@ export const makeStore = () => {
       [memberApi.reducerPath]: memberApi.reducer,
       [distributeApi.reducerPath]: distributeApi.reducer,
       [saleApi.reducerPath]: saleApi.reducer,
-  
       [authApi.reducerPath]: authApi.reducer,
       [headquarterInventoryApi.reducerPath]: headquarterInventoryApi.reducer,
       [branchInventoryApi.reducerPath]: branchInventoryApi.reducer,
       [statApi.reducerPath]: statApi.reducer,
       [returnApi.reducerPath]: returnApi.reducer,
+      [pointClaimApi.reducerPath]: pointClaimApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().concat(
@@ -39,14 +40,12 @@ export const makeStore = () => {
         memberApi.middleware,
         distributeApi.middleware,
         saleApi.middleware,
-
         authApi.middleware,
         headquarterInventoryApi.middleware,
-      branchInventoryApi.middleware,
-      statApi.middleware,
-      returnApi.middleware,
-
-        
+        branchInventoryApi.middleware,
+        statApi.middleware,
+        returnApi.middleware,
+        pointClaimApi.middleware
       ),
   });
 

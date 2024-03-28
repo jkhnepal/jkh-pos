@@ -32,11 +32,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     return null;
   };
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  // if (isLoading) {
+  //   return <div>Loading...</div>;
+  // }
 
-  if (currentBranch && currentBranch.type === "headquarter") {
+  // if (currentBranch && currentBranch.type === "headquarter") {
     return (
       <div className=" flex">
         {!isFullScreen && (
@@ -82,11 +82,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
     );
-  } else {
-    if (!isLoading && currentBranch && currentBranch.type === "branch") {
-      router.push("/branch");
-    }
-  }
+  // } else {
+  //   if (!isLoading && currentBranch && currentBranch.type === "branch") {
+  //     router.push("/branch");
+  //   }
+  // }
 }
 
 const navItems = [

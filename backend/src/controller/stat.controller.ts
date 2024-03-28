@@ -94,10 +94,10 @@ export async function getBranchStatHandler(req: Request<{}, {}, {}>, res: Respon
 export async function getBranchProfitHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
   try {
     const queryParameter = req.query;
-    console.log("🚀 ~ getBranchProfitHandler ~ queryParameter:", queryParameter);
+    // console.log("🚀 ~ getBranchProfitHandler ~ queryParameter:", queryParameter);
 
     const res1 = await SaleModel.find({ branch: queryParameter.branch, isReturned: false });
-    console.log("🚀 ~ getBranchProfitHandler ~ res:", res1);
+    // console.log("🚀 ~ getBranchProfitHandler ~ res:", res1);
 
     const totalSales = await SaleModel.aggregate([
       {
@@ -121,7 +121,7 @@ export async function getBranchProfitHandler(req: Request<{}, {}, {}>, res: Resp
       return sum + profit;
     }, 0);
 
-    console.log("Total Profit:", totalProfit);
+    // console.log("Total Profit:", totalProfit);
 
     return res.status(200).json({
       status: "success",

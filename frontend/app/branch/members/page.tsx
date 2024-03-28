@@ -59,11 +59,18 @@ export default function Page() {
     setCurrentPage((prevPage) => prevPage + 1);
   };
 
+  const [createPointClaim] = useCreatePointClaimMutation();
 
-  // const [createSale] = useCreateSaleMutation();
-  // const handleClaimPoint=async()=>{
-  //   const res = await createSale(selectedProducts);
-  // }
+  const datatoBeSent = {
+    member: "",
+    branch: "",
+    claimPoint: "",
+  };
+  
+  const handleClaimPoint = async (e: any) => {
+    e.preventDefault();
+    const res = await createPointClaim(datatoBeSent);
+  };
 
   const columns: ColumnDef<any>[] = [
     {
@@ -116,11 +123,7 @@ export default function Page() {
     {
       accessorKey: "point",
       header: "Claim",
-      cell: ({ row }: any) => (
-        <div>
-        {row.getValue("point") >=900 &&  <Button className=""> Claim</Button>}
-        </div>
-      ),
+      cell: ({ row }: any) => <div>{row.getValue("point") >= 900 && <Button className=""> Claim</Button>}</div>,
     },
 
     {
@@ -322,6 +325,7 @@ export default function Page() {
 // Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { useCreatePointClaimMutation } from "@/lib/features/pointClaimSlice";
 
 function Breadcumb() {
   return (

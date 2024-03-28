@@ -18,7 +18,7 @@ export async function findAllReturn(filter: FilterQuery<ReturnDocument> = {}) {
   const count = await ReturnModel.countDocuments({ branch: branch });
 
   const results1 = await ReturnModel.find({ branch: branch })
-  console.log("🚀 ~ findAllReturn ~ results1:", results1)
+  // console.log("🚀 ~ findAllReturn ~ results1:", results1)
 
   const results = await ReturnModel.find({ branch: branch })
     .skip(skip)

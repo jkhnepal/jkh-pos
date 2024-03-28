@@ -7,45 +7,16 @@ import { findAndUpdateBranchInventory } from "../service/branchInventory.service
 import { findAndUpdateMember, findMember } from "../service/member.service";
 var colors = require("colors");
 
-// export async function createSaleHandler(req: Request<{}, {}, CreateSaleInput["body"]>, res: Response, next: NextFunction) {
-//   try {
-//     const body = req.body;
-
-//     body.forEach(async (saleObject: any) => {
-//       const sale = await createSale(saleObject);
-//       console.log("🚀 ~ body.forEach ~ sale:", sale);
-//       const branchInventory: any = await BranchInventoryModel.findOne({ branch: saleObject.branch, product: saleObject.product });
-
-//       let updatedBranchInventory;
-//       if (branchInventory) {
-//         const newTotalstock = branchInventory.totalStock - saleObject.quantity;
-//         updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, { totalStock: newTotalstock }, { new: true });
-//       }
-
-//       return res.status(201).json({
-//         status: "success",
-//         msg: "sales created success",
-//         data: updatedBranchInventory,
-//       });
-//     });
-//   } catch (error: any) {
-//     console.error(colors.red("msg:", error.message));
-//     next(new AppError("Internal server error", 500));
-//   }
-// }
-
-// Perfectly working without point feature
 export async function createSaleHandler(req: Request<{}, {}, CreateSaleInput["body"]>, res: Response, next: NextFunction) {
   try {
     const body = req.body;
-    let totalPointsToAdd: number = 0; // Initialize totalPointsToAdd outside the loop
+    let totalPointsToAdd: number = 0;
 
-    // Use Promise.all to await all asynchronous operations inside the loop
+    // sale objects comes in array so i am using loop with promise
     let updatedBranchInventory;
     await Promise.all(
       body.map(async (saleObject: any) => {
         const sale = await createSale(saleObject);
-        // console.log("🚀 ~ body.forEach ~ sale:", sale);
         const branchInventory: any = await BranchInventoryModel.findOne({ branch: saleObject.branch, product: saleObject.product });
 
         if (branchInventory) {
@@ -54,28 +25,18 @@ export async function createSaleHandler(req: Request<{}, {}, CreateSaleInput["bo
         }
 
         const pointsToAdd = saleObject.totalAmount * 0.1;
-        totalPointsToAdd += pointsToAdd; // Accumulate pointsToAdd for each sale
+        totalPointsToAdd += pointsToAdd;
       })
     );
 
-    console.log(totalPointsToAdd, "{{{{{{{{{{{{{{{{{{{{{{{{{{{{{");
-
     const member = await findMember({ _id: body[0].member });
-    console.log("🚀 ~ createSaleHandler ~ member:", member, "/////////////");
-
     if (!member) {
       next(new AppError("Member does not exist", 404));
       return;
     }
 
-    const updatedMember = await findAndUpdateMember(
-      { _id: member._id },
-      { $inc: { point: totalPointsToAdd } }, // Increment member's points by totalPointsToAdd
-      { new: true }
-    );
-    console.log(updatedMember);
+    await findAndUpdateMember({ _id: member._id }, { $inc: { point: totalPointsToAdd } }, { new: true });
 
-    // Respond with the total points to add for all sales collectively
     return res.status(201).json({
       status: "success",
       msg: "sales created success",
