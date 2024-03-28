@@ -54,7 +54,7 @@ export default function Page() {
 
   console.log(date);
 
-  const { data: testData } = useGetAllSaleQuery({ branch: branch_id, sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue, date:date });
+  const { data: testData } = useGetAllSaleQuery({ branch: branch_id, sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue, date: date });
   console.log("🚀 ~ Page ~ testData:", testData);
 
   const columns: ColumnDef<any>[] = [
@@ -86,12 +86,20 @@ export default function Page() {
 
     {
       accessorKey: "member",
-      header: "Buyer",
-      cell: ({ row }: any) => (
-        <div>
-          {row.getValue("member")?.name} ({row.getValue("member")?.phone}){" "}
-        </div>
-      ),
+      header: "Member",
+      cell: ({ row }: any) => <div>{row.getValue("member")?.name}</div>,
+    },
+
+    {
+      accessorKey: "member",
+      header: "Member Phone",
+      cell: ({ row }: any) => <div>{row.getValue("member")?.phone}</div>,
+    },
+
+    {
+      accessorKey: "isReturned",
+      header: "Quantity",
+      cell: ({ row }: any) => <div className=" flex">{row.getValue("isReturned") ? <p className="bg-red-400/20 flex text-sm font-medium text-red-700 rounded-full px-4">Returned</p> : <p className="bg-green-400/20 flex text-sm font-medium text-red-green rounded-full px-4">Sold</p>}</div>,
     },
 
     {

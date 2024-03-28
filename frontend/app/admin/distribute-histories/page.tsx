@@ -133,7 +133,7 @@ export default function Page() {
 
         <div className="flex  space-x-2">
           <Link href={"/admin/distribute-histories/create"}>
-            <Button>Add New</Button>
+            <Button>Distribute</Button>
           </Link>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

@@ -78,6 +78,7 @@ export async function getBranchFromTokenHandler(req: any, res: Response, next: N
 
 export async function loginBranchHandler(req: Request<{}, {}, LoginInput["body"]>, res: Response, next: NextFunction) {
   const branch = await validatePassword(req.body);
+  // console.log("🚀 ~ loginBranchHandler ~ branch:", branch)
 
   if (!branch) {
     return res.status(401).json({

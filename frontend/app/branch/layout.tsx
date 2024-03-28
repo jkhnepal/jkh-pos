@@ -38,10 +38,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   }
 
   // if (currentBranch && currentBranch.type === "branch") {
-    return (
-      <div className=" flex">
-        {!isFullScreen && (
-          <div className={`${isFullScreen ? "" : "w-2/12"}  h-screen overflow-y-scroll bg-primary p-4 text-primary-foreground `}>
+  return (
+    <div className=" flex">
+      {!isFullScreen && (
+        <div className={`${isFullScreen ? "" : "w-2/12"} flex flex-col justify-between  h-screen overflow-y-scroll bg-primary p-4 text-primary-foreground `}>
+          <div>
             <div className=" mb-8">
               <Image
                 src={logo}
@@ -63,27 +64,49 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               ))}
             </div>
           </div>
-        )}
 
-        <div className={`${isFullScreen ? " w-full " : " w-10/12"} h-screen overflow-y-scroll`}>
-          <div className="  flex items-center justify-between  h-12 px-4 shadow-md z-50">
-            <Button
-              onClick={changeFullScreen}
-              variant="outline">
-              <Menu className=" cursor-pointer " />
-            </Button>
-            <div className=" flex space-x-4">
-              <Button onClick={handleLogout}>
-                <LogOut />
-              </Button>
+          {currentBranch && (
+            <div className="py-4  border-t border-zinc-700 text-primary-foreground/60 ">
+              <div className="flex items-center gap-x-4">
+                  {/* <Image
+                    src={currentBranch.image}
+                    alt="branch-image"
+                    className=" shape-square rounded-full "
+                    height={50}
+                    width={50}
+                  /> */}
+                <div>
+                  <span className="block text-sm font-semibold">
+                    {currentBranch.name} ({currentBranch.address}){" "}
+                  </span>
+                  <span className="block mt-px   text-xs">{currentBranch.email}</span>
+                  <span className="block mt-px   text-xs">{currentBranch.phone}</span>
+                </div>
+              </div>
             </div>
-          </div>
-          <div>
-            <div className=" px-4 mt-8 ">{children}</div>
+          )}
+        </div>
+      )}
+
+      <div className={`${isFullScreen ? " w-full " : " w-10/12"} h-screen overflow-y-scroll`}>
+        <div className="  flex items-center justify-between  h-12 px-4 shadow-md z-50">
+          <Button
+            onClick={changeFullScreen}
+            variant="outline">
+            <Menu className=" cursor-pointer " />
+          </Button>
+          <div className=" flex space-x-4">
+            <Button onClick={handleLogout}>
+              <LogOut />
+            </Button>
           </div>
         </div>
+        <div>
+          <div className=" px-4 mt-8 ">{children}</div>
+        </div>
       </div>
-    );
+    </div>
+  );
   // } else {
   //   if (!isLoading && currentBranch && currentBranch.type === "branch") {
   //     router.push("/branch");

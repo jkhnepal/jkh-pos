@@ -18,6 +18,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const { data: currentUserData, isLoading, error } = useGetCurrentUserFromTokenQuery({});
   const currentBranch = currentUserData?.data.branch;
+  console.log("🚀 ~ Layout ~ currentBranch:", currentBranch);
 
   // Redirect to the login page if accessToken is not present in localStorage
   const accessToken = localStorage.getItem("accessToken");
@@ -37,10 +38,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   // }
 
   // if (currentBranch && currentBranch.type === "headquarter") {
-    return (
-      <div className=" flex">
-        {!isFullScreen && (
-          <div className={`${isFullScreen ? "" : "w-2/12"}  h-screen overflow-y-scroll bg-primary p-4 text-primary-foreground `}>
+  return (
+    <div className=" flex">
+      {!isFullScreen && (
+        <div className={`${isFullScreen ? "" : "w-2/12"} flex flex-col justify-between  h-screen overflow-y-scroll bg-primary p-4 text-primary-foreground `}>
+          <div>
             <div className=" mb-8">
               <Image
                 src={logo}
@@ -48,7 +50,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 className=" h-12 w-40"
               />
             </div>
-            <div className=" space-y-4 tracking-wider   ">
+
+            <div className=" flex  flex-col justify-between space-y-4 tracking-wider   ">
               {navItems.map((item: any, index: number) => (
                 <div
                   key={index}
@@ -62,26 +65,48 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               ))}
             </div>
           </div>
-        )}
 
-        <div className={`${isFullScreen ? " w-full " : " w-10/12"} h-screen overflow-y-scroll`}>
-          <div className="  flex items-center justify-between  h-12 px-4 shadow-md z-50">
-            <Button
-              onClick={changeFullScreen}
-              variant="outline">
-              <Menu className=" cursor-pointer " />
-            </Button>
+          {currentBranch && (
+            <div className="py-4  border-t border-zinc-700 text-primary-foreground/60 ">
+              <div className="flex items-center gap-x-4">
+                  {/* <Image
+                    src={currentBranch.image}
+                    alt="branch-image"
+                    className=" shape-square rounded-full "
+                    height={50}
+                    width={50}
+                  /> */}
+                <div>
+                  <span className="block text-sm font-semibold">
+                    {currentBranch.name} ({currentBranch.address}){" "}
+                  </span>
+                  <span className="block mt-px   text-xs">{currentBranch.email}</span>
+                  <span className="block mt-px   text-xs">{currentBranch.phone}</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
-            <Button onClick={handleLogout}>
-              <LogOut />
-            </Button>
-          </div>
-          <div>
-            <div className=" px-4 mt-8 ">{children}</div>
-          </div>
+      <div className={`${isFullScreen ? " w-full " : " w-10/12"} h-screen overflow-y-scroll`}>
+        <div className="  flex items-center justify-between  h-12 px-4 shadow-md z-50">
+          <Button
+            onClick={changeFullScreen}
+            variant="outline">
+            <Menu className=" cursor-pointer " />
+          </Button>
+
+          <Button onClick={handleLogout}>
+            <LogOut />
+          </Button>
+        </div>
+        <div>
+          <div className=" px-4 mt-8 ">{children}</div>
         </div>
       </div>
-    );
+    </div>
+  );
   // } else {
   //   if (!isLoading && currentBranch && currentBranch.type === "branch") {
   //     router.push("/branch");
@@ -115,7 +140,7 @@ const navItems = [
   },
 
   {
-    name: "Distribute Histories",
+    name: "Distribute",
     icon: <SendToBack size={18} />,
     href: "/admin/distribute-histories",
   },

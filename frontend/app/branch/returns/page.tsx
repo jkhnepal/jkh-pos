@@ -60,19 +60,34 @@ export default function Page() {
       enableHiding: false,
     },
 
-    
+    {
+      accessorKey: "sale",
+      header: "Product Name",
+      cell: ({ row }: any) => <div>{row.getValue("sale")?.product.name} </div>,
+    },
 
     {
       accessorKey: "member",
       header: "Member",
-      cell: ({ row }: any) => <div>{row.getValue("member")?.name} ({row.getValue("member")?.phone})</div>,
+      cell: ({ row }: any) => <div> {row.getValue("member")?.phone}</div>,
     },
 
+    {
+      accessorKey: "sale",
+      header: "Sell Date",
+      cell: ({ row }: any) => <div>{moment(row.getValue("sale")?.createdAt).format("MMM Do YY")} </div>,
+    },
 
     {
       accessorKey: "quantity",
       header: "Quantity",
       cell: ({ row }: any) => <div>{row.getValue("quantity")} </div>,
+    },
+
+    {
+      accessorKey: "createdAt",
+      header: "Return Date",
+      cell: ({ row }: any) => <div>{moment(row.getValue("createdAt")).format("MMM Do YY")} </div>,
     },
 
     {
@@ -83,23 +98,6 @@ export default function Page() {
 
         return (
           <DropdownMenu>
-            {/* <DropdownMenuTrigger asChild>
-              {isDeleting ? (
-                <Button
-                  variant="ghost"
-                  className="h-8 w-8 p-0">
-                  <span className="sr-only">Open menu</span>
-                  <LoaderPre />
-                </Button>
-              ) : (
-                <Button
-                  variant="ghost"
-                  className="h-8 w-8 p-0">
-                  <span className="sr-only">Open menu</span>
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              )}
-            </DropdownMenuTrigger> */}
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem
@@ -114,11 +112,7 @@ export default function Page() {
               <Link href={`/branch/members/edit/${item.memberId}`}>
                 <DropdownMenuItem>View/Edit</DropdownMenuItem>
               </Link>
-              <DropdownMenuItem
-                // onClick={() => handleDelete(item.memberId)}
-                className=" text-destructive">
-                Delete
-              </DropdownMenuItem>
+              <DropdownMenuItem className=" text-destructive">Delete</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         );
@@ -150,7 +144,6 @@ export default function Page() {
       <Breadcumb />
       <div className="flex justify-between items-center py-4">
         <Input
-
           placeholder="Filter by name ..."
           value={searchName}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
@@ -268,6 +261,7 @@ import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useGetAllReturnQuery } from "@/lib/features/returnSlice";
 import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
+import moment from "moment";
 
 function Breadcumb() {
   return (

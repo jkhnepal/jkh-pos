@@ -52,12 +52,24 @@ export const saleApi = createApi({
       query: (saleId) => `/${saleId}`,
     }),
 
+    // createSale: builder.mutation({
+    //   query: (newSale) => ({
+    //     url: ``,
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: newSale,
+    //   }),
+    // }),
+
     createSale: builder.mutation({
       query: (newSale) => ({
         url: ``,
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: newSale,
+        body: {
+          selectedProducts: newSale.selectedProducts,
+          claimPoint: newSale.claimPoint,
+        },
       }),
     }),
 

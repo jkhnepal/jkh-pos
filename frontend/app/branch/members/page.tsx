@@ -116,15 +116,23 @@ export default function Page() {
 
     {
       accessorKey: "point",
-      header: "point",
+      header: "Reward (Rs)",
       cell: ({ row }: any) => <div>{row.getValue("point")}</div>,
     },
 
+
     {
-      accessorKey: "point",
-      header: "Claim",
-      cell: ({ row }: any) => <div>{row.getValue("point") >= 900 && <Button className=""> Claim</Button>}</div>,
+      accessorKey: "createdAt",
+      header: "Created Date ",
+      cell: ({ row }: any) => <div>{moment(row.getValue("createdAt")).format("MMM Do YY")}</div>,
     },
+
+
+
+
+    
+
+    
 
     {
       id: "actions",
@@ -326,6 +334,7 @@ export default function Page() {
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useCreatePointClaimMutation } from "@/lib/features/pointClaimSlice";
+import moment from "moment";
 
 function Breadcumb() {
   return (

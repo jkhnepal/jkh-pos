@@ -11,7 +11,7 @@ export default function Component() {
   console.log("🚀 ~ Component ~ stats:", stats);
 
   const { data: profitData } = useGetBranchProfitQuery({ branch: branch_id });
-  console.log("🚀 ~ Component ~ profitData:", profitData)
+  console.log("🚀 ~ Component ~ profitData:", profitData);
 
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -35,13 +35,13 @@ export default function Component() {
 
           <StatCard
             title=" Total Sale Amount"
-            value={`Rs ${stats.data.totalSales}`}
+            value={`Rs ${profitData.totalSales}`}
             icon={<Shirt />}
           />
 
-<StatCard
+          <StatCard
             title=" Total Profit"
-            value={`Rs ${profitData?.totalProfit}`}
+            value={`Rs ${profitData?.totalSales - profitData?.totalCp}`}
             icon={<Shirt />}
           />
         </>

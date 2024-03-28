@@ -25,7 +25,14 @@ export async function findAllReturn(filter: FilterQuery<ReturnDocument> = {}) {
     .limit(limit)
     .sort({ createdAt: sort == "latest" ? -1 : 1 })
     .populate("member")
-    .populate("sale");
+    .populate({
+      path: "sale",
+      populate: {
+        path: "product",
+        select: "name"
+        
+      }
+    });
 
   // console.log(count);
   // console.log(results);

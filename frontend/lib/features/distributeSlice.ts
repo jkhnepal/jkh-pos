@@ -16,8 +16,9 @@ export const distributeApi = createApi({
     // }),
 
     getAllDistribute: builder.query({
-      query: ({ page = 1, limit = 5, search, sort }) => {
+      query: ({ branch, page = 1, limit = 5, search, sort }) => {
         const params = {
+          branch,
           page,
           limit,
           search,
@@ -25,6 +26,23 @@ export const distributeApi = createApi({
         };
         return {
           url: "/",
+          params: params,
+        };
+      },
+    }),
+
+
+    getAllDistributeOfABranch: builder.query({
+      query: ({ branch, page = 1, limit = 5, search, sort }) => {
+        const params = {
+          branch,
+          page,
+          limit,
+          search,
+          sort,
+        };
+        return {
+          url: "/loki/loki/distributes-of-a-branch",
           params: params,
         };
       },
@@ -61,4 +79,4 @@ export const distributeApi = createApi({
   }),
 });
 
-export const { useCreateDistributeMutation, useDeleteDistributeMutation, useGetAllDistributeQuery, useGetDistributeQuery, useUpdateDistributeMutation } = distributeApi;
+export const { useCreateDistributeMutation, useGetAllDistributeOfABranchQuery, useDeleteDistributeMutation, useGetAllDistributeQuery, useGetDistributeQuery, useUpdateDistributeMutation } = distributeApi;

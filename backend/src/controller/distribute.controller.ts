@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import AppError from "../utils/appError";
 import { CreateDistributeInput, UpdateDistributeInput } from "../schema/distribute.schama";
-import { createDistribute, findAllDistribute, findDistribute, findAndUpdateDistribute, deleteDistribute } from "../service/distribute.service";
+import { createDistribute, findAllDistribute, findDistribute, findAndUpdateDistribute, deleteDistribute, findAllDistributeOfABranch } from "../service/distribute.service";
 import mongoose from "mongoose";
 import DistributeModel from "../models/distribute.model";
 import { createBranchInventory, findAndUpdateBranchInventory, findBranchInventory } from "../service/branchInventory.service";
@@ -55,18 +55,34 @@ export async function getAllDistributeHandler(req: Request<{}, {}, {}>, res: Res
   }
 }
 
+export async function getAllDistributeOfABranchHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
+  try {
+    const queryParameters = req.query;
+
+    const results = await findAllDistributeOfABranch(queryParameters);
+    return res.json({
+      status: "success",
+      msg: "Get all distribute success",
+      data: results,
+    });
+  } catch (error: any) {
+    console.error(colors.red("msg:", error.message));
+    next(new AppError("Internal server error", 500));
+  }
+}
+
 export async function getAllUniqueProductInventoryOfABranchHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
   try {
     const queryParameters = req.query;
-    const results = await findAllDistribute(queryParameters);
+    const results: any = await findAllDistribute(queryParameters);
 
     console.log(results);
 
     // Extract unique product IDs
-    const uniqueProductIds = results.map((result) => result.product._id).filter((value, index, self) => self.indexOf(value) === index);
+    const uniqueProductIds = results.map((result: any) => result.product._id).filter((value: any, index: any, self: any) => self.indexOf(value) === index);
 
     const uniqueProducts = await Promise.all(
-      uniqueProductIds.map(async (productId) => {
+      uniqueProductIds.map(async (productId: any) => {
         const totalQuantity = await getTotalStock(productId);
         const productResult: any = results.find((result: any) => result.product._id === productId);
         const { _id, branch, product, quantity, distributeId, createdAt, updatedAt, __v } = productResult?._doc;
