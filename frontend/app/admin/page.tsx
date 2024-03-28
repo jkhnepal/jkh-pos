@@ -1,6 +1,7 @@
 "use client";
 import { CardTitle, CardHeader, CardContent, Card } from "@/components/ui/card";
 import { useGetHeadquarterStatQuery } from "@/lib/features/statSlice";
+
 import { Shapes, Shirt, Store, UsersRound } from "lucide-react";
 
 export default function Component() {
@@ -14,7 +15,7 @@ export default function Component() {
           <StatCard
             title=" Branches"
             description="Total branches"
-            value={34}
+            value={stats.data.branches}
             icon={<Store />}
           />
           <StatCard
@@ -35,11 +36,16 @@ export default function Component() {
             value={stats.data.products}
             icon={<Shirt />}
           />
-
           <StatCard
             title="Sales"
             description="Total sales of all branches till now"
             value={`Rs. ${stats.data.totalSales}`}
+            icon={<Shirt />}
+          />
+          <StatCard
+            title="Profits"
+            description="Total prodits of all branches till now"
+            value={`Rs. ${stats.data.totalSales - stats.data.totalCp}`}
             icon={<Shirt />}
           />
         </>

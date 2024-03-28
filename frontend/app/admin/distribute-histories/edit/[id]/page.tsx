@@ -108,7 +108,7 @@ export default function Page() {
                   <SelectContent>
                     <SelectGroup>
                       <SelectLabel>Branches</SelectLabel>
-                      {branches?.data.map((item: any) => (
+                      {branches?.data.results.map((item: any) => (
                         <SelectItem
                           key={item._id}
                           value={item._id}>
@@ -147,7 +147,7 @@ export default function Page() {
                           placeholder="Select product"
                         />
                       </SelectLabel>
-                      {products?.data.map((item: any) => (
+                      {products?.data.results.map((item: any) => (
                         <SelectItem
                           key={item._id}
                           value={item._id}>

@@ -18,7 +18,6 @@ const formSchema = z.object({
 });
 
 export default function Page() {
-  const [createDistribute, { error, isLoading: isCreating }] = useCreateDistributeMutation();
   const { refetch } = useGetAllDistributeQuery({ name: "" });
   const { data: branches } = useGetAllBranchQuery({});
 
@@ -37,20 +36,18 @@ export default function Page() {
     },
   });
 
-  const { watch } = form;
-  const watchedFields = watch();
-  const priduct_id = watchedFields.product;
+  // const { watch } = form;
+  // const watchedFields = watch();
+  // const priduct_id = watchedFields.product;
 
-  const { data } = useGetProductQuery({ productId: priduct_id });
-  console.log("🚀 ~ Page ~ data:", data)
-  // const product = data?.data;
-  // console.log(product);
+  // const { data } = useGetProductQuery({ productId: priduct_id });
 
-  React.useEffect(() => {
-    console.log(watchedFields);
-  }, [watchedFields]);
+  // React.useEffect(() => {
+  //   console.log(watchedFields);
+  // }, [watchedFields]);
 
   // Define a submit handler.
+  const [createDistribute, { error, isLoading: isCreating }] = useCreateDistributeMutation();
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const res: any = await createDistribute(values);
     if (res.data) {

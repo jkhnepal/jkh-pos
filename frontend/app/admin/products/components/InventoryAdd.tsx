@@ -6,14 +6,14 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { useCreateInventoryMutation, useDeleteInventoryMutation, useGetAllInventoryQuery, useUpdateInventoryMutation } from "@/lib/features/inventorySlice";
+import { useCreateInventoryMutation, useGetAllInventoryQuery, useUpdateInventoryMutation } from "@/lib/features/inventorySlice";
 import { toast } from "sonner";
 import LoaderPre from "@/app/custom-components/LoaderPre";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import moment from "moment";
-import { PencilRuler, SaveIcon, Trash2, X } from "lucide-react";
+import { PencilRuler, SaveIcon, X } from "lucide-react";
 import { useState } from "react";
-import { useGetHeadquarterInventoryByProductQuery } from "@/lib/features/headquarterInventorySlice";
+import { useGetProductQuery } from "@/lib/features/product.sclice";
 
 type Props = {
   product: any;
@@ -27,9 +27,11 @@ const formSchema = z.object({
 });
 
 export default function InventoryAdd({ product }: Props) {
-  const { data: inventoryAddedHistoriesOfAProduct, refetch: refetchInventoryAddedHistoriesOfAProduct } = useGetAllInventoryQuery({ product: product._id });
-  // const { data: productInventory, refetch: productInventoryRefetch } = useGetHeadquarterInventoryByProductQuery(product._id);
+  const { data, refetch } = useGetAllInventoryQuery({ product: product._id });
   const [createInventory, { error, isLoading: isCreating }] = useCreateInventoryMutation();
+
+  //For refetch
+  const { refetch: productRefetch } = useGetProductQuery(product.productId);
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -46,8 +48,8 @@ export default function InventoryAdd({ product }: Props) {
     if (res.data) {
       toast.success(res.data.msg);
       form.reset();
-      // productInventoryRefetch();
-      refetchInventoryAddedHistoriesOfAProduct();
+      refetch();
+      productRefetch();
     }
   };
 
@@ -70,18 +72,9 @@ export default function InventoryAdd({ product }: Props) {
     const res: any = await updateInventory({ inventoryId: readyToEditId, updatedInventory: { stock: newStock } });
     if (res.data) {
       toast.success(res.data.msg);
-      refetchInventoryAddedHistoriesOfAProduct();
-      // productInventoryRefetch();
+      refetch();
       setReadyToEditId("00");
-    }
-  };
-
-  const [deleteInventory] = useDeleteInventoryMutation();
-  const handleDelete = async (id: string) => {
-    const res: any = await deleteInventory(id);
-    if (res.data) {
-      toast.success(res.data.msg);
-      refetchInventoryAddedHistoriesOfAProduct();
+      productRefetch();
     }
   };
 
@@ -166,7 +159,7 @@ export default function InventoryAdd({ product }: Props) {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {inventoryAddedHistoriesOfAProduct?.data?.map((item: any, index: number) => (
+                  {data?.data?.map((item: any, index: number) => (
                     <TableRow key={index}>
                       <TableCell className="font-medium">{index + 1}.</TableCell>
                       <TableCell>
@@ -204,11 +197,6 @@ export default function InventoryAdd({ product }: Props) {
                           size={18}
                           onClick={() => setReadyToEditId(item.inventoryId)}
                           className=" text-blue-500 cursor-pointer"
-                        />
-                        <Trash2
-                          onClick={() => handleDelete(item.inventoryId)}
-                          size={18}
-                          className=" text-red-500 cursor-pointer"
                         />
                       </TableCell>
                     </TableRow>

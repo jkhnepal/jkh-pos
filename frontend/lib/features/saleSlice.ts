@@ -52,12 +52,24 @@ export const saleApi = createApi({
       query: (saleId) => `/${saleId}`,
     }),
 
+    // createSale: builder.mutation({
+    //   query: (newSale) => ({
+    //     url: ``,
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: newSale,
+    //   }),
+    // }),
+
     createSale: builder.mutation({
       query: (newSale) => ({
         url: ``,
         method: "POST",
-        // headers: { "Content-Type": "application/json" },
-        body: newSale,
+        headers: { "Content-Type": "application/json" },
+        body: {
+          selectedProducts: newSale.selectedProducts,
+          claimPoint: newSale.claimPoint,
+        },
       }),
     }),
 
@@ -79,4 +91,4 @@ export const saleApi = createApi({
   }),
 });
 
-export const { useCreateSaleMutation,useGetAllSalesOfAMemberQuery, useDeleteSaleMutation, useGetAllSaleQuery, useGetSaleQuery, useUpdateSaleMutation } = saleApi;
+export const { useCreateSaleMutation, useGetAllSalesOfAMemberQuery, useDeleteSaleMutation, useGetAllSaleQuery, useGetSaleQuery, useUpdateSaleMutation } = saleApi;

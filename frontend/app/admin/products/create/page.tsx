@@ -37,11 +37,6 @@ const formSchema = z.object({
     message: "Selling price must be a positive number.",
   }),
 
-  // totalAddedStock:z.coerce.number().optional(),
-  // availableStock:z.coerce.number().optional(),
-
-  discount: z.coerce.number().optional(),
-
   image: z.string().optional(),
   note: z.string().optional(),
 });
@@ -61,11 +56,8 @@ export default function Page() {
       name: "",
       sku: "",
       category: "",
-
       cp: 0,
       sp: 0,
-      discount: 0,
-
       image: "",
       note: "",
     },
@@ -78,7 +70,6 @@ export default function Page() {
   // Define a submit handler.
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const res: any = await createProduct(values);
-    console.log(res);
     if (res.data) {
       refetch();
       toast.success(res.data.msg);
@@ -199,60 +190,6 @@ export default function Page() {
                 <Input
                   type="number"
                   placeholder="Selling Price"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* <FormField
-          control={form.control}
-          name="totalAddedStock"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Add Stock </FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  placeholder="Add Stock"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        /> */}
-
-        {/* <FormField
-          control={form.control}
-          name="availableStock"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Available Stock </FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  placeholder="Available Stock"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        /> */}
-
-        <FormField
-          control={form.control}
-          name="discount"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Discount (%) *</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  placeholder="Discount (%)"
                   {...field}
                 />
               </FormControl>

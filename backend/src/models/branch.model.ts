@@ -29,7 +29,7 @@ const branchSchema = new mongoose.Schema(
     password: { type: String, required: true },
     phone: { type: Number, required: true },
     address: { type: String, required: true },
-    type: { type: String, enum: ["head", "branch"], default: "branch" },
+    type: { type: String, enum: ["headquarter", "branch"], default: "branch" },
     image: { type: String },
   },
   {

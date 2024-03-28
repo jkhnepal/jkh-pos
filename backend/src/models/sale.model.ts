@@ -9,10 +9,11 @@ export interface SaleInput {
   product: ProductDocument["_id"];
   member: MemberDocument["_id"];
 
+  cp: number;
   sp: number;
-  discount: number; // in %
   quantity: number;
   totalAmount: number;
+  isReturned?: boolean;
 }
 
 export interface SaleDocument extends SaleInput, mongoose.Document {
@@ -33,9 +34,11 @@ const saleSchema = new mongoose.Schema(
     member: { type: mongoose.Schema.Types.ObjectId, ref: "Member", required: true },
 
     quantity: { type: Number, required: true },
-    discount: { type: Number, required: true },
+    cp: { type: Number, required: true },
     sp: { type: Number, required: true },
     totalAmount: { type: Number, required: true },
+
+    isReturned: { type: Boolean, default: false },
   },
   {
     timestamps: true,

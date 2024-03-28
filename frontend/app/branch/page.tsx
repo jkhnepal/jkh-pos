@@ -22,10 +22,7 @@ export default function Page({}: Props) {
   const [sort, setSort] = React.useState("latest");
   const itemsPerPage = 10;
 
-  // const { data: branchInventories } = useGetAllBranchInventoryQuery({ branch: branch_id });
-  const { data: branchInventories, isLoading: isFetching } = useGetAllBranchInventoryQuery({ branch: branch_id, sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
-  console.log("🚀 ~ Page ~ branchInventories:", branchInventories);
-
+  const { data: branchInventories,refetch } = useGetAllBranchInventoryQuery({ branch: branch_id, sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
   let totalItem = branchInventories?.data.count;
   const pageCount = Math.ceil(totalItem / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -37,8 +34,6 @@ export default function Page({}: Props) {
   const goToNextPage = () => {
     setCurrentPage((prevPage) => prevPage + 1);
   };
-
-
 
   return (
     <>
@@ -119,7 +114,7 @@ export default function Page({}: Props) {
           </Card>
         ))}
       </div>
-      <Cart />
+      <Cart refetch={refetch} />
     </>
   );
 }

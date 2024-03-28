@@ -37,26 +37,22 @@ const formSchema = z.object({
     message: "Selling price must be a positive number.",
   }),
 
-  discount: z.coerce.number().optional(),
-
   image: z.string().optional(),
   note: z.string().optional(),
 });
 
 export default function Page() {
+  const params = useParams();
+  const productId = params.id as string;
+
   const [updateProduct, { error: updateError, isLoading: isUpdating }] = useUpdateProductMutation();
 
   // For refreshing the table list with new data
   const { refetch } = useGetAllProductQuery({ page: 1, limit: 1 });
-
   const { data: categories } = useGetAllCategoryQuery({});
-
-  const params = useParams();
-  const productId = params.id as string;
 
   const { data, isFetching } = useGetProductQuery(productId);
   const product = data?.data;
-  console.log("🚀 ~ Page ~ product:", product);
 
   const { uploading, handleFileUpload } = useCloudinaryFileUpload();
   const [imageUrl, setImageUrl] = useState<string>("");
@@ -68,11 +64,8 @@ export default function Page() {
       name: "",
       sku: "",
       category: product ? product.category : "",
-
       cp: 0,
       sp: 0,
-      discount: 0,
-
       image: "",
       note: "",
     },
@@ -87,7 +80,6 @@ export default function Page() {
 
         cp: product.cp || 0,
         sp: product.sp || 0,
-        discount: product.discount || 0,
 
         image: product.image || "",
         note: product.note || "",
@@ -231,24 +223,6 @@ export default function Page() {
                   <Input
                     type="number"
                     placeholder="Selling Price"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="discount"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Discount (%) *</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    placeholder="Discount (%)"
                     {...field}
                   />
                 </FormControl>

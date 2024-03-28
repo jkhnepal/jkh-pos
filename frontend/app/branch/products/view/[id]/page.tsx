@@ -163,7 +163,7 @@ export default function Page() {
                     <SelectContent>
                       <SelectGroup>
                         <SelectLabel>Categories (Expense)</SelectLabel>
-                        {categories?.data.map((item: any) => (
+                        {categories?.data.results.map((item: any) => (
                           <SelectItem
                             key={item._id}
                             value={item._id}>

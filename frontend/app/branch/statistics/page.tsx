@@ -1,14 +1,17 @@
 "use client";
 import { CardTitle, CardHeader, CardContent, Card } from "@/components/ui/card";
 import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
-import { useGetBranchStatQuery } from "@/lib/features/statSlice";
+import { useGetBranchProfitQuery, useGetBranchStatQuery } from "@/lib/features/statSlice";
 import { Shapes, Shirt, UsersRound } from "lucide-react";
 
 export default function Component() {
-  const { data: currentUser, isLoading, error } = useGetCurrentUserFromTokenQuery({});
+  const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
   const branch_id = currentUser.data.branch._id;
-  const { data: stats, isLoading: isFetching, refetch } = useGetBranchStatQuery({ branch: branch_id });
+  const { data: stats } = useGetBranchStatQuery({ branch: branch_id });
   console.log("🚀 ~ Component ~ stats:", stats);
+
+  const { data: profitData } = useGetBranchProfitQuery({ branch: branch_id });
+  console.log("🚀 ~ Component ~ profitData:", profitData);
 
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -30,11 +33,17 @@ export default function Component() {
             icon={<Shirt />}
           />
 
-          {/* <StatCard
+          <StatCard
             title=" Total Sale Amount"
-            value={stats.data.totalSale.totalAmountSum}
+            value={`Rs ${profitData.totalSales}`}
             icon={<Shirt />}
-          /> */}
+          />
+
+          <StatCard
+            title=" Total Profit"
+            value={`Rs ${profitData?.totalSales - profitData?.totalCp}`}
+            icon={<Shirt />}
+          />
         </>
       )}
     </div>

@@ -9,15 +9,12 @@ export interface ProductInput {
 
   cp: Number;
   sp: Number;
-  discount?: Number; // in %
 
   image?: string;
   note?: string;
 
   totalAddedStock?: number;
   availableStock?: number;
-
-  isReturned?: boolean;
 }
 
 export interface ProductDocument extends ProductInput, mongoose.Document {
@@ -39,15 +36,12 @@ const productSchema = new mongoose.Schema(
 
     cp: { type: Number, required: true },
     sp: { type: Number, required: true },
-    discount: { type: Number, default: 0 },
 
     image: { type: String },
     note: { type: String },
 
     totalAddedStock: { type: Number, default: 0 },
     availableStock: { type: Number, default: 0 },
-
-    isReturned: { type: Boolean, default: false },
   },
   {
     timestamps: true,

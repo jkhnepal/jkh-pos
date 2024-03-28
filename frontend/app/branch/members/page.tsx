@@ -27,7 +27,7 @@ export default function Page() {
   const itemsPerPage = 5;
 
   const { data: members, isLoading: isFetching, refetch } = useGetAllMemberQuery({ sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
-  let totalItem:number = members?.data.count;
+  let totalItem: number = members?.data.count;
   const pageCount = Math.ceil(totalItem / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
 
@@ -57,6 +57,19 @@ export default function Page() {
 
   const goToNextPage = () => {
     setCurrentPage((prevPage) => prevPage + 1);
+  };
+
+  const [createPointClaim] = useCreatePointClaimMutation();
+
+  const datatoBeSent = {
+    member: "",
+    branch: "",
+    claimPoint: "",
+  };
+  
+  const handleClaimPoint = async (e: any) => {
+    e.preventDefault();
+    const res = await createPointClaim(datatoBeSent);
   };
 
   const columns: ColumnDef<any>[] = [
@@ -100,6 +113,26 @@ export default function Page() {
       header: "Phone",
       cell: ({ row }: any) => <div>{row.getValue("phone")}</div>,
     },
+
+    {
+      accessorKey: "point",
+      header: "Reward (Rs)",
+      cell: ({ row }: any) => <div>{row.getValue("point")}</div>,
+    },
+
+
+    {
+      accessorKey: "createdAt",
+      header: "Created Date ",
+      cell: ({ row }: any) => <div>{moment(row.getValue("createdAt")).format("MMM Do YY")}</div>,
+    },
+
+
+
+
+    
+
+    
 
     {
       id: "actions",
@@ -300,6 +333,8 @@ export default function Page() {
 // Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { useCreatePointClaimMutation } from "@/lib/features/pointClaimSlice";
+import moment from "moment";
 
 function Breadcumb() {
   return (

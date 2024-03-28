@@ -7,7 +7,7 @@ export async function createSale(input: SaleInput) {
 }
 
 export async function findAllSale(filter: FilterQuery<SaleDocument> = {}) {
-  console.log("🚀 ~ findAllSale ~ filter:", filter);
+  // console.log("🚀 ~ findAllSale ~ filter:", filter);
   const branch = filter.branch || "";
   const search = filter.search || "";
   const sort = filter.sort || "";
@@ -32,7 +32,7 @@ export async function findAllSale(filter: FilterQuery<SaleDocument> = {}) {
       path: "member",
       select: "name phone",
     });
-  console.log(results);
+  // console.log(results);
   return { count, results };
 }
 

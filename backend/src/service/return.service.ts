@@ -7,6 +7,7 @@ export async function createReturn(input: ReturnInput) {
 }
 
 export async function findAllReturn(filter: FilterQuery<ReturnDocument> = {}) {
+  // console.log("🚀 ~ findAllReturn ~ filter:", filter);
   const branch = filter.branch || "";
   const search = filter.search || "";
   const sort = filter.sort || "";
@@ -14,23 +15,27 @@ export async function findAllReturn(filter: FilterQuery<ReturnDocument> = {}) {
   const limit: any = filter.limit || 5;
   const skip = (page - 1) * limit;
 
-  const searchQuery: any = {
-    name: { $regex: search, $options: "i" },
-    branchId: branch,
-  };
   const count = await ReturnModel.countDocuments({ branch: branch });
-  const results = await ReturnModel.find(searchQuery)
+
+  const results1 = await ReturnModel.find({ branch: branch })
+  // console.log("🚀 ~ findAllReturn ~ results1:", results1)
+
+  const results = await ReturnModel.find({ branch: branch })
     .skip(skip)
     .limit(limit)
     .sort({ createdAt: sort == "latest" ? -1 : 1 })
+    .populate("member")
     .populate({
-      path: "product",
-      select: "name image",
-    })
-    .populate({
-      path: "member",
-      select: "name phone",
+      path: "sale",
+      populate: {
+        path: "product",
+        select: "name"
+        
+      }
     });
+
+  // console.log(count);
+  // console.log(results);
   return { count, results };
 }
 

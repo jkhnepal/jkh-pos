@@ -16,8 +16,9 @@ export const branchInventoryApi = createApi({
     // }),
 
     getAllBranchInventory: builder.query({
-      query: ({ page = 1, limit = 5, search, sort }) => {
+      query: ({branch, page = 1, limit = 5, search, sort }) => {
         const params = {
+          branch,
           page,
           limit,
           search,

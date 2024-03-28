@@ -1,4 +1,4 @@
-import { array, coerce, object, string, TypeOf, unknown } from "zod";
+import { array, boolean, coerce, object, string, TypeOf, unknown } from "zod";
 
 // Define common schemas
 const payload = {
@@ -19,17 +19,19 @@ const payload = {
       required_error: "quantity is required",
     }),
 
-    discount: coerce.number({
-      required_error: "discount is required",
-    }),
-
     totalAmount: coerce.number({
       required_error: "totalAmount is required",
+    }),
+
+    cp: coerce.number({
+      required_error: "cp is required",
     }),
 
     sp: coerce.number({
       required_error: "sp is required",
     }),
+
+    isReturned: boolean().optional(),
   }),
 };
 
@@ -53,8 +55,8 @@ const createPayload = {
         required_error: "quantity is required",
       }),
 
-      discount: coerce.number({
-        required_error: "discount is required",
+      cp: coerce.number({
+        required_error: "cp is required",
       }),
 
       sp: coerce.number({

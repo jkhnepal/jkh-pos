@@ -24,7 +24,19 @@ export const statApi = createApi({
         };
       },
     }),
+
+    getBranchProfit: builder.query({
+      query: ({ branch }) => {
+        const params = {
+          branch,
+        };
+        return {
+          url: "/stats/branch/branch-profit",
+          params: params,
+        };
+      },
+    }),
   }),
 });
 
-export const { useGetHeadquarterStatQuery, useGetBranchStatQuery } = statApi;
+export const { useGetHeadquarterStatQuery, useGetBranchStatQuery,useGetBranchProfitQuery } = statApi;

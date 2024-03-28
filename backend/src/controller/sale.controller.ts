@@ -5,28 +5,44 @@ import { findSale, createSale, findAllSale, findAndUpdateSale, deleteSale, findA
 import BranchInventoryModel from "../models/branchInventory.model";
 import { findAndUpdateBranchInventory } from "../service/branchInventory.service";
 import { findAndUpdateMember, findMember } from "../service/member.service";
+import { createPointClaimHistory } from "../service/pointClaimHistory.service";
 var colors = require("colors");
 
+// All working before claim feature
 // export async function createSaleHandler(req: Request<{}, {}, CreateSaleInput["body"]>, res: Response, next: NextFunction) {
 //   try {
 //     const body = req.body;
+//     let totalPointsToAdd: number = 0;
 
-//     body.forEach(async (saleObject: any) => {
-//       const sale = await createSale(saleObject);
-//       console.log("🚀 ~ body.forEach ~ sale:", sale);
-//       const branchInventory: any = await BranchInventoryModel.findOne({ branch: saleObject.branch, product: saleObject.product });
+//     // sale objects comes in array so i am using loop with promise
+//     let updatedBranchInventory;
+//     await Promise.all(
+//       body.map(async (saleObject: any) => {
+//         const sale = await createSale(saleObject);
+//         const branchInventory: any = await BranchInventoryModel.findOne({ branch: saleObject.branch, product: saleObject.product });
 
-//       let updatedBranchInventory;
-//       if (branchInventory) {
-//         const newTotalstock = branchInventory.totalStock - saleObject.quantity;
-//         updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, { totalStock: newTotalstock }, { new: true });
-//       }
+//         if (branchInventory) {
+//           const newTotalstock = branchInventory.totalStock - saleObject.quantity;
+//           updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, { totalStock: newTotalstock }, { new: true });
+//         }
 
-//       return res.status(201).json({
-//         status: "success",
-//         msg: "sales created success",
-//         data: updatedBranchInventory,
-//       });
+//         const pointsToAdd = saleObject.totalAmount * 0.1;
+//         totalPointsToAdd += pointsToAdd;
+//       })
+//     );
+
+//     const member = await findMember({ _id: body[0].member });
+//     if (!member) {
+//       next(new AppError("Member does not exist", 404));
+//       return;
+//     }
+
+//     await findAndUpdateMember({ _id: member._id }, { $inc: { point: totalPointsToAdd } }, { new: true });
+
+//     return res.status(201).json({
+//       status: "success",
+//       msg: "sales created success",
+//       updatedBranchInventory: updatedBranchInventory,
 //     });
 //   } catch (error: any) {
 //     console.error(colors.red("msg:", error.message));
@@ -36,15 +52,14 @@ var colors = require("colors");
 
 export async function createSaleHandler(req: Request<{}, {}, CreateSaleInput["body"]>, res: Response, next: NextFunction) {
   try {
-    const body = req.body;
-    let totalPointsToAdd: number = 0; // Initialize totalPointsToAdd outside the loop
+    const body: any = req.body;
+    let totalPointsToAdd: number = 0;
 
-    // Use Promise.all to await all asynchronous operations inside the loop
+    // sale objects comes in array so i am using loop with promise
     let updatedBranchInventory;
     await Promise.all(
-      body.map(async (saleObject: any) => {
+      body.selectedProducts.map(async (saleObject: any) => {
         const sale = await createSale(saleObject);
-        // console.log("🚀 ~ body.forEach ~ sale:", sale);
         const branchInventory: any = await BranchInventoryModel.findOne({ branch: saleObject.branch, product: saleObject.product });
 
         if (branchInventory) {
@@ -53,28 +68,27 @@ export async function createSaleHandler(req: Request<{}, {}, CreateSaleInput["bo
         }
 
         const pointsToAdd = saleObject.totalAmount * 0.1;
-        totalPointsToAdd += pointsToAdd; // Accumulate pointsToAdd for each sale
+        totalPointsToAdd += pointsToAdd;
       })
     );
 
-    console.log(totalPointsToAdd,"{{{{{{{{{{{{{{{{{{{{{{{{{{{{{");
-
-    const member = await findMember({ _id: body[0].member });
-    console.log("🚀 ~ createSaleHandler ~ member:", member, "/////////////");
-
+    const member = await findMember({ _id: body.selectedProducts[0].member });
     if (!member) {
       next(new AppError("Member does not exist", 404));
       return;
     }
 
-    const updatedMember = await findAndUpdateMember(
-      { _id: member._id },
-      { $inc: { point: totalPointsToAdd } }, // Increment member's points by totalPointsToAdd
-      { new: true }
-    );
-    console.log(updatedMember)
+    await findAndUpdateMember({ _id: member._id }, { $inc: { point: totalPointsToAdd } }, { new: true });
 
-    // Respond with the total points to add for all sales collectively
+    if (body.claimPoint) {
+      const pointClaimHistory = await createPointClaimHistory({
+        member: body.selectedProducts[0].member,
+        branch: body.selectedProducts[0].branch,
+        claimPoint: body.claimPoint,
+      });
+      await findAndUpdateMember({ _id: member._id }, { $inc: { point: -body.claimPoint } }, { new: true });
+    }
+
     return res.status(201).json({
       status: "success",
       msg: "sales created success",

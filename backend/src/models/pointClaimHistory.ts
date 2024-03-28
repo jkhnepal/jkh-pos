@@ -7,7 +7,6 @@ export interface PointClaimHistoryInput {
   member: MemberDocument["_id"];
   branch: BranchDocument["_id"];
   claimPoint: number;
-  claimAmount: number;
 }
 
 export interface PointClaimHistoryDocument extends PointClaimHistoryInput, mongoose.Document {
@@ -26,7 +25,6 @@ const pointClaimHistorySchema = new mongoose.Schema(
     branch: { type: mongoose.Schema.Types.ObjectId, ref: "Branch", required: true },
     member: { type: mongoose.Schema.Types.ObjectId, ref: "Member", required: true },
     claimPoint: { type: Number, required: true },
-    claimAmount: { type: Number, required: true },
   },
   {
     timestamps: true,

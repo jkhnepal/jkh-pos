@@ -22,16 +22,14 @@ export default function Page() {
   const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
   const branch_id = currentUser?.data.branch._id;
 
- 
 
-  const { data: branchInventories, isLoading: isFetching } = useGetAllBranchInventoryQuery({ branch: branch_id, sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
-  
-  let totalItem = branchInventories?.data.count;
+  const { data: productIncomingHistory, isFetching } = useGetAllDistributeOfABranchQuery({ branch: branch_id, sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
+
+  let totalItem = productIncomingHistory?.data.count;
   const pageCount = Math.ceil(totalItem / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
 
-  console.log("🚀 ~ Page ~ branchInventories:", searchName);
-
+  console.log("🚀 ~ Page ~ productIncomingHistory:", searchName);
 
   const goToPreviousPage = () => {
     setCurrentPage((prevPage) => prevPage - 1);
@@ -63,9 +61,27 @@ export default function Page() {
     },
 
     {
-      accessorKey: "totalStock",
-      header: "Received Quantity",
-      cell: ({ row }: any) => <div>{row.getValue("totalStock")}</div>,
+      accessorKey: "product",
+      header: "Product",
+      cell: ({ row }: any) => <div>{row.getValue("product")?.name}</div>,
+    },
+
+    {
+      accessorKey: "product",
+      header: "C.P",
+      cell: ({ row }: any) => <div>{row.getValue("product")?.cp}</div>,
+    },
+
+    {
+      accessorKey: "product",
+      header: "S.P",
+      cell: ({ row }: any) => <div>{row.getValue("product")?.sp}</div>,
+    },
+
+    {
+      accessorKey: "stock",
+      header: "Stock",
+      cell: ({ row }: any) => <div>{row.getValue("stock")}</div>,
     },
 
     {
@@ -118,7 +134,7 @@ export default function Page() {
   ];
 
   const table = useReactTable({
-    data: branchInventories?.data.results || [],
+    data: productIncomingHistory?.data.results || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -149,7 +165,7 @@ export default function Page() {
     <div className="w-full">
       <Breadcumb />
       <div className="flex justify-between items-center py-4">
-      <Input
+        <Input
           placeholder="Search by product name..."
           value={searchName}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
@@ -201,8 +217,6 @@ export default function Page() {
             )}
           </div>
         </div>
-
-
       </div>
       <div className="rounded-md border">
         <Table>
@@ -244,7 +258,7 @@ export default function Page() {
           {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
         <div className="space-x-2">
-        <Button
+          <Button
             variant="outline"
             size="sm"
             disabled={startIndex === 0}
@@ -274,6 +288,7 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
 import { useDebounce } from "use-debounce";
+import { useGetAllDistributeOfABranchQuery, useGetAllDistributeQuery } from "@/lib/features/distributeSlice";
 
 function Breadcumb() {
   return (

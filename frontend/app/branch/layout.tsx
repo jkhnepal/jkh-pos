@@ -1,5 +1,5 @@
 "use client";
-import { BarChartBig, CornerDownLeft, DatabaseZap, Home, LayoutDashboard, LayoutList, Menu, Settings, TrendingUp, User2, Users } from "lucide-react";
+import { BarChartBig, CornerDownLeft, LayoutDashboard, LayoutList, LogOut, Menu, TrendingUp, Users } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -17,14 +17,32 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     setIsFullScreen(!isFullScreen);
   };
 
-  const { data: currentUser, isLoading, error } = useGetCurrentUserFromTokenQuery({});
-  console.log("🚀 ~ Layout ~ currentUser:", currentUser);
+  const { data: currentUserData, isLoading, error } = useGetCurrentUserFromTokenQuery({});
+  const currentBranch = currentUserData?.data.branch;
 
-  if (currentUser && currentUser.data.branch.type === "branch") {
-    return (
-      <div className=" flex">
-        {!isFullScreen && (
-          <div className={`${isFullScreen ? "" : "w-2/12"}  h-screen overflow-y-scroll bg-primary p-4 text-primary-foreground `}>
+  // Redirect to the login page if accessToken is not present in localStorage
+  const accessToken = localStorage.getItem("accessToken");
+  if (!accessToken) {
+    router.push("/");
+    return null;
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    router.push("/");
+    return null;
+  };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  // if (currentBranch && currentBranch.type === "branch") {
+  return (
+    <div className=" flex">
+      {!isFullScreen && (
+        <div className={`${isFullScreen ? "" : "w-2/12"} flex flex-col justify-between  h-screen overflow-y-scroll bg-primary p-4 text-primary-foreground `}>
+          <div>
             <div className=" mb-8">
               <Image
                 src={logo}
@@ -46,31 +64,54 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               ))}
             </div>
           </div>
-        )}
 
-        <div className={`${isFullScreen ? " w-full " : " w-10/12"} h-screen overflow-y-scroll`}>
-          <div className="  flex items-center justify-between  h-12 px-4 shadow-md z-50">
-            <Button
-              onClick={changeFullScreen}
-              variant="outline">
-              <Menu className=" cursor-pointer " />
-            </Button>
-            <div className=" flex space-x-4">
-              <DatabaseZap />
+          {currentBranch && (
+            <div className="py-4  border-t border-zinc-700 text-primary-foreground/60 ">
+              <div className="flex items-center gap-x-4">
+                  {/* <Image
+                    src={currentBranch.image}
+                    alt="branch-image"
+                    className=" shape-square rounded-full "
+                    height={50}
+                    width={50}
+                  /> */}
+                <div>
+                  <span className="block text-sm font-semibold">
+                    {currentBranch.name} ({currentBranch.address}){" "}
+                  </span>
+                  <span className="block mt-px   text-xs">{currentBranch.email}</span>
+                  <span className="block mt-px   text-xs">{currentBranch.phone}</span>
+                </div>
+              </div>
             </div>
-          </div>
-          <div>
-            <div className=" px-4 mt-8 ">{children}</div>
+          )}
+        </div>
+      )}
+
+      <div className={`${isFullScreen ? " w-full " : " w-10/12"} h-screen overflow-y-scroll`}>
+        <div className="  flex items-center justify-between  h-12 px-4 shadow-md z-50">
+          <Button
+            onClick={changeFullScreen}
+            variant="outline">
+            <Menu className=" cursor-pointer " />
+          </Button>
+          <div className=" flex space-x-4">
+            <Button onClick={handleLogout}>
+              <LogOut />
+            </Button>
           </div>
         </div>
+        <div>
+          <div className=" px-4 mt-8 ">{children}</div>
+        </div>
       </div>
-    );
-  } else {
-    if (!isLoading && !error) {
-      router.push("/");
-    }
-    return null;
-  }
+    </div>
+  );
+  // } else {
+  //   if (!isLoading && currentBranch && currentBranch.type === "branch") {
+  //     router.push("/branch");
+  //   }
+  // }
 }
 
 const navItems = [
