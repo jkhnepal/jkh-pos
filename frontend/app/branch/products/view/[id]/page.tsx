@@ -33,8 +33,6 @@ const formSchema = z.object({
     message: "Selling price must be a positive number.",
   }),
 
-  discount: z.coerce.number().optional(),
-
   image: z.string().optional(),
   note: z.string().optional(),
 });
@@ -46,7 +44,6 @@ export default function Page() {
 
   const params = useParams();
   const productId = params.id as string;
-  console.log("🚀 ~ Page ~ productId:", productId);
 
   const { data, isFetching } = useGetProductQuery(productId);
   const product = data?.data;
@@ -79,7 +76,6 @@ export default function Page() {
 
         cp: product.cp || 0,
         sp: product.sp || 0,
-        discount: product.discount || 0,
 
         image: product.image || "",
         note: product.note || "",
@@ -226,25 +222,6 @@ export default function Page() {
                   <Input
                     type="number"
                     placeholder="Selling Price"
-                    {...field}
-                    readOnly
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="discount"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Discount (%) *</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    placeholder="Discount (%)"
                     {...field}
                     readOnly
                   />

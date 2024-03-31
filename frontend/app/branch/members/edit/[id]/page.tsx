@@ -15,7 +15,7 @@ import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, Tabl
 
 const formSchema = z.object({
   name: z.string(),
-  phone: z.coerce.number(),
+  phone: z.string(),
   creatorBranch: z.string(),
 });
 
@@ -27,22 +27,17 @@ export default function Page() {
 
   const { data, isFetching } = useGetMemberQuery(memberId);
   const member = data?.data;
-
-  console.log(member?._id);
-
-  // const { data: sales } = useGetAllSalesOfAMemberQuery({ sort: "latest", page: 1, limit: 100, search: "" });
-  // console.log("🚀 ~ Page ~ sales:", sales)
+  console.log("🚀 ~ Page ~ member:", member);
 
   const { data: sales } = useGetAllSalesOfAMemberQuery({ member_id: member?._id });
-  console.log("🚀 ~ Page ~ sales:", sales);
 
   // 1. Define your form.
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      phone: 0,
-      creatorBranch: "123456789012345678809754",
+      phone: "",
+      creatorBranch: "",
     },
   });
 
@@ -50,7 +45,8 @@ export default function Page() {
     if (member) {
       form.reset({
         name: member.name || "",
-        phone: member.phone || 0,
+        phone: member.phone || "",
+        creatorBranch: member.creatorBranch || "",
       });
     }
   }, [form, member]);
@@ -60,14 +56,11 @@ export default function Page() {
     if (!sales || !sales.data || sales.data.length === 0) {
       return 0; // Return 0 if sales data is empty
     }
-
-    // Sum up totalAmount of each item in sales data
     return sales.data.reduce((total: any, item: any) => total + item.totalAmount, 0);
   };
 
   // Define a submit handler.
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
     const res: any = await updateMember({ memberId: memberId, updatedMember: values });
     if (res.data) {
       toast.success(res.data.msg);
@@ -149,10 +142,11 @@ export default function Page() {
           <TableRow>
             <TableHead className="w-[100px]">S.N</TableHead>
             <TableHead>Name</TableHead>
+            <TableHead>SKU</TableHead>
             <TableHead>SP</TableHead>
             <TableHead>Quantity</TableHead>
-            <TableHead>Discount (%)</TableHead>
-            <TableHead className="text-right">Total Amount</TableHead>
+            <TableHead>Buy Date</TableHead>
+            <TableHead className="text-right">Total Amount (Rs)</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -160,17 +154,17 @@ export default function Page() {
             <TableRow key={item.item}>
               <TableCell className="font-medium">{index + 1}</TableCell>
               <TableCell>{item.product.name}</TableCell>
-
+              <TableCell>{item.product.sku}</TableCell>
               <TableCell>{item.sp}</TableCell>
-              <TableCell>{item.discount}</TableCell>
               <TableCell>{item.quantity}</TableCell>
+              <TableCell>{moment(item.createdAt).format("MMM Do YY")}</TableCell>
               <TableCell className="text-right">{item.totalAmount}</TableCell>
             </TableRow>
           ))}
         </TableBody>
         <TableFooter>
           <TableRow>
-            <TableCell colSpan={5}>Total</TableCell>
+            <TableCell colSpan={6}>Total (Rs)</TableCell>
             <TableCell className="text-right"> Rs.{calculateTotalAmount().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
           </TableRow>
         </TableFooter>
@@ -182,7 +176,8 @@ export default function Page() {
 // Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { useGetAllSaleQuery, useGetAllSalesOfAMemberQuery } from "@/lib/features/saleSlice";
+import { useGetAllSalesOfAMemberQuery } from "@/lib/features/saleSlice";
+import moment from "moment";
 
 function Breadcumb() {
   return (

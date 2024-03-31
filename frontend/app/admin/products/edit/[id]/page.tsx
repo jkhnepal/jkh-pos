@@ -39,6 +39,9 @@ const formSchema = z.object({
 
   image: z.string().optional(),
   note: z.string().optional(),
+
+  colors: z.string().optional(),
+  sizes: z.string().optional(),
 });
 
 export default function Page() {
@@ -68,6 +71,8 @@ export default function Page() {
       sp: 0,
       image: "",
       note: "",
+      colors: "",
+      sizes: "",
     },
   });
 
@@ -83,6 +88,9 @@ export default function Page() {
 
         image: product.image || "",
         note: product.note || "",
+
+        colors: product.colors || "",
+        sizes: product.sizes || "",
       });
       setImageUrl(product.image || "");
     }
@@ -155,7 +163,7 @@ export default function Page() {
                   <Select
                     {...field}
                     onValueChange={field.onChange}
-                    defaultOpen={product?.category}>
+                    defaultValue={product?.category}>
                     <SelectTrigger className="">
                       <SelectValue placeholder="Select Category" />
                     </SelectTrigger>
@@ -165,7 +173,7 @@ export default function Page() {
                         {categories?.data.results.map((item: any) => (
                           <SelectItem
                             key={item._id}
-                            value={item._id}>
+                            value={item._id?.toString()}>
                             {item.name}
                           </SelectItem>
                         ))}
@@ -250,6 +258,40 @@ export default function Page() {
 
           <FormField
             control={form.control}
+            name="sizes"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Sizes <OptionalLabel/></FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="XS,S,M,L"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="colors"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Colors <OptionalLabel/></FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Red,Green,Blue"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
             name="image"
             render={({ field }) => (
               <FormItem>
@@ -282,8 +324,11 @@ export default function Page() {
             )}
           />
 
-          <div>
+          <div className=" flex flex-col">
+            <span className=" opacity-0">.</span>
+            <div>
             <Button type="submit"> {isUpdating && <LoaderPre />} Submit</Button>
+            </div>
           </div>
         </form>
       </Form>

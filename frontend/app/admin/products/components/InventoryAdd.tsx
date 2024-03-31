@@ -27,17 +27,17 @@ const formSchema = z.object({
 });
 
 export default function InventoryAdd({ product }: Props) {
-  const { data, refetch } = useGetAllInventoryQuery({ product: product._id });
+  const { data, refetch } = useGetAllInventoryQuery({ product: product?._id });
   const [createInventory, { error, isLoading: isCreating }] = useCreateInventoryMutation();
 
   //For refetch
-  const { refetch: productRefetch } = useGetProductQuery(product.productId);
+  const { refetch: productRefetch } = useGetProductQuery(product?.productId);
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      product: product._id,
+      product: product?._id,
       stock: 0,
     },
   });

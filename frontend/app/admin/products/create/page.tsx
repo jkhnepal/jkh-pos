@@ -39,6 +39,9 @@ const formSchema = z.object({
 
   image: z.string().optional(),
   note: z.string().optional(),
+
+  colors: z.string().optional(),
+  sizes: z.string().optional(),
 });
 
 export default function Page() {
@@ -60,6 +63,8 @@ export default function Page() {
       sp: 0,
       image: "",
       note: "",
+      colors: "",
+      sizes: "",
     },
   });
 
@@ -207,6 +212,40 @@ export default function Page() {
               <FormControl>
                 <Input
                   placeholder="Product Note"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="colors"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>colors </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Red,Green,Blue"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="sizes"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>sizes</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="XS,S,M"
                   {...field}
                 />
               </FormControl>

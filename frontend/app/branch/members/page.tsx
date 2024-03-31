@@ -24,7 +24,7 @@ export default function Page() {
   const [debounceValue] = useDebounce(searchName, 1000);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [sort, setSort] = React.useState("latest");
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
 
   const { data: members, isLoading: isFetching, refetch } = useGetAllMemberQuery({ sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
   let totalItem: number = members?.data.count;
@@ -66,7 +66,7 @@ export default function Page() {
     branch: "",
     claimPoint: "",
   };
-  
+
   const handleClaimPoint = async (e: any) => {
     e.preventDefault();
     const res = await createPointClaim(datatoBeSent);
@@ -94,6 +94,12 @@ export default function Page() {
     },
 
     {
+      accessorKey: "sale",
+      header: "S.N",
+      cell: ({ row }: any) => <div>{startIndex + row.index + 1} </div>,
+    },
+
+    {
       accessorKey: "name",
       header: ({ column }) => {
         return (
@@ -116,23 +122,21 @@ export default function Page() {
 
     {
       accessorKey: "point",
-      header: "Reward (Rs)",
-      cell: ({ row }: any) => <div>{row.getValue("point")}</div>,
+      header: "Reward Point",
+      cell: ({ row }: any) => <div>{row.getValue("point") / 10}</div>,
     },
 
+    {
+      accessorKey: "point",
+      header: "Reward Amount(Rs)",
+      cell: ({ row }: any) => <div>{row.getValue("point")}</div>,
+    },
 
     {
       accessorKey: "createdAt",
       header: "Created Date ",
       cell: ({ row }: any) => <div>{moment(row.getValue("createdAt")).format("MMM Do YY")}</div>,
     },
-
-
-
-
-    
-
-    
 
     {
       id: "actions",
@@ -161,13 +165,7 @@ export default function Page() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => {
-                  navigator.clipboard.writeText(item.memberId);
-                  toast.success("Copy success");
-                }}>
-                Copy id
-              </DropdownMenuItem>
+
               <DropdownMenuSeparator />
 
               <Link href={`/branch/members/edit/${item.memberId}`}>

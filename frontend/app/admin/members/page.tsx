@@ -24,10 +24,10 @@ export default function Page() {
   const [debounceValue] = useDebounce(searchName, 1000);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [sort, setSort] = React.useState("latest");
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
 
   const { data: members, isLoading: isFetching, refetch } = useGetAllMemberQuery({ sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
-  let totalItem:number = members?.data.count;
+  let totalItem: number = members?.data.count;
   const pageCount = Math.ceil(totalItem / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
 
@@ -81,6 +81,12 @@ export default function Page() {
     },
 
     {
+      accessorKey: "sale",
+      header: "S.N",
+      cell: ({ row }: any) => <div>{startIndex + row.index + 1} </div>,
+    },
+
+    {
       accessorKey: "name",
       header: ({ column }) => {
         return (
@@ -128,13 +134,7 @@ export default function Page() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => {
-                  navigator.clipboard.writeText(item.memberId);
-                  toast.success("Copy success");
-                }}>
-                Copy id
-              </DropdownMenuItem>
+
               <DropdownMenuSeparator />
 
               <Link href={`/admin/members/edit/${item.memberId}`}>

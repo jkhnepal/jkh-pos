@@ -11,33 +11,33 @@ import { useParams } from "next/navigation";
 import { useGetAllMemberQuery, useGetMemberQuery, useUpdateMemberMutation } from "@/lib/features/memberSlice";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import LoaderPre from "@/app/custom-components/LoaderPre";
+import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const formSchema = z.object({
   name: z.string(),
-  phone: z.coerce.number(),
+  phone: z.string(),
   creatorBranch: z.string(),
 });
 
 export default function Page() {
+  const [updateMember, { error: updateError, isLoading: isUpdating }] = useUpdateMemberMutation();
   const { refetch } = useGetAllMemberQuery({ name: "" });
   const params = useParams();
   const memberId = params.id;
 
   const { data, isFetching } = useGetMemberQuery(memberId);
   const member = data?.data;
-
-  // console.log(member)
+  console.log("🚀 ~ Page ~ member:", member);
 
   const { data: sales } = useGetAllSalesOfAMemberQuery({ member_id: member?._id });
-  console.log("🚀 ~ Page ~ sales:", sales);
 
-  const [updateMember, { error: updateError, isError: ab, isLoading: isUpdating }] = useUpdateMemberMutation();
   // 1. Define your form.
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      phone: 0,
+      phone: "",
+      creatorBranch: "",
     },
   });
 
@@ -45,14 +45,22 @@ export default function Page() {
     if (member) {
       form.reset({
         name: member.name || "",
-        phone: member.phone || 0,
+        phone: member.phone || "",
+        creatorBranch: member.creatorBranch || "",
       });
     }
   }, [form, member]);
 
+  // Function to calculate total amount
+  const calculateTotalAmount = () => {
+    if (!sales || !sales.data || sales.data.length === 0) {
+      return 0; // Return 0 if sales data is empty
+    }
+    return sales.data.reduce((total: any, item: any) => total + item.totalAmount, 0);
+  };
+
   // Define a submit handler.
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
     const res: any = await updateMember({ memberId: memberId, updatedMember: values });
     if (res.data) {
       toast.success(res.data.msg);
@@ -81,72 +89,109 @@ export default function Page() {
   }
 
   return (
-    <Form {...form}>
-      <Breadcumb />
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className=" grid grid-cols-2 gap-4">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Full Name *</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Loki Chaulagain"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <div>
+      <Form {...form}>
+        <Breadcumb />
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className=" grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Full Name *</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Loki Chaulagain"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="phone"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Phone</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  placeholder="Phone"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="Phone"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <div>
-          <Button type="submit"> {isUpdating && <LoaderPre />} Submit</Button>
-        </div>
-      </form>
-    </Form>
+          <div>
+            <Button type="submit"> {isUpdating && <LoaderPre />} Submit</Button>
+          </div>
+        </form>
+      </Form>
+
+      <Table className=" mt-12">
+        <TableCaption>A list of your recent invoices.</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-[100px]">S.N</TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>SKU</TableHead>
+            <TableHead>SP</TableHead>
+            <TableHead>Quantity</TableHead>
+            <TableHead>Buy Date</TableHead>
+            <TableHead className="text-right">Total Amount (Rs)</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {sales?.data.map((item: any, index: number) => (
+            <TableRow key={item.item}>
+              <TableCell className="font-medium">{index + 1}</TableCell>
+              <TableCell>{item.product.name}</TableCell>
+              <TableCell>{item.product.sku}</TableCell>
+              <TableCell>{item.sp}</TableCell>
+              <TableCell>{item.quantity}</TableCell>
+              <TableCell>{moment(item.createdAt).format("MMM Do YY")}</TableCell>
+              <TableCell className="text-right">{item.totalAmount}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+        <TableFooter>
+          <TableRow>
+            <TableCell colSpan={6}>Total (Rs)</TableCell>
+            <TableCell className="text-right"> Rs.{calculateTotalAmount().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
+          </TableRow>
+        </TableFooter>
+      </Table>
+    </div>
   );
 }
 
 // Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { useGetAllSaleQuery, useGetAllSalesOfAMemberQuery } from "@/lib/features/saleSlice";
+import { useGetAllSalesOfAMemberQuery } from "@/lib/features/saleSlice";
+import moment from "moment";
 
 function Breadcumb() {
   return (
     <Breadcrumb className=" mb-8">
       <BreadcrumbList>
         <BreadcrumbItem>
-          <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+          <BreadcrumbLink href="/branch">Dashboard</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator>
           <SlashIcon />
         </BreadcrumbSeparator>
 
         <BreadcrumbItem>
-          <BreadcrumbLink href="/admin/members">Members</BreadcrumbLink>
+          <BreadcrumbLink href="/branch/members">Members</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator>
           <SlashIcon />

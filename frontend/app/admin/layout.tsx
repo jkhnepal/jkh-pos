@@ -1,5 +1,5 @@
 "use client";
-import { LayoutDashboard, LogOut, Menu, SendToBack, Settings, Store, Users } from "lucide-react";
+import { LayoutDashboard, LogOut, Menu, SendToBack, Settings, Shapes, Shirt, Store, Users } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -20,18 +20,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const currentBranch = currentUserData?.data.branch;
   console.log("🚀 ~ Layout ~ currentBranch:", currentBranch);
 
-  // Redirect to the login page if accessToken is not present in localStorage
-  const accessToken = localStorage.getItem("accessToken");
-  if (!accessToken) {
-    router.push("/");
-    return null;
-  }
+  // // Redirect to the login page if accessToken is not present in localStorage
+  // const accessToken = localStorage.getItem("accessToken");
+  // if (!accessToken) {
+  //   router.push("/");
+  //   return null;
+  // }
 
-  const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    router.push("/");
-    return null;
-  };
+  // const handleLogout = () => {
+  //   localStorage.removeItem("accessToken");
+  //   router.push("/");
+  //   return null;
+  // };
 
   // if (isLoading) {
   //   return <div>Loading...</div>;
@@ -69,7 +69,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {currentBranch && (
             <div className="py-4  border-t border-zinc-700 text-primary-foreground/60 ">
               <div className="flex items-center gap-x-4">
-                  {/* <Image
+                {/* <Image
                     src={currentBranch.image}
                     alt="branch-image"
                     className=" shape-square rounded-full "
@@ -97,7 +97,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <Menu className=" cursor-pointer " />
           </Button>
 
-          <Button onClick={handleLogout}>
+          <Button
+          // onClick={handleLogout}
+          >
             <LogOut />
           </Button>
         </div>
@@ -116,7 +118,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
 const navItems = [
   {
-    name: "Dashboard",
+    name: "Overview",
     icon: <LayoutDashboard size={18} />,
     href: "/admin",
   },
@@ -129,13 +131,13 @@ const navItems = [
 
   {
     name: "Categories",
-    icon: <Settings size={15} />,
+    icon: <Shapes size={18} />,
     href: "/admin/categories",
   },
 
   {
     name: "Products",
-    icon: <SendToBack size={18} />,
+    icon: <Shirt size={18} />,
     href: "/admin/products",
   },
 

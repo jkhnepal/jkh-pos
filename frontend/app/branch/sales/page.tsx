@@ -7,16 +7,9 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Link from "next/link";
-import { toast } from "sonner";
 import { useGetAllSaleQuery } from "@/lib/features/saleSlice";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
-import { addDays, format } from "date-fns";
-import { Calendar as CalendarIcon } from "lucide-react";
-import { DateRange } from "react-day-picker";
-import { cn } from "@/lib/utils";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -31,12 +24,11 @@ export default function Page() {
   const [debounceValue] = useDebounce(searchName, 1000);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [sort, setSort] = React.useState("latest");
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
 
-  const { data: salesOfABranch, isLoading: isFetching, refetch } = useGetAllSaleQuery({ branch: branch_id, sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
-  console.log("🚀 ~ Page ~ salesOfABranch:", salesOfABranch);
+  const { data: salesOfABranch, isLoading: isFetching } = useGetAllSaleQuery({ branch: branch_id, sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
+
   let totalItem: number = salesOfABranch?.data.count;
-  const pageCount = Math.ceil(totalItem / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
 
   const goToPreviousPage = () => {
@@ -46,16 +38,6 @@ export default function Page() {
   const goToNextPage = () => {
     setCurrentPage((prevPage) => prevPage + 1);
   };
-
-  const [date, setDate] = React.useState<DateRange | undefined>({
-    from: new Date(2022, 2, 18),
-    to: addDays(new Date(2022, 2, 20), 2),
-  });
-
-  console.log(date);
-
-  const { data: testData } = useGetAllSaleQuery({ branch: branch_id, sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue, date: date });
-  console.log("🚀 ~ Page ~ testData:", testData);
 
   const columns: ColumnDef<any>[] = [
     {
@@ -76,6 +58,12 @@ export default function Page() {
       ),
       enableSorting: false,
       enableHiding: false,
+    },
+
+    {
+      accessorKey: "sale",
+      header: "S.N",
+      cell: ({ row }: any) => <div>{startIndex + row.index + 1} </div>,
     },
 
     {
@@ -132,17 +120,15 @@ export default function Page() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => {
-                  navigator.clipboard.writeText(item.saleId);
-                  toast.success("Copy success");
-                }}>
-                Copy id
-              </DropdownMenuItem>
+
               <DropdownMenuSeparator />
 
               <Link href={`/branch/sales/return/${item.saleId}`}>
-                <DropdownMenuItem>View/Edit</DropdownMenuItem>
+                <DropdownMenuItem>Return</DropdownMenuItem>
+              </Link>
+
+              <Link href={`/branch/sales/view/${item.saleId}`}>
+                <DropdownMenuItem>View detail</DropdownMenuItem>
               </Link>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -191,42 +177,6 @@ export default function Page() {
         />
 
         <div className=" flex space-x-2">
-          <div className={cn("grid gap-2")}>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  id="date"
-                  variant={"outline"}
-                  className={cn("w-[300px] justify-start text-left font-normal", !date && "text-muted-foreground")}>
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date?.from ? (
-                    date.to ? (
-                      <>
-                        {format(date.from, "LLL dd, y")} - {format(date.to, "LLL dd, y")}
-                      </>
-                    ) : (
-                      format(date.from, "LLL dd, y")
-                    )
-                  ) : (
-                    <span>Pick a date</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent
-                className="w-auto p-0"
-                align="start">
-                <Calendar
-                  initialFocus
-                  mode="range"
-                  defaultMonth={date?.from}
-                  selected={date}
-                  onSelect={setDate}
-                  numberOfMonths={2}
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
-
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button

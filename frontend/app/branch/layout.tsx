@@ -20,22 +20,22 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { data: currentUserData, isLoading, error } = useGetCurrentUserFromTokenQuery({});
   const currentBranch = currentUserData?.data.branch;
 
-  // Redirect to the login page if accessToken is not present in localStorage
-  const accessToken = localStorage.getItem("accessToken");
-  if (!accessToken) {
-    router.push("/");
-    return null;
-  }
+  // // Redirect to the login page if accessToken is not present in localStorage
+  // const accessToken = localStorage.getItem("accessToken");
+  // if (!accessToken) {
+  //   router.push("/");
+  //   return null;
+  // }
 
-  const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    router.push("/");
-    return null;
-  };
+  // const handleLogout = () => {
+  //   localStorage.removeItem("accessToken");
+  //   router.push("/");
+  //   return null;
+  // };
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  // if (isLoading) {
+  //   return <div>Loading...</div>;
+  // }
 
   // if (currentBranch && currentBranch.type === "branch") {
   return (
@@ -96,7 +96,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <Menu className=" cursor-pointer " />
           </Button>
           <div className=" flex space-x-4">
-            <Button onClick={handleLogout}>
+            <Button 
+            // onClick={handleLogout}
+            >
               <LogOut />
             </Button>
           </div>

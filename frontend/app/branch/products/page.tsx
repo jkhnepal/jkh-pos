@@ -17,19 +17,16 @@ export default function Page() {
   const [debounceValue] = useDebounce(searchName, 1000);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [sort, setSort] = React.useState("latest");
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
 
   const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
   const branch_id = currentUser?.data.branch._id;
-
 
   const { data: productIncomingHistory, isFetching } = useGetAllDistributeOfABranchQuery({ branch: branch_id, sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
 
   let totalItem = productIncomingHistory?.data.count;
   const pageCount = Math.ceil(totalItem / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-
-  console.log("🚀 ~ Page ~ productIncomingHistory:", searchName);
 
   const goToPreviousPage = () => {
     setCurrentPage((prevPage) => prevPage - 1);
@@ -61,9 +58,21 @@ export default function Page() {
     },
 
     {
+      accessorKey: "sale",
+      header: "S.N",
+      cell: ({ row }: any) => <div>{startIndex + row.index + 1} </div>,
+    },
+
+    {
       accessorKey: "product",
       header: "Product",
       cell: ({ row }: any) => <div>{row.getValue("product")?.name}</div>,
+    },
+
+    {
+      accessorKey: "product",
+      header: "SKU",
+      cell: ({ row }: any) => <div>{row.getValue("product")?.sku}</div>,
     },
 
     {
@@ -82,12 +91,6 @@ export default function Page() {
       accessorKey: "stock",
       header: "Stock",
       cell: ({ row }: any) => <div>{row.getValue("stock")}</div>,
-    },
-
-    {
-      accessorKey: "product",
-      header: "Product Name",
-      cell: ({ row }: any) => <div>{row.getValue("product").name}</div>,
     },
 
     {
@@ -114,13 +117,7 @@ export default function Page() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => {
-                  navigator.clipboard.writeText(item.branchInventoryId);
-                  toast.success("Copy success");
-                }}>
-                Copy id
-              </DropdownMenuItem>
+
               <DropdownMenuSeparator />
 
               <Link href={`/branch/products/view/${item.product.productId}`}>

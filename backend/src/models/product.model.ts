@@ -15,6 +15,9 @@ export interface ProductInput {
 
   totalAddedStock?: number;
   availableStock?: number;
+
+  colors?: string;
+  sizes?: string;
 }
 
 export interface ProductDocument extends ProductInput, mongoose.Document {
@@ -42,6 +45,9 @@ const productSchema = new mongoose.Schema(
 
     totalAddedStock: { type: Number, default: 0 },
     availableStock: { type: Number, default: 0 },
+
+    colors: { type: String },
+    sizes: { type: String },
   },
   {
     timestamps: true,

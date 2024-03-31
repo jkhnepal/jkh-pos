@@ -7,18 +7,16 @@ export async function createReturn(input: ReturnInput) {
 }
 
 export async function findAllReturn(filter: FilterQuery<ReturnDocument> = {}) {
-  // console.log("🚀 ~ findAllReturn ~ filter:", filter);
   const branch = filter.branch || "";
   const search = filter.search || "";
+  console.log("🚀 ~ findAllReturn ~ search:", search)
   const sort = filter.sort || "";
   const page: any = filter.page || 1;
   const limit: any = filter.limit || 5;
   const skip = (page - 1) * limit;
 
   const count = await ReturnModel.countDocuments({ branch: branch });
-
-  const results1 = await ReturnModel.find({ branch: branch })
-  // console.log("🚀 ~ findAllReturn ~ results1:", results1)
+  const results1 = await ReturnModel.find({ branch: branch });
 
   const results = await ReturnModel.find({ branch: branch })
     .skip(skip)
@@ -29,18 +27,23 @@ export async function findAllReturn(filter: FilterQuery<ReturnDocument> = {}) {
       path: "sale",
       populate: {
         path: "product",
-        select: "name"
-        
-      }
+        select: "name",
+      },
     });
 
-  // console.log(count);
-  // console.log(results);
   return { count, results };
 }
 
 export async function findReturn(query: FilterQuery<ReturnDocument>, options: QueryOptions = { lean: true }) {
-  const result = await ReturnModel.findOne(query, {}, options);
+  const result = await ReturnModel.findOne(query, {}, options)
+    .populate("branch")
+    .populate("member")
+    .populate({
+      path: "sale",
+      populate: {
+        path: "product",
+      },
+    });
   return result;
 }
 

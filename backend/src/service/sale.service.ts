@@ -18,16 +18,14 @@ export async function findAllSale(filter: FilterQuery<SaleDocument> = {}) {
   const searchQuery: any = {
     name: { $regex: search, $options: "i" },
     branch: branch,
+    isReturned: false,
   };
   const count = await SaleModel.countDocuments({ branch: branch });
   const results = await SaleModel.find(searchQuery)
     .skip(skip)
     .limit(limit)
     .sort({ createdAt: sort == "latest" ? -1 : 1 })
-    .populate({
-      path: "product",
-      select: "name image",
-    })
+    .populate("product")
     .populate({
       path: "member",
       select: "name phone",
@@ -39,13 +37,13 @@ export async function findAllSale(filter: FilterQuery<SaleDocument> = {}) {
 export async function findAllSaleOfAMember(filter: FilterQuery<SaleDocument> = {}) {
   const results = await SaleModel.find({ member: filter.member_id }).populate({
     path: "product",
-    select: "name image",
-  })
+    select: "name image sku",
+  });
   return results;
 }
 
 export async function findSale(query: FilterQuery<SaleDocument>, options: QueryOptions = { lean: true }) {
-  const result = await SaleModel.findOne(query, {}, options);
+  const result = await SaleModel.findOne(query, {}, options).populate("branch product member");
   return result;
 }
 
