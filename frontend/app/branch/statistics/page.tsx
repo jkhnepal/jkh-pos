@@ -6,7 +6,7 @@ import { Shapes, Shirt, UsersRound } from "lucide-react";
 
 export default function Component() {
   const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
-  const branch_id = currentUser.data.branch._id;
+  const branch_id = currentUser?.data.branch._id;
   const { data: stats } = useGetBranchStatQuery({ branch: branch_id });
   console.log("🚀 ~ Component ~ stats:", stats);
 

@@ -30,7 +30,6 @@ export default function Page() {
 
   const { data: saleData, refetch: refetchSale } = useGetSaleQuery(params.id);
   const sale = saleData?.data;
-  // console.log(sale);
 
   // To be return quantity
   const [quantity, setQuantity] = React.useState<number>(1);
@@ -43,7 +42,7 @@ export default function Page() {
     sale: sale?._id,
     quantity: quantity,
   };
-  // console.log(dataToBeSend);
+  
   const handleReturn = async (e: any) => {
     e.preventDefault();
     const res: any = await createReturn(dataToBeSend);
@@ -53,6 +52,7 @@ export default function Page() {
 
   return (
     <div className="   ">
+      <Breadcumb />
       <div className="flex gap-4 items-center w-3/12">
         <Input
           disabled={sale?.isReturned}

@@ -25,7 +25,7 @@ export default function Page() {
   const [debounceValue] = useDebounce(searchName, 1000);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [sort, setSort] = React.useState("latest");
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
 
   const { data: products, isError, isLoading: isFetching, refetch } = useGetAllProductQuery({ sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
   let totalItem = products?.data.count;
@@ -82,6 +82,12 @@ export default function Page() {
     },
 
     {
+      accessorKey: "sale",
+      header: "S.N",
+      cell: ({ row }: any) => <div>{startIndex + row.index + 1} </div>,
+    },
+
+    {
       accessorKey: "name",
       header: ({ column }) => {
         return (
@@ -111,7 +117,15 @@ export default function Page() {
     {
       accessorKey: "sku",
       header: "SKU",
-      cell: ({ row }: any) => <div>{row.getValue("sku")}</div>,
+      cell: ({ row }: any) => (
+        <div
+          onClick={() => {
+            navigator.clipboard.writeText(row.getValue("sku"));
+            toast.success("SKU copy success");
+          }}>
+          {row.getValue("sku")}
+        </div>
+      ),
     },
 
     {
@@ -160,13 +174,7 @@ export default function Page() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => {
-                  navigator.clipboard.writeText(item.productId);
-                  toast.success("Copy success");
-                }}>
-                Copy id
-              </DropdownMenuItem>
+
               <DropdownMenuSeparator />
 
               <Link href={`/admin/products/edit/${item.productId}`}>
@@ -308,7 +316,7 @@ export default function Page() {
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-        {startIndex} of {totalItem} row(s) selected.
+          {startIndex} of {totalItem} row(s) selected.
         </div>
         <div className="space-x-2">
           <Button

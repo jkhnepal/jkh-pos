@@ -1,7 +1,7 @@
 "use client";
 import * as React from "react";
 import { ColumnDef, ColumnFiltersState, SortingState, VisibilityState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
-import { ArrowDown01, ArrowDown10, ArrowUpDown, ChevronDown } from "lucide-react";
+import { ArrowDown01, ArrowDown10, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -21,7 +21,7 @@ export default function Page() {
   const [debounceValue] = useDebounce(searchName, 1000);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [sort, setSort] = React.useState("latest");
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
 
   const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
   const branch_id = currentUser?.data.branch._id;
@@ -62,6 +62,12 @@ export default function Page() {
 
     {
       accessorKey: "sale",
+      header: "S.N",
+      cell: ({ row }: any) => <div>{startIndex + row.index + 1} </div>,
+    },
+
+    {
+      accessorKey: "sale",
       header: "Product Name",
       cell: ({ row }: any) => <div>{row.getValue("sale")?.product.name} </div>,
     },
@@ -88,6 +94,18 @@ export default function Page() {
       accessorKey: "createdAt",
       header: "Return Date",
       cell: ({ row }: any) => <div>{moment(row.getValue("createdAt")).format("MMM Do YY")} </div>,
+    },
+
+    {
+      accessorKey: "returnId",
+      header: "Action",
+      cell: ({ row }: any) => (
+        <div>
+          <Link href={`/branch/returns/${row.getValue("returnId")}`}>
+            <Badge variant="outline">View Detail</Badge>
+          </Link>
+        </div>
+      ),
     },
 
     {
@@ -147,7 +165,7 @@ export default function Page() {
           placeholder="Filter by name ..."
           value={searchName}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
-          className="max-w-sm opacity-0"
+          className="max-w-sm opacity-0 "
         />
 
         <div className="flex space-x-2">
@@ -262,6 +280,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import { useGetAllReturnQuery } from "@/lib/features/returnSlice";
 import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
 import moment from "moment";
+import { Badge } from "@/components/ui/badge";
 
 function Breadcumb() {
   return (

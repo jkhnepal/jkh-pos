@@ -22,11 +22,10 @@ export default function Page() {
   const [debounceValue] = useDebounce(searchName, 1000);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [sort, setSort] = React.useState("latest");
-  const itemsPerPage = 5;
+  const itemsPerPage = 8;
 
-  const { data: distributes, isError, isLoading: isFetching, refetch } = useGetAllDistributeQuery({ sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
+  const { data: distributes, isLoading: isFetching } = useGetAllDistributeQuery({ sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
   let totalItem = distributes?.data.count;
-  const pageCount = Math.ceil(totalItem / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
 
   const goToPreviousPage = () => {
@@ -59,6 +58,12 @@ export default function Page() {
     },
 
     {
+      accessorKey: "sale",
+      header: "S.N",
+      cell: ({ row }: any) => <div>{startIndex + row.index + 1} </div>,
+    },
+
+    {
       accessorKey: "branch",
       header: ({ column }) => {
         return (
@@ -77,6 +82,12 @@ export default function Page() {
       accessorKey: "product",
       header: "Product Name",
       cell: ({ row }: any) => <div>{row.getValue("product")?.name}</div>,
+    },
+
+    {
+      accessorKey: "product",
+      header: "SKU",
+      cell: ({ row }: any) => <div>{row.getValue("product")?.sku}</div>,
     },
 
     {

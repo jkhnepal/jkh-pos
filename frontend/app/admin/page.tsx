@@ -1,12 +1,11 @@
 "use client";
 import { CardTitle, CardHeader, CardContent, Card } from "@/components/ui/card";
 import { useGetHeadquarterStatQuery } from "@/lib/features/statSlice";
-
-import { Shapes, Shirt, Store, UsersRound } from "lucide-react";
+import { BarChart4, LineChart, Shapes, Shirt, Store, UsersRound } from "lucide-react";
 
 export default function Component() {
   const { data: stats } = useGetHeadquarterStatQuery({});
-  console.log("🚀 ~ Component ~ stats:", stats);
+  // console.log("🚀 ~ Component ~ stats:", stats);
 
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -40,13 +39,13 @@ export default function Component() {
             title="Sales"
             description="Total sales of all branches till now"
             value={`Rs. ${stats.data.totalSales}`}
-            icon={<Shirt />}
+            icon={<BarChart4 />}
           />
           <StatCard
             title="Profits"
             description="Total prodits of all branches till now"
             value={`Rs. ${stats.data.totalSales - stats.data.totalCp}`}
-            icon={<Shirt />}
+            icon={<LineChart />}
           />
         </>
       )}
@@ -64,10 +63,7 @@ function StatCard({ title, value, icon, description }: any) {
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
-        <p className="text-xs text-gray-500 dark:text-gray-400">
-          {/* Total of {value} {title}{" "} */}
-          {description}
-        </p>
+        <p className="text-xs text-gray-500 dark:text-gray-400">{description}</p>
       </CardContent>
     </Card>
   );

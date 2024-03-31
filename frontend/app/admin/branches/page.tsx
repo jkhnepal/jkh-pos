@@ -24,7 +24,7 @@ export default function Page() {
   const [debounceValue] = useDebounce(searchName, 1000);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [sort, setSort] = React.useState("latest");
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
 
   const { data: branches, isLoading: isFetching, refetch } = useGetAllBranchQuery({ sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
   let totalItem: number = branches?.data.count;
@@ -50,7 +50,6 @@ export default function Page() {
       toast.error(errorMsg);
     }
   }
-
 
   const goToPreviousPage = () => {
     setCurrentPage((prevPage) => prevPage - 1);
@@ -79,6 +78,12 @@ export default function Page() {
       ),
       enableSorting: false,
       enableHiding: false,
+    },
+
+    {
+      accessorKey: "sale",
+      header: "S.N",
+      cell: ({ row }: any) => <div>{startIndex + row.index + 1} </div>,
     },
 
     {
@@ -154,13 +159,7 @@ export default function Page() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => {
-                  navigator.clipboard.writeText(item.branchId);
-                  toast.success("Copy success");
-                }}>
-                Copy id
-              </DropdownMenuItem>
+
               <DropdownMenuSeparator />
 
               <Link href={`/admin/branches/edit/${item.branchId}`}>
@@ -264,7 +263,6 @@ export default function Page() {
               </Button>
             )}
           </div>
-
         </div>
       </div>
       <div className="rounded-md border">
@@ -303,7 +301,7 @@ export default function Page() {
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-        {startIndex} of {totalItem} row(s) selected.
+          {startIndex} of {totalItem} row(s) selected.
         </div>
         <div className="flex space-x-2">
           <Button

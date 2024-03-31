@@ -55,6 +55,7 @@ export default function Cart({ refetch }: Props) {
   const watchedFields = watch();
 
   const { data: product } = useGetProductBySkuQuery(watchedFields.sku);
+  console.log("🚀 ~ Cart ~ product:", product);
 
   const [searchText, setSearchText] = useState("");
   const { data: members } = useGetAllMemberQuery({ sort: "latest", page: 1, limit: 2, search: searchText });
@@ -71,8 +72,10 @@ export default function Cart({ refetch }: Props) {
   const [selectedProducts, setSelectedProducts] = useState<any[]>([]);
   console.log("🚀 ~ Cart ~ selectedProducts:", selectedProducts);
 
+  // console.log(product?.data)
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const { _id, cp, sp } = product.data;
+    const { _id, cp, sp, name } = product.data;
 
     const totalAmount = sp * 1;
     const existingProductIndex = selectedProducts.findIndex((item) => item.product === _id);
@@ -84,6 +87,7 @@ export default function Cart({ refetch }: Props) {
       setSelectedProducts(updatedSelectedProducts);
     } else {
       const selectedProduct = {
+        name,
         branch: branch_id,
         product: _id,
         member: selectedMemberData.data._id,
@@ -105,6 +109,10 @@ export default function Cart({ refetch }: Props) {
       ...product,
       member: selectedMemberData.data._id,
     }));
+    // Remove the 'name' field from each updated product
+    updatedSelectedProducts.forEach((product) => {
+      delete product.name;
+    });
     console.log("🚀 ~ updatedSelectedProducts ~ updatedSelectedProducts:", updatedSelectedProducts);
   };
 
@@ -135,49 +143,24 @@ export default function Cart({ refetch }: Props) {
   };
 
   return (
-    <div>
+    <div className="">
       <ShoppingCart
         size={40}
-        className="fixed right-12 top-16 bg-neutral-50 rounded-full p-2 cursor-pointer text-neutral-700 hover:bg-neutral-100"
+        className="fixed right-12 top-16 bg-neutral-50 rounded-full  cursor-pointer text-neutral-700 hover:bg-neutral-100"
         onClick={() => setSetShowCartDrawer(true)}
       />
 
-      <div className={`${showCartDrawer ? "block" : "hidden"} fixed right-0 top-14  bg-white  shadow-md`}>
+      <div className={`${showCartDrawer ? "block" : "hidden"} fixed right-0 top-14  bg-white  shadow-md px-4 `}>
         <X
           size={40}
           className=" bg-neutral-50 rounded-full p-2 cursor-pointer text-neutral-700 hover:bg-neutral-100"
           onClick={() => setSetShowCartDrawer(false)}
         />
-        <div className=" p-4 flex items-center gap-4">
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="flex items-center gap-4">
-              <FormField
-                control={form.control}
-                name="sku"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="SKU"
-                        {...field}
-                      />
-                    </FormControl>
-                    {/* <FormMessage /> */}
-                  </FormItem>
-                )}
-              />
-              <Button type="submit">Add</Button>
-            </form>
-          </Form>
-        </div>
 
-        <div className=" flex flex-col px-4 mb-8  ">
+        <div className=" flex flex-col py-4  ">
           <Select
-            value={selectedMember} // Pass selected category as value
-            onValueChange={handleMemberChange} // Handle category change
-          >
+            value={selectedMember}
+            onValueChange={handleMemberChange}>
             <SelectTrigger className="">
               <SelectValue placeholder="Select Member" />
             </SelectTrigger>
@@ -200,35 +183,31 @@ export default function Cart({ refetch }: Props) {
               </SelectGroup>
             </SelectContent>
           </Select>
+        </div>
 
-          {/* <Input
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            placeholder="Search by name/phone..."
-          /> */}
-
-          {/* <div className={`${searchText === "" ? "hidden" : "block"}`}>
-            {members?.data.results.map((item: any) => (
-              <p
-                key={item._id}
-                onClick={() => {
-                  setSelectedMemberId(item.memberId);
-                  setSearchText(selectedMember?.data.phone);
-
-                  // Function to update member field of selected products
-                  // const updateMemberForSelectedProducts = (memberId: string) => {
-                  const updatedSelectedProducts = selectedProducts.map((product) => ({
-                    ...product,
-                    member: selectedMember?.data._id,
-                  }));
-                  setSelectedProducts(updatedSelectedProducts);
-                  // };
-                }}
-                className=" p-1.5 shadow-sm border flex items-center mt-1 rounded-md text-sm text-neutral-700 cursor-pointer hover:bg-neutral-100">
-                {item.name} ({item.phone})
-              </p>
-            ))}
-          </div> */}
+        <div className=" flex items-center gap-4 mb-8 ">
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="flex items-center gap-4">
+              <FormField
+                control={form.control}
+                name="sku"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        placeholder="SKU"
+                        {...field}
+                      />
+                    </FormControl>
+                    {/* <FormMessage /> */}
+                  </FormItem>
+                )}
+              />
+              <Button type="submit">Add</Button>
+            </form>
+          </Form>
         </div>
 
         <ScrollArea className="  h-[90vh] w-[500px] rounded-md border   ">
@@ -270,9 +249,11 @@ export default function Cart({ refetch }: Props) {
                 <TableCell colSpan={3}>Total Amount After Reward</TableCell>
                 <TableCell className="text-right">Rs.{`${useRewardPoint ? totalAmountSum - selectedMemberData?.data.point : totalAmountSum}`}</TableCell>
               </TableRow>
+
+              
             </TableFooter>
           </Table>
-          <div className=" mt-4 flex justify-end gap-4">
+          <div className=" mt-4 flex justify-end gap-4 px-4">
             <Button
               onClick={() => setuseRewardPoint(!useRewardPoint)}
               type="button"
@@ -288,44 +269,13 @@ export default function Cart({ refetch }: Props) {
             </Button>
           </div>
 
-          <Dialog  >
-            <DialogTrigger asChild>
+          <Dialog >
+            <DialogTrigger asChild className=" mx-4">
               <Button variant="outline">Print Receipt</Button>
             </DialogTrigger>
             <DialogContent
               ref={componentRef}
               className=" p-0">
-              {/* <DialogHeader>
-                <DialogTitle>Edit profile</DialogTitle>
-                <DialogDescription>Make changes to your profile here. Click save when youre done.</DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label
-                    htmlFor="name"
-                    className="text-right">
-                    Name
-                  </Label>
-                  <Input
-                    id="name"
-                    value="Pedro Duarte"
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label
-                    htmlFor="username"
-                    className="text-right">
-                    Username
-                  </Label>
-                  <Input
-                    id="username"
-                    value="@peduarte"
-                    className="col-span-3"
-                  />
-                </div>
-              </div> */}
-
               <div>
                 <div className=" p-2 text-sm">
                   <div className=" flex flex-col items-center ">
@@ -338,8 +288,7 @@ export default function Cart({ refetch }: Props) {
                     <p className=" ">VAT No : 619738433</p>
                   </div>
 
-
-                  <Separator className="mt-8 mb-2 border border-zinc-300"/>
+                  <Separator className="mt-8 mb-2 border border-zinc-300" />
 
                   <p className=" font-medium mb-4"> Customers Name : wewewewewe</p>
                   <div className=" flex items-center text-xs ">
@@ -365,7 +314,26 @@ export default function Cart({ refetch }: Props) {
                       ))}
                   </div>
 
-                  <Separator className="mt-8 mb-2 border border-zinc-300"/>
+                  <Separator className="mt-8 mb-2 border border-zinc-300" />
+
+                  <div>
+                    <p>Total Amount</p>
+                    <p className="text-right">Rs.{totalAmountSum}</p>
+                  </div>
+
+                  {useRewardPoint && (
+                    <div>
+                      <p>Reward Amount</p>
+                      <p className="text-right">- Rs.{selectedMemberData?.data.point}</p>
+                    </div>
+                  )}
+
+                  <div>
+                    <p>Total Amount After Reward</p>
+                    <p className="text-right">Rs.{`${useRewardPoint ? totalAmountSum - selectedMemberData?.data.point : totalAmountSum}`}</p>
+                  </div>
+
+                  <Separator className="mt-8 mb-2 border border-zinc-300" />
                   <div className=" flex   justify-between">
                     {/* <p>Payment Method : asas</p> */}
 
@@ -386,7 +354,7 @@ export default function Cart({ refetch }: Props) {
 
               <DialogFooter>
                 <Button
-                className="printBtn"
+                  className="printBtn"
                   onClick={handlePrint}
                   type="submit">
                   Print Receipt
