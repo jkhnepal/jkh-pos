@@ -16,7 +16,6 @@ import OptionalLabel from "@/app/custom-components/OptionalLabel";
 import LoaderPre from "@/app/custom-components/LoaderPre";
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
@@ -43,7 +42,6 @@ const formSchema = z.object({
 
 export default function Page() {
   const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
-  // const branch_id = currentUser?.data.branch._id;
 
   const { refetch } = useGetAllBranchQuery({ name: "" });
   const params = useParams();
@@ -70,6 +68,17 @@ export default function Page() {
   const [imageUrl, setImageUrl] = useState<string>("");
 
   const [updateBranch, { error: updateError, isLoading: isUpdating }] = useUpdateBranchMutation();
+
+  const { data: branchInventories } = useGetAllBranchInventoryQuery({ branch: branch?._id });
+  console.log("🚀 ~ Page ~ branchInventories:", branchInventories);
+  let totalItem = branchInventories?.data.count;
+
+  // Assuming branchInventories.data.results is the array containing inventory objects
+  const totalStockSum = branchInventories?.data.results.reduce((acc: any, inventory: any) => {
+    return acc + inventory.totalStock;
+  }, 0);
+
+  console.log("Total Stock Sum:", totalStockSum);
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -282,7 +291,6 @@ export default function Page() {
                   <TableRow>
                     <TableHead>Month</TableHead>
                     <TableHead>Total Revenue (Rs)</TableHead>
-                    {/* <TableHead>Total Cp</TableHead> */}
                     <TableHead className="text-center">Profits (Rs)</TableHead>
                     <TableHead className="text-right">Actions </TableHead>
                   </TableRow>
@@ -304,9 +312,10 @@ export default function Page() {
                 <TableFooter>
                   <TableRow>
                     <TableCell>Total</TableCell>
-                    <TableCell></TableCell>
+                    {/*  */}
                     <TableCell>Rs. {stats?.data.totalSales}</TableCell>
-                    <TableCell className="text-right"></TableCell>
+                    <TableCell className="text-center">Rs. {stats?.data.totalSales - stats?.data.totalCp}</TableCell>
+                    <TableCell></TableCell>
                   </TableRow>
                 </TableFooter>
               </Table>
@@ -322,7 +331,6 @@ export default function Page() {
             </CardHeader>
             <CardContent className="space-y-2">
               <Table>
-                {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
                 <TableHeader>
                   <TableRow>
                     <TableHead>Product Name</TableHead>
@@ -349,7 +357,13 @@ export default function Page() {
                         )}
                       </TableCell>
 
-                      <TableCell>{item.sku}</TableCell>
+                      <TableCell
+                        onClick={() => {
+                          navigator.clipboard.writeText(item.product.sku);
+                          toast.success("SKU copy success");
+                        }}>
+                        {item.product.sku}
+                      </TableCell>
                       <TableCell className="text-center">{item.totalStock} stock</TableCell>
                       <TableCell className="text-center space-x-2">
                         <Link href={`/admin/products/edit/${item.product.productId}`}>
@@ -396,6 +410,20 @@ export default function Page() {
                       value={`Rs. ${stats.data.totalSales - stats.data.totalCp}`}
                       icon={<LineChart />}
                     />
+
+<StatCard
+                      title="Total Unique Stock"
+                      description="Total unique availabe stocks"
+                      value={totalItem}
+                      icon={<LineChart />}
+                    />
+
+                    <StatCard
+                      title="Total Stock"
+                      description="Total availabe stocks"
+                      value={totalStockSum}
+                      icon={<LineChart />}
+                    />
                   </>
                 )}
               </div>
@@ -416,6 +444,7 @@ import { useGetAllBranchQuery, useGetBranchQuery, useUpdateBranchMutation } from
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { BarChart4, LineChart, Store } from "lucide-react";
+import { useGetAllBranchInventoryQuery } from "@/lib/features/branchInventorySlice";
 
 function Breadcumb() {
   return (
