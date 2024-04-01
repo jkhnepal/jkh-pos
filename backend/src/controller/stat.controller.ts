@@ -74,7 +74,7 @@ export async function getBranchStatHandler(req: Request<{}, {}, {}>, res: Respon
         },
       },
     ]);
-    console.log("🚀 ~ getBranchStatHandler ~ totalSales1:", totalSales1)
+    console.log("🚀 ~ getBranchStatHandler ~ totalSales1:", totalSales1);
 
     const totalSales = await SaleModel.aggregate([
       {
@@ -108,7 +108,7 @@ export async function getBranchStatHandler(req: Request<{}, {}, {}>, res: Respon
     // console.log("🚀 ~ getBranchStatHandler ~ totalCp:", totalCp);
 
     const inventoryCount = await BranchInventoryModel.find(queryParameter).countDocuments();
-    const inventories = await BranchInventoryModel.find(queryParameter).populate({ path: "product", select: "name , image , totalStock productId ,sku" });
+    const inventories = await BranchInventoryModel.find(queryParameter).populate({ path: "product", select: "name  image  totalStock productId sku" });
     console.log("🚀 ~ getBranchStatHandler ~ inventories:", inventories);
 
     const totalSalesByMonth = await SaleModel.aggregate([

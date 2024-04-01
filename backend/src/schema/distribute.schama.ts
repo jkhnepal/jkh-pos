@@ -1,4 +1,4 @@
-import { coerce, object, string, TypeOf, unknown } from "zod";
+import { boolean, coerce, object, string, TypeOf, unknown } from "zod";
 
 // Define common schemas
 const payload = {
@@ -14,6 +14,18 @@ const payload = {
     stock: coerce.number({
       required_error: "stock is required",
     }),
+
+    isAcceptedByBranch: boolean().optional(),
+  }),
+};
+
+// Define common schemas
+const updatePayload = {
+  body: object({
+    branch: string().optional(),
+    product: string().optional(),
+    stock: coerce.number().optional(),
+    isAcceptedByBranch: boolean().optional(),
   }),
 };
 
@@ -31,7 +43,7 @@ export const createDistributeSchema = object({
 });
 
 export const updateDistributeSchema = object({
-  ...payload,
+  ...updatePayload,
   ...params,
 });
 

@@ -7,6 +7,9 @@ import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ArrowDown01, ArrowDown10, ChevronDown, MoreHorizontal } from "lucide-react";
+
+import { useAcceptTheDistributeMutation, useUpdateDistributeMutation } from "@/lib/features/distributeSlice";
+
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -22,11 +25,20 @@ export default function Page() {
   const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
   const branch_id = currentUser?.data.branch._id;
 
-  const { data: productIncomingHistory, isFetching } = useGetAllDistributeOfABranchQuery({ branch: branch_id, sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
+  const { data: productIncomingHistory, isFetching } = useGetAllDistributeOfABranchQuery({ branch: branch_id, sort: sort, page: currentPage, limit: itemsPerPage,  search: debounceValue });
 
   let totalItem = productIncomingHistory?.data.count;
   const pageCount = Math.ceil(totalItem / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
+
+  const [acceptTheDistribute] = useAcceptTheDistributeMutation();
+
+  // const handleAccept = async (distributeId: any) => {
+  //   const updatedDistribute = {
+  //     isAcceptedByBranch: true,
+  //   };
+  //   await acceptTheDistribute({ distributeId: distributeId, updatedDistribute: updatedDistribute });
+  // };
 
   const goToPreviousPage = () => {
     setCurrentPage((prevPage) => prevPage - 1);
@@ -92,6 +104,20 @@ export default function Page() {
       header: "Stock",
       cell: ({ row }: any) => <div>{row.getValue("stock")}</div>,
     },
+
+    // {
+    //   accessorKey: "distributeId",
+    //   header: "Accept",
+    //   cell: ({ row }: any) => (
+    //     <div>
+    //       <Badge
+    //         variant="outline"
+    //         onClick={() => handleAccept(row.getValue("distributeId"))}>
+    //         Accept
+    //       </Badge>{" "}
+    //     </div>
+    //   ),
+    // },
 
     {
       accessorKey: "createdAt",
@@ -280,12 +306,11 @@ import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Input } from "@/components/ui/input";
 import moment from "moment";
-import { useGetAllBranchInventoryQuery } from "@/lib/features/branchInventorySlice";
-import { toast } from "sonner";
-import Link from "next/link";
 import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
 import { useDebounce } from "use-debounce";
-import { useGetAllDistributeOfABranchQuery, useGetAllDistributeQuery } from "@/lib/features/distributeSlice";
+import { useGetAllDistributeOfABranchQuery } from "@/lib/features/distributeSlice";
+import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 function Breadcumb() {
   return (

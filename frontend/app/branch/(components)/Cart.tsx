@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ShoppingCart, X } from "lucide-react";
+import { Plus, ShoppingCart, X } from "lucide-react";
 import { useGetProductBySkuQuery } from "@/lib/features/product.sclice";
 import { Button } from "@/components/ui/button";
 import { z } from "zod";
@@ -16,10 +16,10 @@ import { useGetAllBranchInventoryQuery } from "@/lib/features/branchInventorySli
 import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { useReactToPrint } from "react-to-print";
 import { Separator } from "@/components/ui/separator";
+import Link from "next/link";
 
 const formSchema = z.object({
   sku: z.string().min(5, {
@@ -39,6 +39,7 @@ export default function Cart({ refetch }: Props) {
 
   const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
   const branch_id = currentUser?.data.branch._id;
+  console.log(currentUser);
 
   const { refetch: refetchBranchInventories } = useGetAllBranchInventoryQuery({ branch: branch_id });
   const [showCartDrawer, setSetShowCartDrawer] = useState(true);
@@ -58,21 +59,14 @@ export default function Cart({ refetch }: Props) {
   console.log("🚀 ~ Cart ~ product:", product);
 
   const [searchText, setSearchText] = useState("");
-  const { data: members } = useGetAllMemberQuery({ sort: "latest", page: 1, limit: 2, search: searchText });
+  const { data: members } = useGetAllMemberQuery({ sort: "latest", page: 1, limit: 4, search: searchText });
 
-  // category means user
   const [selectedMember, setSelectedMember] = useState("");
-  console.log("🚀 ~ Cart ~ selectedMember:", selectedMember);
 
-  // const [selectedMemberId, setSelectedMemberId] = useState<string>("0");
   const { data: selectedMemberData } = useGetMemberQuery(selectedMember);
   console.log("🚀 ~ Cart ~ selectedMemberData:", selectedMemberData);
 
-  // Handle selecting/carting
   const [selectedProducts, setSelectedProducts] = useState<any[]>([]);
-  console.log("🚀 ~ Cart ~ selectedProducts:", selectedProducts);
-
-  // console.log(product?.data)
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const { _id, cp, sp, name } = product.data;
@@ -97,6 +91,7 @@ export default function Cart({ refetch }: Props) {
         totalAmount,
       };
       setSelectedProducts([...selectedProducts, selectedProduct]);
+      form.reset();
     }
     form.reset();
   };
@@ -117,13 +112,9 @@ export default function Cart({ refetch }: Props) {
   };
 
   const [useRewardPoint, setuseRewardPoint] = useState(false);
-  console.log("🚀 ~ Cart ~ useRewardPoint:", useRewardPoint);
 
   // Calculate the sum of totalAmount
   const totalAmountSum = selectedProducts.reduce((total, product) => total + product.totalAmount, 0);
-  // const totalAmountSumAfterReward=totalAmountSum-selectedMemberData?.data.point
-
-  console.log("Total Amount Sum:", totalAmountSum);
 
   // Create sale
   const [createSale] = useCreateSaleMutation();
@@ -131,8 +122,6 @@ export default function Cart({ refetch }: Props) {
     selectedProducts: selectedProducts,
     ...(useRewardPoint && { claimPoint: selectedMemberData?.data.point }),
   };
-
-  console.log(dataToSend);
 
   const createSaleHandler = async () => {
     const res: any = await createSale(dataToSend);
@@ -166,8 +155,9 @@ export default function Cart({ refetch }: Props) {
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>Categories (Expense)</SelectLabel>
+                <SelectLabel>Members</SelectLabel>
                 <Input
+                  className=" mb-2"
                   value={searchText}
                   onChange={(e) => setSearchText(e.target.value)}
                   placeholder="Search by name/phone..."
@@ -177,9 +167,17 @@ export default function Cart({ refetch }: Props) {
                   <SelectItem
                     key={item._id}
                     value={item.memberId}>
-                    {item.name}
+                    {item.name} ({item.phone})
                   </SelectItem>
                 ))}
+
+                {members?.data.results.length === 0 && (
+                  <Link href={"/branch/members/create"}>
+                    <div className=" flex items-center gap-1 text-zinc-700 cursor-pointer justify-center py-1">
+                      <Plus size={18} /> Add Member
+                    </div>
+                  </Link>
+                )}
               </SelectGroup>
             </SelectContent>
           </Select>
@@ -249,8 +247,6 @@ export default function Cart({ refetch }: Props) {
                 <TableCell colSpan={3}>Total Amount After Reward</TableCell>
                 <TableCell className="text-right">Rs.{`${useRewardPoint ? totalAmountSum - selectedMemberData?.data.point : totalAmountSum}`}</TableCell>
               </TableRow>
-
-              
             </TableFooter>
           </Table>
           <div className=" mt-4 flex justify-end gap-4 px-4">
@@ -269,8 +265,10 @@ export default function Cart({ refetch }: Props) {
             </Button>
           </div>
 
-          <Dialog >
-            <DialogTrigger asChild className=" mx-4">
+          <Dialog>
+            <DialogTrigger
+              asChild
+              className=" mx-4">
               <Button variant="outline">Print Receipt</Button>
             </DialogTrigger>
             <DialogContent
@@ -280,8 +278,8 @@ export default function Cart({ refetch }: Props) {
                 <div className=" p-2 text-sm">
                   <div className=" flex flex-col items-center ">
                     <p className=" text-3xl font-medium">Jacket House</p>
-                    <p>Branch Name : weewewew</p>
-                    <p>Address :wewewe</p>
+                    <p>Branch Name : {currentUser?.data.branch.name}</p>
+                    <p>Address : {currentUser?.data.branch.address}</p>
                   </div>
                   <div className=" flex items-center justify-between mt-2">
                     <p>Date : {new Date().toLocaleDateString()}</p>
@@ -290,7 +288,7 @@ export default function Cart({ refetch }: Props) {
 
                   <Separator className="mt-8 mb-2 border border-zinc-300" />
 
-                  <p className=" font-medium mb-4"> Customers Name : wewewewewe</p>
+                  <p className=" font-medium mb-4"> Customers Name : {selectedMemberData?.data.name}</p>
                   <div className=" flex items-center text-xs ">
                     <p className=" w-1/12">S.N</p>
                     <p className=" w-6/12 text-center">Item</p>

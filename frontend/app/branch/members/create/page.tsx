@@ -24,7 +24,6 @@ const formSchema = z.object({
 export default function Page() {
   const [createMember, { error, isLoading: isCreating }] = useCreateMemberMutation();
   const { refetch } = useGetAllMemberQuery({});
-
   const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
 
   // Initialize form with default values
@@ -125,14 +124,14 @@ function Breadcumb() {
     <Breadcrumb className=" mb-8">
       <BreadcrumbList>
         <BreadcrumbItem>
-          <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+          <BreadcrumbLink href="/branch">Dashboard</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator>
           <SlashIcon />
         </BreadcrumbSeparator>
 
         <BreadcrumbItem>
-          <BreadcrumbLink href="/admin/members">Members</BreadcrumbLink>
+          <BreadcrumbLink href="/branch/members">Members</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator>
           <SlashIcon />

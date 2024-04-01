@@ -31,7 +31,6 @@ export const distributeApi = createApi({
       },
     }),
 
-
     getAllDistributeOfABranch: builder.query({
       query: ({ branch, page = 1, limit = 5, search, sort }) => {
         const params = {
@@ -65,7 +64,17 @@ export const distributeApi = createApi({
       query: ({ distributeId, updatedDistribute }) => ({
         url: `/${distributeId}`,
         method: "PATCH",
-        // headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" },
+        body: updatedDistribute,
+      }),
+    }),
+
+
+    acceptTheDistribute: builder.mutation({
+      query: ({ distributeId, updatedDistribute }) => ({
+        url: `/accept-the-distribute/${distributeId}`,
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
         body: updatedDistribute,
       }),
     }),
@@ -79,4 +88,4 @@ export const distributeApi = createApi({
   }),
 });
 
-export const { useCreateDistributeMutation, useGetAllDistributeOfABranchQuery, useDeleteDistributeMutation, useGetAllDistributeQuery, useGetDistributeQuery, useUpdateDistributeMutation } = distributeApi;
+export const { useCreateDistributeMutation, useAcceptTheDistributeMutation, useGetAllDistributeOfABranchQuery, useDeleteDistributeMutation, useGetAllDistributeQuery, useGetDistributeQuery, useUpdateDistributeMutation } = distributeApi;

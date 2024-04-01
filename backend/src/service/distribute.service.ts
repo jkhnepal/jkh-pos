@@ -27,6 +27,7 @@ export async function findAllDistribute(filter: FilterQuery<DistributeDocument> 
 }
 
 export async function findAllDistributeOfABranch(filter: FilterQuery<DistributeDocument> = {}) {
+  const isAcceptedByBranch = filter.isAcceptedByBranch;
   const branch = filter.branch || "";
   const search = filter.search || "";
   const sort = filter.sort || "";
@@ -37,7 +38,9 @@ export async function findAllDistributeOfABranch(filter: FilterQuery<DistributeD
   const searchQuery: any = {
     name: { $regex: search, $options: "i" },
     branch: branch,
+    isAcceptedByBranch: isAcceptedByBranch,
   };
+
   const count = await DistributeModel.countDocuments(searchQuery);
   const results = await DistributeModel.find(searchQuery)
     .skip(skip)

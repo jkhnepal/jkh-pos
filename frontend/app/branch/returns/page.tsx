@@ -69,7 +69,7 @@ export default function Page() {
     {
       accessorKey: "sale",
       header: "Product Name",
-      cell: ({ row }: any) => <div>{row.getValue("sale")?.product.name} </div>,
+      cell: ({ row }: any) => <div>{row.getValue("sale")?.product?.name} </div>,
     },
 
     {
@@ -165,7 +165,7 @@ export default function Page() {
           placeholder="Filter by name ..."
           value={searchName}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
-          className="max-w-sm opacity-0 "
+          className="max-w-sm   "
         />
 
         <div className="flex space-x-2">
@@ -248,6 +248,7 @@ export default function Page() {
           </TableBody>
         </Table>
       </div>
+      
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
           {startIndex} of {totalItem} row(s) selected.

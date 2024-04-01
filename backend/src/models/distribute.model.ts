@@ -7,6 +7,7 @@ export interface DistributeInput {
   branch: BranchDocument["_id"];
   product: ProductDocument["_id"];
   stock: number;
+  isAcceptedByBranch?: boolean;
 }
 
 export interface DistributeDocument extends DistributeInput, mongoose.Document {
@@ -25,6 +26,7 @@ const distributeSchema = new mongoose.Schema(
     branch: { type: mongoose.Schema.Types.ObjectId, ref: "Branch", required: true },
     product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
     stock: { type: Number, required: true },
+    isAcceptedByBranch: { type: Boolean, default: false },
   },
   {
     timestamps: true,

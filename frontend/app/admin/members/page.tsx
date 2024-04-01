@@ -108,6 +108,20 @@ export default function Page() {
     },
 
     {
+      accessorKey: "point",
+      header: "Reward Point",
+      cell: ({ row }: any) => <div> <Badge variant="outline">{row.getValue("point")/10}</Badge>          </div>,
+    },
+
+
+    {
+      accessorKey: "point",
+      header: "Reward Amount (Rs)",
+      cell: ({ row }: any) => <div> <Badge variant="outline">Rs. {row.getValue("point")}</Badge>          </div>,
+    },
+
+
+    {
       id: "actions",
       enableHiding: false,
       cell: ({ row }) => {
@@ -303,6 +317,7 @@ export default function Page() {
 // Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { Badge } from "@/components/ui/badge";
 
 function Breadcumb() {
   return (

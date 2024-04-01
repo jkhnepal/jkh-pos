@@ -22,7 +22,7 @@ export default function Page({}: Props) {
   const [sort, setSort] = React.useState("latest");
   const itemsPerPage = 10;
 
-  const { data: branchInventories,refetch } = useGetAllBranchInventoryQuery({ branch: branch_id, sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
+  const { data: branchInventories, refetch } = useGetAllBranchInventoryQuery({ branch: branch_id, sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
   let totalItem = branchInventories?.data.count;
   const pageCount = Math.ceil(totalItem / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
