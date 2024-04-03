@@ -373,12 +373,7 @@ export default function Page() {
                   ))}
                 </TableBody>
                 {stats?.data.inventories.length === 0 && <TableCaption className=" w-full">No any inventory.</TableCaption>}
-                {/* <TableFooter>
-                  <TableRow>
-                    <TableCell colSpan={3}>Total</TableCell>
-                    <TableCell className="text-right">$2,500.00</TableCell>
-                  </TableRow>
-                </TableFooter> */}
+               
               </Table>
             </CardContent>
           </Card>
@@ -394,15 +389,15 @@ export default function Page() {
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 <>
                   <StatCard
-                    title="Sales"
+                    title="Total Sales"
                     description="Total sales of a branches till now"
                     value={`Rs. ${stats?.data.totalSales | 0}`}
                     icon={<BarChart4 />}
                   />
                   <StatCard
-                    title="Profits"
+                    title="Total Profits"
                     description="Total prodits of a branches till now"
-                    value={`Rs. ${stats?.data.totalSales - stats?.data.totalCp} `}
+                    value={`Rs. ${stats?.data.totalSales - stats?.data.totalCp | 0}  `}
                     icon={<LineChart />}
                   />
 
@@ -414,7 +409,7 @@ export default function Page() {
                   />
 
                   <StatCard
-                    title="Total Stock"
+                    title="Total Availeble Stock"
                     description="Total availabe stocks"
                     value={totalStockSum | 0}
                     icon={<LineChart />}
