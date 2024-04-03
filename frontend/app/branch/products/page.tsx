@@ -7,8 +7,7 @@ import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ArrowDown01, ArrowDown10, ChevronDown, MoreHorizontal } from "lucide-react";
-
-import { useAcceptTheDistributeMutation, useUpdateDistributeMutation } from "@/lib/features/distributeSlice";
+import { useAcceptTheDistributeMutation } from "@/lib/features/distributeSlice";
 
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -25,7 +24,7 @@ export default function Page() {
   const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
   const branch_id = currentUser?.data.branch._id;
 
-  const { data: productIncomingHistory, isFetching } = useGetAllDistributeOfABranchQuery({ branch: branch_id, sort: sort, page: currentPage, limit: itemsPerPage,  search: debounceValue });
+  const { data: productIncomingHistory, isFetching } = useGetAllDistributeOfABranchQuery({ branch: branch_id, sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
 
   let totalItem = productIncomingHistory?.data.count;
   const pageCount = Math.ceil(totalItem / itemsPerPage);
@@ -74,6 +73,15 @@ export default function Page() {
       header: "S.N",
       cell: ({ row }: any) => <div>{startIndex + row.index + 1} </div>,
     },
+    {
+      accessorKey: "product",
+      header: "SKU",
+      cell: ({ row }: any) => <div  onClick={() => {
+        navigator.clipboard.writeText(row.getValue("product").sku);
+        toast.success("SKU copy success");
+      }}>{row.getValue("product")?.sku}</div>,
+    },
+
 
     {
       accessorKey: "product",
@@ -81,12 +89,7 @@ export default function Page() {
       cell: ({ row }: any) => <div>{row.getValue("product")?.name}</div>,
     },
 
-    {
-      accessorKey: "product",
-      header: "SKU",
-      cell: ({ row }: any) => <div>{row.getValue("product")?.sku}</div>,
-    },
-
+   
     {
       accessorKey: "product",
       header: "C.P",
@@ -311,6 +314,7 @@ import { useDebounce } from "use-debounce";
 import { useGetAllDistributeOfABranchQuery } from "@/lib/features/distributeSlice";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { toast } from "sonner";
 
 function Breadcumb() {
   return (

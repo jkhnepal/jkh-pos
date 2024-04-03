@@ -5,50 +5,48 @@ import { BarChart4, LineChart, Shapes, Shirt, Store, UsersRound } from "lucide-r
 
 export default function Component() {
   const { data: stats } = useGetHeadquarterStatQuery({});
-  // console.log("🚀 ~ Component ~ stats:", stats);
+  console.log("🚀 ~ Component ~ stats:", stats);
 
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-      {stats && (
-        <>
-          <StatCard
-            title=" Branches"
-            description="Total branches"
-            value={stats.data.branches}
-            icon={<Store />}
-          />
-          <StatCard
-            title=" Members"
-            description="Total members (all branches combined)"
-            value={stats.data.members}
-            icon={<UsersRound />}
-          />
-          <StatCard
-            title=" Categories"
-            description="Total categories"
-            value={stats.data.categories}
-            icon={<Shapes />}
-          />
-          <StatCard
-            title=" Products"
-            description="Total number of product"
-            value={stats.data.products}
-            icon={<Shirt />}
-          />
-          <StatCard
-            title="Sales"
-            description="Total sales of all branches till now"
-            value={`Rs. ${stats.data.totalSales}`}
-            icon={<BarChart4 />}
-          />
-          <StatCard
-            title="Profits"
-            description="Total prodits of all branches till now"
-            value={`Rs. ${stats.data.totalSales - stats.data.totalCp}`}
-            icon={<LineChart />}
-          />
-        </>
-      )}
+      <>
+        <StatCard
+          title=" Branches"
+          description="Total branches"
+          value={stats?.data.branches | 0}
+          icon={<Store />}
+        />
+        <StatCard
+          title=" Members"
+          description="Total members (all branches combined)"
+          value={stats?.data.members | 0}
+          icon={<UsersRound />}
+        />
+        <StatCard
+          title=" Categories"
+          description="Total categories"
+          value={stats?.data.categories | 0}
+          icon={<Shapes />}
+        />
+        <StatCard
+          title=" Products"
+          description="Total number of product"
+          value={stats?.data.products | 0}
+          icon={<Shirt />}
+        />
+        <StatCard
+          title="Sales"
+          description="Total sales of all branches till now"
+          value={`Rs. ${stats?.data.totalSales | 0}`}
+          icon={<BarChart4 />}
+        />
+        <StatCard
+          title="Profits"
+          description="Total profits of all branches till now"
+          value={`Rs. ${stats?.data.totalSales -  stats?.data.totalCp | 0}`}
+          icon={<LineChart />}
+        />
+      </>
     </div>
   );
 }

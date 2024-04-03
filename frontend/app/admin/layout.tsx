@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import logo from "../../public/logo/logo.png";
 import Image from "next/image";
 import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -18,26 +19,26 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const { data: currentUserData, isLoading, error } = useGetCurrentUserFromTokenQuery({});
   const currentBranch = currentUserData?.data.branch;
-  console.log("🚀 ~ Layout ~ currentBranch:", currentBranch);
+  // console.log("🚀 ~ Layout ~ currentBranch:", currentBranch);
 
-  // // Redirect to the login page if accessToken is not present in localStorage
-  // const accessToken = localStorage.getItem("accessToken");
-  // if (!accessToken) {
-  //   router.push("/");
-  //   return null;
-  // }
+  // Redirect to the login page if accessToken is not present in localStorage
+  const accessToken = localStorage.getItem("accessToken");
+  if (!accessToken) {
+    router.push("/");
+    return null;
+  }
 
-  // const handleLogout = () => {
-  //   localStorage.removeItem("accessToken");
-  //   router.push("/");
-  //   return null;
-  // };
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    router.push("/");
+    return null;
+  };
 
-  // if (isLoading) {
-  //   return <div>Loading...</div>;
-  // }
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
-  // if (currentBranch && currentBranch.type === "headquarter") {
+  if (currentBranch && currentBranch.type === "headquarter") {
   return (
     <div className=" flex">
       {!isFullScreen && (
@@ -69,19 +70,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {currentBranch && (
             <div className="py-4  border-t border-zinc-700 text-primary-foreground/60 ">
               <div className="flex items-center gap-x-4">
-                {/* <Image
-                    src={currentBranch.image}
-                    alt="branch-image"
-                    className=" shape-square rounded-full "
-                    height={50}
-                    width={50}
-                  /> */}
                 <div>
                   <span className="block text-sm font-semibold">
                     {currentBranch.name} ({currentBranch.address}){" "}
                   </span>
                   <span className="block mt-px   text-xs">{currentBranch.email}</span>
                   <span className="block mt-px   text-xs">{currentBranch.phone}</span>
+
+                  <Button
+                    className=" px-0 mt-4  flex items-center gap-2 py-4  text-primary-foreground/60 hover:text-primary-foreground/90 "
+                    onClick={handleLogout}
+                  >
+                    <p>Logout</p> <LogOut size={18} />
+                  </Button>
                 </div>
               </div>
             </div>
@@ -97,11 +98,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <Menu className=" cursor-pointer " />
           </Button>
 
-          <Button
-          // onClick={handleLogout}
-          >
-            <LogOut />
-          </Button>
+          <Avatar>
+            <AvatarImage src={currentBranch?.image} />
+            <AvatarFallback>{currentBranch?.name[0]}</AvatarFallback>
+          </Avatar>
         </div>
         <div>
           <div className=" px-4 mt-8 ">{children}</div>
@@ -109,11 +109,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </div>
     </div>
   );
-  // } else {
-  //   if (!isLoading && currentBranch && currentBranch.type === "branch") {
-  //     router.push("/branch");
-  //   }
-  // }
+  } else {
+    if (!isLoading && currentBranch && currentBranch.type === "branch") {
+      router.push("/branch");
+    }
+  }
 }
 
 const navItems = [

@@ -123,7 +123,7 @@ export default function Page() {
     {
       accessorKey: "point",
       header: "Reward Point",
-      cell: ({ row }: any) => <div>{row.getValue("point") / 10}</div>,
+      cell: ({ row }: any) => <div>{row.getValue("point") / 100}</div>,
     },
 
     {

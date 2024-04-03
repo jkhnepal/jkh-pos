@@ -22,6 +22,8 @@ const formSchema = z.object({
 });
 
 export default function Page() {
+  const router = useRouter();
+
   const [createMember, { error, isLoading: isCreating }] = useCreateMemberMutation();
   const { refetch } = useGetAllMemberQuery({});
   const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
@@ -50,6 +52,7 @@ export default function Page() {
       refetch();
       toast.success(res.data.msg);
       form.reset();
+      router.push("/branch");
     }
   };
 
@@ -118,6 +121,7 @@ import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
 import { useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
 
 function Breadcumb() {
   return (

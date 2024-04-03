@@ -1,7 +1,7 @@
 import { Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
-export const requireAdmin = (req: any, res: Response, next: NextFunction) => {
+export const requireBranch = (req: any, res: Response, next: NextFunction) => {
   const token = req.header("Authorization");
 
   if (!token) {
@@ -11,8 +11,8 @@ export const requireAdmin = (req: any, res: Response, next: NextFunction) => {
   try {
     const decoded: any = jwt.verify(token, `${process.env.AUTH_SECRET_KEY}`);
 
-    if (decoded.branch.type !== "headquarter") {
-      return res.status(403).json({ error: true, msg: "User is not authorized as admin" });
+    if (decoded.branch.type !== "branch") {
+      return res.status(403).json({ error: true, msg: "Branch is not authorized " });
     }
 
     // Attach the decoded payload to the request for later use in the route handlers

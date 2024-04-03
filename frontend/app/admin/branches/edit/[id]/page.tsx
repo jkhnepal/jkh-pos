@@ -14,13 +14,9 @@ import useCloudinaryFileUpload from "@/app/hooks/useCloudinaryFileUpload";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import OptionalLabel from "@/app/custom-components/OptionalLabel";
 import LoaderPre from "@/app/custom-components/LoaderPre";
-
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
 import { useGetBranchStatQuery } from "@/lib/features/statSlice";
-
 import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const formSchema = z.object({
@@ -41,8 +37,6 @@ const formSchema = z.object({
 });
 
 export default function Page() {
-  const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
-
   const { refetch } = useGetAllBranchQuery({ name: "" });
   const params = useParams();
   const branchId = params.id;
@@ -52,6 +46,7 @@ export default function Page() {
 
   const { data: stats } = useGetBranchStatQuery({ branch: branch?._id });
   console.log("🚀 ~ Component ~ stats:", stats);
+
   const totalSalesByMonth = stats?.data.totalSalesByMonth;
   const totalCpByMonth = stats?.data.totalCpByMonth;
 
@@ -292,7 +287,7 @@ export default function Page() {
                     <TableHead>Month</TableHead>
                     <TableHead>Total Revenue (Rs)</TableHead>
                     <TableHead className="text-center">Profits (Rs)</TableHead>
-                    <TableHead className="text-right">Actions </TableHead>
+                    {/* <TableHead className="text-right">Actions </TableHead> */}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -301,23 +296,23 @@ export default function Page() {
                       <TableCell className="font-medium">{monthNames[month._id - 1]}</TableCell>
                       <TableCell className="font-medium">{month.totalSalesOfAMonth}</TableCell>
                       <TableCell className="text-center">{month.totalSalesOfAMonth - month.totalCpOfAMonth}</TableCell>
-                      <TableCell className="text-right">
+                      {/* <TableCell className="text-right">
                         <Link href={`/admin/branches/report-of-a-branch-by-month?branch=${branch._id}&month=${monthNames[month._id - 1]}`}>
                           <Badge variant="outline">View</Badge>
                         </Link>
-                      </TableCell>
+                      </TableCell> */}
                     </TableRow>
                   ))}
                 </TableBody>
-                <TableFooter>
+                {/* <TableFooter>
                   <TableRow>
                     <TableCell>Total</TableCell>
-                    {/*  */}
-                    <TableCell>Rs. {stats?.data.totalSales}</TableCell>
-                    <TableCell className="text-center">Rs. {stats?.data.totalSales - stats?.data.totalCp}</TableCell>
+
+                    <TableCell>Rs. {stats?.data.totalSales | 0}</TableCell>
+                    <TableCell className="text-center">Rs.                   {stats?.data?.totalSales  - stats?.data.totalCp }</TableCell>
                     <TableCell></TableCell>
                   </TableRow>
-                </TableFooter>
+                </TableFooter> */}
               </Table>
             </CardContent>
           </Card>
@@ -377,6 +372,7 @@ export default function Page() {
                     </TableRow>
                   ))}
                 </TableBody>
+                {stats?.data.inventories.length === 0 && <TableCaption className=" w-full">No any inventory.</TableCaption>}
                 {/* <TableFooter>
                   <TableRow>
                     <TableCell colSpan={3}>Total</TableCell>
@@ -396,36 +392,34 @@ export default function Page() {
             </CardHeader>
             <CardContent className="space-y-2">
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                {stats && (
-                  <>
-                    <StatCard
-                      title="Sales"
-                      description="Total sales of a branches till now"
-                      value={`Rs. ${stats.data.totalSales}`}
-                      icon={<BarChart4 />}
-                    />
-                    <StatCard
-                      title="Profits"
-                      description="Total prodits of a branches till now"
-                      value={`Rs. ${stats.data.totalSales - stats.data.totalCp}`}
-                      icon={<LineChart />}
-                    />
+                <>
+                  <StatCard
+                    title="Sales"
+                    description="Total sales of a branches till now"
+                    value={`Rs. ${stats?.data.totalSales | 0}`}
+                    icon={<BarChart4 />}
+                  />
+                  <StatCard
+                    title="Profits"
+                    description="Total prodits of a branches till now"
+                    value={`Rs. ${stats?.data.totalSales - stats?.data.totalCp} `}
+                    icon={<LineChart />}
+                  />
 
-<StatCard
-                      title="Total Unique Stock"
-                      description="Total unique availabe stocks"
-                      value={totalItem}
-                      icon={<LineChart />}
-                    />
+                  <StatCard
+                    title="Total Unique Stock"
+                    description="Total unique availabe stocks"
+                    value={totalItem | 0}
+                    icon={<LineChart />}
+                  />
 
-                    <StatCard
-                      title="Total Stock"
-                      description="Total availabe stocks"
-                      value={totalStockSum}
-                      icon={<LineChart />}
-                    />
-                  </>
-                )}
+                  <StatCard
+                    title="Total Stock"
+                    description="Total availabe stocks"
+                    value={totalStockSum | 0}
+                    icon={<LineChart />}
+                  />
+                </>
               </div>
             </CardContent>
           </Card>

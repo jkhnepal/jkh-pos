@@ -11,6 +11,7 @@ import { useDebounce } from "use-debounce";
 import { Input } from "@/components/ui/input";
 import { ArrowDown01, ArrowDown10 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export default function Page({}: Props) {
   const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
@@ -97,17 +98,26 @@ export default function Page({}: Props) {
                 />
               </CardTitle>
               <Separator />
-              <CardDescription className=" p-3 flex justify-between">
-                <div>
-                  <p> Name : Rs. {item.product.name}</p>
-                  <p> CP : Rs. {item.product.cp}</p>
-                  <p> SP : Rs. {item.product.sp}</p>
-                  <p> SKU : {item.product.sku}</p>
-                </div>
+              <CardDescription className=" p-3 ">
+                <p className=" text-xl font-medium text-center">{item.product.name}</p>
+                <div className=" space-y-1 mt-4">
+                  <p className=" tracking-wider">
+                    <span className=" font-medium">Available Stock</span> : {item.totalStock}
+                  </p>
+                  <div className=" flex">
+                    <p
+                      onClick={() => {
+                        navigator.clipboard.writeText(item.product.sku);
+                        toast.success("SKU copy success");
+                      }}
+                      className=" tracking-wider">
+                      <span className=" font-medium">SKU</span> : {item.product.sku}
+                    </p>
+                  </div>
 
-                <div>
-                  <p>Available Stock</p>
-                  <p className=" text-2xl font-semibold text-center">{item.totalStock}</p>
+                  <p className=" tracking-wider">
+                    <span className=" font-medium">Price</span> :Rs {item.product.sp}
+                  </p>
                 </div>
               </CardDescription>
             </CardHeader>

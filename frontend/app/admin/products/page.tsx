@@ -28,6 +28,7 @@ export default function Page() {
   const itemsPerPage = 10;
 
   const { data: products, isError, isLoading: isFetching, refetch } = useGetAllProductQuery({ sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
+
   let totalItem = products?.data.count;
   const pageCount = Math.ceil(totalItem / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -104,13 +105,13 @@ export default function Page() {
 
     {
       id: "totalAddedStock",
-      header: "Total Added Stock",
+      header: "Total Stock",
       cell: ({ row }) => <div>{row.original.totalAddedStock} </div>,
     },
 
     {
       id: "availableStock",
-      header: "In Stock",
+      header: "Available Stock",
       cell: ({ row }) => <div>{row.original.availableStock} </div>,
     },
 

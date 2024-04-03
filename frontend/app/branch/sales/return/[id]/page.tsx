@@ -15,8 +15,10 @@ const formSchema = z.object({
 });
 
 export default function Page() {
+  const router = useRouter();
+
   const params = useParams();
-  const { refetch } = useGetAllDistributeQuery({ name: "" }); // To refresh
+  const { refetch } = useGetAllDistributeQuery({ name: "" });
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -33,21 +35,21 @@ export default function Page() {
 
   // To be return quantity
   const [quantity, setQuantity] = React.useState<number>(1);
-  console.log(quantity);
 
   const [createReturn] = useCreateReturnMutation();
   const dataToBeSend = {
-    branch: sale?.branch,
-    member: sale?.member,
+    branch: sale?.branch._id,
+    member: sale?.member._id,
     sale: sale?._id,
     quantity: quantity,
   };
-  
+
   const handleReturn = async (e: any) => {
     e.preventDefault();
     const res: any = await createReturn(dataToBeSend);
     toast.success(res.data.msg);
     refetchSale();
+    router.push("/branch/sales");
   };
 
   return (
@@ -75,7 +77,7 @@ export default function Page() {
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useCreateReturnMutation } from "@/lib/features/returnSlice";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useGetSaleQuery } from "@/lib/features/saleSlice";
 
 function Breadcumb() {

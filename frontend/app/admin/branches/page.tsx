@@ -31,6 +31,8 @@ export default function Page() {
   const pageCount = Math.ceil(totalItem / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
 
+  // console.log(branches?.data.results);
+
   const [deleteBranch, { error: deleteError, isLoading: isDeleting }] = useDeleteBranchMutation();
   const handleDelete = async (id: string) => {
     const res: any = await deleteBranch(id);
@@ -134,44 +136,46 @@ export default function Page() {
 
     {
       id: "actions",
-      enableHiding: false,
       cell: ({ row }) => {
         const item = row.original;
-
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              {isDeleting ? (
-                <Button
-                  variant="ghost"
-                  className="h-8 w-8 p-0">
-                  <span className="sr-only">Open menu</span>
-                  <LoaderPre />
-                </Button>
-              ) : (
-                <Button
-                  variant="ghost"
-                  className="h-8 w-8 p-0">
-                  <span className="sr-only">Open menu</span>
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              )}
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <>
+            {row.original.type !== "headquarter" ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                {isDeleting ? (
+                  <Button
+                    variant="ghost"
+                    className="h-8 w-8 p-0">
+                    <span className="sr-only">Open menu</span>
+                    <LoaderPre />
+                  </Button>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    className="h-8 w-8 p-0">
+                    <span className="sr-only">Open menu</span>
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                )}
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
-              <DropdownMenuSeparator />
+                <DropdownMenuSeparator />
 
-              <Link href={`/admin/branches/edit/${item.branchId}`}>
-                <DropdownMenuItem>View/Edit</DropdownMenuItem>
-              </Link>
-              <DropdownMenuItem
-                onClick={() => handleDelete(item.branchId)}
-                className=" text-destructive">
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <Link href={`/admin/branches/edit/${item.branchId}`}>
+                  <DropdownMenuItem>View/Edit</DropdownMenuItem>
+                </Link>
+                <DropdownMenuItem
+                  onClick={() => handleDelete(item.branchId)}
+                  className=" text-destructive">
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+           ) : null} 
+          </>
         );
       },
     },
