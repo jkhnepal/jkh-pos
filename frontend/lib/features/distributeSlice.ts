@@ -1,20 +1,10 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import baseQuery from "./baseQuery";
 
 export const distributeApi = createApi({
   reducerPath: "distribute",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5008/api/distributes" }),
+  baseQuery,
   endpoints: (builder) => ({
-    // getAllDistribute: builder.query({
-    //   query: (options) => {
-    //     const { branch } = options;
-    //     const params = branch ? { branch } : {};
-    //     return {
-    //       url: "/",
-    //       params: params,
-    //     };
-    //   },
-    // }),
-
     getAllDistribute: builder.query({
       query: ({ branch, page = 1, limit = 5, search, sort }) => {
         const params = {
@@ -25,7 +15,7 @@ export const distributeApi = createApi({
           sort,
         };
         return {
-          url: "/",
+          url: "/distributes",
           params: params,
         };
       },
@@ -41,19 +31,19 @@ export const distributeApi = createApi({
           sort,
         };
         return {
-          url: "/loki/loki/distributes-of-a-branch",
+          url: "/distributes/loki/loki/distributes-of-a-branch",
           params: params,
         };
       },
     }),
 
     getDistribute: builder.query({
-      query: (distributeId) => `/${distributeId}`,
+      query: (distributeId) => `/distributes/${distributeId}`,
     }),
 
     createDistribute: builder.mutation({
       query: (newDistribute) => ({
-        url: ``,
+        url: `/distributes`,
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: newDistribute,
@@ -62,17 +52,16 @@ export const distributeApi = createApi({
 
     updateDistribute: builder.mutation({
       query: ({ distributeId, updatedDistribute }) => ({
-        url: `/${distributeId}`,
+        url: `/distributes/${distributeId}`,
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: updatedDistribute,
       }),
     }),
 
-
     acceptTheDistribute: builder.mutation({
       query: ({ distributeId, updatedDistribute }) => ({
-        url: `/accept-the-distribute/${distributeId}`,
+        url: `/distributes/accept-the-distribute/${distributeId}`,
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: updatedDistribute,
@@ -81,7 +70,7 @@ export const distributeApi = createApi({
 
     deleteDistribute: builder.mutation({
       query: (distributeId) => ({
-        url: `/${distributeId}`,
+        url: `/distributes/${distributeId}`,
         method: "DELETE",
       }),
     }),

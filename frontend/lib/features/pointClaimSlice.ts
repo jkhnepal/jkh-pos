@@ -1,8 +1,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import baseQuery from "./baseQuery";
 
 export const pointClaimApi = createApi({
   reducerPath: "point-claim",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5008/api/point-claims" }),
+  baseQuery,
   endpoints: (builder) => ({
     // getAllSale: builder.query({
     //   query: () => "/",
@@ -54,7 +55,7 @@ export const pointClaimApi = createApi({
 
     createPointClaim: builder.mutation({
       query: (newPointClaim) => ({
-        url: ``,
+        url: `/point-claims`,
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: newPointClaim,

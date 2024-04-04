@@ -1,31 +1,32 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import baseQuery from "./baseQuery";
 
 export const headquarterInventoryApi = createApi({
   reducerPath: "headquarter-inventory",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5008/api/headquarter-inventories" }),
+  baseQuery,
   endpoints: (builder) => ({
     getAllHeadquarterInventory: builder.query({
       query: (options) => {
         const { name } = options;
         const params = name ? { name } : {};
         return {
-          url: "/",
+          url: "/headquarter-inventories",
           params: params,
         };
       },
     }),
 
     getHeadquarterInventory: builder.query({
-      query: (headquarterInventoryId) => `/${headquarterInventoryId}`,
+      query: (headquarterInventoryId) => `/headquarter-inventories/${headquarterInventoryId}`,
     }),
 
     getHeadquarterInventoryByProduct: builder.query({
-      query: (product) => `/get-headquarter-inventory-by-product/${product}`,
+      query: (product) => `/headquarter-inventories/get-headquarter-inventory-by-product/${product}`,
     }),
 
     createHeadquarterInventory: builder.mutation({
       query: (newHeadquarterInventory) => ({
-        url: ``,
+        url: `/headquarter-inventories`,
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: newHeadquarterInventory,
@@ -34,7 +35,7 @@ export const headquarterInventoryApi = createApi({
 
     updateHeadquarterInventory: builder.mutation({
       query: ({ headquarterInventoryId, updatedHeadquarterInventory }) => ({
-        url: `/${headquarterInventoryId}`,
+        url: `/headquarter-inventories/${headquarterInventoryId}`,
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: updatedHeadquarterInventory,
@@ -43,7 +44,7 @@ export const headquarterInventoryApi = createApi({
 
     deleteHeadquarterInventory: builder.mutation({
       query: (headquarterInventoryId) => ({
-        url: `/${headquarterInventoryId}`,
+        url: `/headquarter-inventories/${headquarterInventoryId}`,
         method: "DELETE",
       }),
     }),

@@ -1,6 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import baseQuery from "./baseQuery";
 
+
 // Define common headers
 const headers = { "Content-Type": "application/json" };
 

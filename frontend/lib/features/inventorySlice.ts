@@ -1,15 +1,16 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import baseQuery from "./baseQuery";
 
 // Define common headers
 const headers = { "Content-Type": "application/json" };
 
 export const inventoryApi = createApi({
   reducerPath: "inventory",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5008/api/inventories" }),
+  baseQuery,
   endpoints: (builder) => ({
     createInventory: builder.mutation({
       query: (newInventory) => ({
-        url: ``,
+        url: `/inventories`,
         method: "POST",
         headers,
         body: newInventory,
@@ -21,23 +22,23 @@ export const inventoryApi = createApi({
         const { product } = options;
         const params = product ? { product } : {};
         return {
-          url: "/",
+          url: "/inventories",
           params: params,
         };
       },
     }),
 
     getInventory: builder.query({
-      query: (inventoryId) => `/${inventoryId}`,
+      query: (inventoryId) => `/inventories/${inventoryId}`,
     }),
 
     getInventoryByProduct: builder.query({
-      query: (inventoryId) => `/product-id/${inventoryId}`, // inventoryId->product_id
+      query: (inventoryId) => `/inventories/product-id/${inventoryId}`, // inventoryId->product_id
     }),
 
     updateInventory: builder.mutation({
       query: ({ inventoryId, updatedInventory }) => ({
-        url: `/${inventoryId}`,
+        url: `/inventories/${inventoryId}`,
         method: "PATCH",
         headers,
         body: updatedInventory,
@@ -46,7 +47,7 @@ export const inventoryApi = createApi({
 
     deleteInventory: builder.mutation({
       query: (inventoryId) => ({
-        url: `/${inventoryId}`,
+        url: `/inventories/${inventoryId}`,
         method: "DELETE",
       }),
     }),

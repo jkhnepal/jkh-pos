@@ -9,10 +9,6 @@ export const statApi = createApi({
       query: () => "/stats/headquarter",
     }),
 
-    // getBranchStat: builder.query({
-    //   query: () => "/stats/branch",
-    // }),
-
     getBranchStat: builder.query({
       query: ({ branch }) => {
         const params = {
@@ -39,4 +35,4 @@ export const statApi = createApi({
   }),
 });
 
-export const { useGetHeadquarterStatQuery, useGetBranchStatQuery,useGetBranchProfitQuery } = statApi;
+export const { useGetHeadquarterStatQuery, useGetBranchStatQuery, useGetBranchProfitQuery } = statApi;
