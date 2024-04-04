@@ -22,21 +22,20 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const currentBranch = currentUserData?.data.branch;
 
   // Redirect to the login page if accessToken is not present in localStorage
-  // const accessToken = localStorage.getItem("accessToken");
-  // if (!accessToken) {
+  // if (currentBranch?.type !== "branch") {
   //   router.push("/");
   //   return null;
   // }
 
   const handleLogout = () => {
-    // localStorage.removeItem("accessToken");
+    localStorage.removeItem("accessToken");
     router.push("/");
     return null;
   };
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  // if (isLoading) {
+  //   return <div>Loading...</div>;
+  // }
 
   if (currentBranch && currentBranch.type === "branch") {
     return (
@@ -111,12 +110,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
     );
-  } else if (!isLoading && currentBranch && currentBranch.type !== "branch") {
-    router.push("/branch");
-    return null;
-  } else {
-    return <div>Loading...</div>;
   }
+  
+  // else if (!isLoading && currentBranch && currentBranch.type !== "branch") {
+  //   router.push("/");
+  //   return null;
+  // } else {
+  //   return <div>Loading...</div>;
+  // }
 }
 
 const navItems = [
