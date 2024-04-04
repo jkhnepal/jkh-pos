@@ -21,7 +21,7 @@ import pointClaimRoute from "../src/routes/pointClaim.route";
 
 const app = express();
 // const port = process.env.PORT;
-const port = 5008;
+const port = 5010;
 
 // Middleware
 // Body Parser middleware
