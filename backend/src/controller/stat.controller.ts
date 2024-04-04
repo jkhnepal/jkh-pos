@@ -50,7 +50,7 @@ export async function getHeadquarterStatHandler(req: Request<{}, {}, {}>, res: R
     return res.status(200).json({
       status: "success",
       msg: "Get all member success",
-      data: { members, categories, branches, products, totalSales: totalSales[0]?.totalAmount | 0, totalCp: totalCp[0].cp | 0 },
+      data: { members, categories, branches, products, totalSales: totalSales[0]?.totalAmount | 0, totalCp: totalCp[0]?.cp | 0 },
     });
   } catch (error: any) {
     console.error(colors.red("msg:", error.message));
