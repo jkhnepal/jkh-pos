@@ -292,7 +292,7 @@ export default function Cart({ refetch }: any) {
     const res: any = await createSale(dataToSend);
     toast.success(res?.data.msg);
     // refetchBranchInventories();
-    // setSelectedProducts([]);
+    setSelectedProducts([]);
     // selectedMemberData()
     // setProductsForPrint(selectedProducts);
     // setSelectedMember("");

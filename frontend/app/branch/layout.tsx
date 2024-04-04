@@ -33,9 +33,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     return null;
   };
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  // if (isLoading) {
+  //   return <div>Loading...</div>;
+  // }
 
   if (currentBranch && currentBranch.type === "branch") {
     return (
