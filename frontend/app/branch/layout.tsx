@@ -22,14 +22,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const currentBranch = currentUserData?.data.branch;
 
   // Redirect to the login page if accessToken is not present in localStorage
-  const accessToken = localStorage.getItem("accessToken");
-  if (!accessToken) {
-    router.push("/");
-    return null;
-  }
+  // const accessToken = localStorage.getItem("accessToken");
+  // if (!accessToken) {
+  //   router.push("/");
+  //   return null;
+  // }
 
   const handleLogout = () => {
-    localStorage.removeItem("accessToken");
+    // localStorage.removeItem("accessToken");
     router.push("/");
     return null;
   };

@@ -60,7 +60,6 @@ export default function Page() {
 
       cp: 0,
       sp: 0,
-      discount: 0,
 
       image: "",
       note: "",

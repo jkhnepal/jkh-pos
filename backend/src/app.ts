@@ -29,7 +29,7 @@ app.use(express.json({ limit: "10kb" }));
 
 app.use(
   cors({
-    origin: ["http://localhost:3000"],
+    origin: ["http://localhost:3000", "https://jkh.webxnep.com"],
     credentials: true,
   })
 );
@@ -59,7 +59,7 @@ app.use("/api/point-claims", pointClaimRoute);
 app.get("/healthChecker", (req: Request, res: Response, next: NextFunction) => {
   res.status(200).json({
     status: "success",
-    msg: "Welcome to epeak Server.",
+    msg: "Welcome to JKH Server.",
   });
 });
 
