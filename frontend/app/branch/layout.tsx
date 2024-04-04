@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
 import logo from "../../public/logo/logo.png";
 import Image from "next/image";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -68,19 +69,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             {currentBranch && (
               <div className="py-4  border-t border-zinc-700 text-primary-foreground/60 ">
                 <div className="flex items-center gap-x-4">
-                  {/* <Image
-                    src={currentBranch.image}
-                    alt="branch-image"
-                    className=" shape-square rounded-full "
-                    height={50}
-                    width={50}
-                  /> */}
                   <div>
                     <span className="block text-sm font-semibold">
                       {currentBranch.name} ({currentBranch.address}){" "}
                     </span>
                     <span className="block mt-px   text-xs">{currentBranch.email}</span>
                     <span className="block mt-px   text-xs">{currentBranch.phone}</span>
+                    <Button
+                      className=" px-0 mt-4  flex items-center gap-2 py-4  text-primary-foreground/60 hover:text-primary-foreground/90 "
+                      onClick={handleLogout}>
+                      <p>Logout</p> <LogOut size={18} />
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -95,11 +94,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               variant="outline">
               <Menu className=" cursor-pointer " />
             </Button>
-            <div className=" flex space-x-4">
+            {/* <div className=" flex space-x-4">
               <Button onClick={handleLogout}>
                 <LogOut />
               </Button>
-            </div>
+            </div> */}
+
+            <Avatar>
+              <AvatarImage src={currentBranch?.image} />
+              <AvatarFallback>{currentBranch?.name[0]}</AvatarFallback>
+            </Avatar>
           </div>
           <div>
             <div className=" px-4 mt-8 ">{children}</div>
@@ -107,11 +111,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
     );
-    // } else {
-    //   if (!isLoading && currentBranch && currentBranch.type === "branch") {
-    //     router.push("/branch");
-    //   }
-    // }
   } else if (!isLoading && currentBranch && currentBranch.type !== "branch") {
     router.push("/branch");
     return null;
