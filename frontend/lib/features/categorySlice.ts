@@ -1,31 +1,22 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
+import baseQuery from "./baseQuery";
 // Define common headers
 const headers = { "Content-Type": "application/json" };
 
 export const categoryApi = createApi({
   reducerPath: "category",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5008/api/categories" }),
+  baseQuery,
   endpoints: (builder) => ({
     createCategory: builder.mutation({
       query: (newCategory) => ({
-        url: ``,
+        url: `/categories`,
         method: "POST",
         headers,
         body: newCategory,
       }),
     }),
 
-    // getAllCategory: builder.query({
-    //   query: (options) => {
-    //     const { name } = options;
-    //     const params = name ? { name } : {};
-    //     return {
-    //       url: "/",
-    //       params: params,
-    //     };
-    //   },
-    // }),
+
 
     getAllCategory: builder.query({
       query: ({ page = 1, limit = 5, search, sort }) => {
@@ -36,19 +27,19 @@ export const categoryApi = createApi({
           sort,
         };
         return {
-          url: "/",
+          url: "/categories",
           params: params,
         };
       },
     }),
 
     getCategory: builder.query({
-      query: (categoryId) => `/${categoryId}`,
+      query: (categoryId) => `/categories/${categoryId}`,
     }),
 
     updateCategory: builder.mutation({
       query: ({ categoryId, updatedCategory }) => ({
-        url: `/${categoryId}`,
+        url: `/categories/${categoryId}`,
         method: "PATCH",
         headers,
         body: updatedCategory,
@@ -57,7 +48,7 @@ export const categoryApi = createApi({
 
     deleteCategory: builder.mutation({
       query: (categoryId) => ({
-        url: `/${categoryId}`,
+        url: `/categories/${categoryId}`,
         method: "DELETE",
       }),
     }),

@@ -1,22 +1,12 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import baseQuery from "./baseQuery";
 
 export const branchInventoryApi = createApi({
   reducerPath: "branch-inventory",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5008/api/branch-inventories" }),
+  baseQuery,
   endpoints: (builder) => ({
-    // getAllBranchInventory: builder.query({
-    //   query: (options) => {
-    //     const { branch } = options;
-    //     const params = branch ? { branch } : {};
-    //     return {
-    //       url: "/",
-    //       params: params,
-    //     };
-    //   },
-    // }),
-
     getAllBranchInventory: builder.query({
-      query: ({branch, page = 1, limit = 5, search, sort }) => {
+      query: ({ branch, page = 1, limit = 5, search, sort }) => {
         const params = {
           branch,
           page,
@@ -25,22 +15,22 @@ export const branchInventoryApi = createApi({
           sort,
         };
         return {
-          url: "/",
+          url: "/branch-inventories",
           params: params,
         };
       },
     }),
     getBranchInventory: builder.query({
-      query: (branchInventoryId) => `/${branchInventoryId}`,
+      query: (branchInventoryId) => `/branch-inventories/${branchInventoryId}`,
     }),
 
     getBranchInventoryByProduct: builder.query({
-      query: (product) => `/get-branch-inventory-by-product/${product}`,
+      query: (product) => `/branch-inventories/get-branch-inventory-by-product/${product}`,
     }),
 
     createBranchInventory: builder.mutation({
       query: (newBranchInventory) => ({
-        url: ``,
+        url: `/branch-inventories`,
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: newBranchInventory,
@@ -49,7 +39,7 @@ export const branchInventoryApi = createApi({
 
     updateBranchInventory: builder.mutation({
       query: ({ branchInventoryId, updatedBranchInventory }) => ({
-        url: `/${branchInventoryId}`,
+        url: `/branch-inventories/${branchInventoryId}`,
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: updatedBranchInventory,
@@ -58,7 +48,7 @@ export const branchInventoryApi = createApi({
 
     deleteBranchInventory: builder.mutation({
       query: (branchInventoryId) => ({
-        url: `/${branchInventoryId}`,
+        url: `/branch-inventories/${branchInventoryId}`,
         method: "DELETE",
       }),
     }),

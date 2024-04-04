@@ -185,7 +185,7 @@ export default function Cart({ refetch }: any) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get(`http://localhost:5008/api/products/sku/${sku}`);
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_URL_API}/products/sku/${sku}`);
         if (res.data.data) {
           const newProduct = res.data.data;
           const existingProductIndex = products.findIndex((product) => product.sku === newProduct.sku);

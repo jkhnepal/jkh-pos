@@ -17,10 +17,6 @@ export const branchApi = createApi({
       }),
     }),
 
-    // getAllBranch: builder.query({
-    //   query: () => "/branches",
-    // }),
-
     getAllBranch: builder.query({
       query: ({ page = 1, limit = 5, search, sort }) => {
         const params = {

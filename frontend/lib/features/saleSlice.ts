@@ -1,8 +1,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import baseQuery from "./baseQuery";
 
 export const saleApi = createApi({
   reducerPath: "sale",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5008/api/sales" }),
+  baseQuery,
   endpoints: (builder) => ({
     getAllSale: builder.query({
       query: ({ branch, page = 1, limit = 5, search, sort }) => {
@@ -14,7 +15,7 @@ export const saleApi = createApi({
           sort,
         };
         return {
-          url: "/",
+          url: "/sales",
           params: params,
         };
       },
@@ -26,19 +27,19 @@ export const saleApi = createApi({
           member_id,
         };
         return {
-          url: "/loki/sales-of-a-member",
+          url: "/sales/loki/sales-of-a-member",
           params: params,
         };
       },
     }),
 
     getSale: builder.query({
-      query: (saleId) => `/${saleId}`,
+      query: (saleId) => `/sales/${saleId}`,
     }),
 
     createSale: builder.mutation({
       query: (newSale) => ({
-        url: ``,
+        url: `/sales`,
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: {
@@ -50,7 +51,7 @@ export const saleApi = createApi({
 
     updateSale: builder.mutation({
       query: ({ saleId, updatedSale }) => ({
-        url: `/${saleId}`,
+        url: `/sales/${saleId}`,
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: updatedSale,
@@ -59,7 +60,7 @@ export const saleApi = createApi({
 
     deleteSale: builder.mutation({
       query: (saleId) => ({
-        url: `/${saleId}`,
+        url: `/sales/${saleId}`,
         method: "DELETE",
       }),
     }),

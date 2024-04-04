@@ -1,31 +1,21 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
+import baseQuery from "./baseQuery";
 // Define common headers
+
 const headers = { "Content-Type": "application/json" };
 
 export const productApi = createApi({
   reducerPath: "product",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5008/api/products" }),
+  baseQuery,
   endpoints: (builder) => ({
     createProduct: builder.mutation({
       query: (newProduct) => ({
-        url: ``,
+        url: `/products`,
         method: "POST",
         headers,
         body: newProduct,
       }),
     }),
-
-    // getAllProduct: builder.query({
-    //   query: (options) => {
-    //     const { name } = options;
-    //     const params = name ? { name } : {};
-    //     return {
-    //       url: "/",
-    //       params: params,
-    //     };
-    //   },
-    // }),
 
     getAllProduct: builder.query({
       query: ({ page = 1, limit = 5, search, sort }) => {
@@ -36,23 +26,23 @@ export const productApi = createApi({
           sort,
         };
         return {
-          url: "/",
+          url: "/products",
           params: params,
         };
       },
     }),
 
     getProduct: builder.query({
-      query: (productId) => `/${productId}`,
+      query: (productId) => `/products/${productId}`,
     }),
 
     getProductBySku: builder.query({
-      query: (productId) => `/sku/${productId}`, //productId->sku
+      query: (productId) => `/products/sku/${productId}`, //productId->sku
     }),
 
     updateProduct: builder.mutation({
       query: ({ productId, updatedProduct }) => ({
-        url: `/${productId}`,
+        url: `/products/${productId}`,
         method: "PATCH",
         headers,
         body: updatedProduct,
@@ -61,7 +51,7 @@ export const productApi = createApi({
 
     deleteProduct: builder.mutation({
       query: (productId) => ({
-        url: `/${productId}`,
+        url: `/products/${productId}`,
         method: "DELETE",
       }),
     }),

@@ -1,8 +1,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import baseQuery from "./baseQuery";
 
 export const memberApi = createApi({
   reducerPath: "member",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5008/api/members" }),
+  baseQuery,
   endpoints: (builder) => ({
     getAllMember: builder.query({
       query: ({ page = 1, limit = 5, search, sort }) => {
@@ -13,23 +14,23 @@ export const memberApi = createApi({
           sort,
         };
         return {
-          url: "/",
+          url: "/members",
           params: params,
         };
       },
     }),
 
     getMember: builder.query({
-      query: (memberId) => `/${memberId}`,
+      query: (memberId) => `/members/${memberId}`,
     }),
 
     getMemberByPhone: builder.query({
-      query: (memberId) => `/by-phone/${memberId}`, //memberId-->phone
+      query: (memberId) => `/members/by-phone/${memberId}`, //memberId-->phone
     }),
 
     createMember: builder.mutation({
       query: (newMember) => ({
-        url: ``,
+        url: `/members`,
         method: "POST",
         // headers: { "Content-Type": "application/json" },
         body: newMember,
@@ -38,7 +39,7 @@ export const memberApi = createApi({
 
     updateMember: builder.mutation({
       query: ({ memberId, updatedMember }) => ({
-        url: `/${memberId}`,
+        url: `/members/${memberId}`,
         method: "PATCH",
         // headers: { "Content-Type": "application/json" },
         body: updatedMember,
@@ -47,7 +48,7 @@ export const memberApi = createApi({
 
     deleteMember: builder.mutation({
       query: (memberId) => ({
-        url: `/${memberId}`,
+        url: `/members/${memberId}`,
         method: "DELETE",
       }),
     }),
