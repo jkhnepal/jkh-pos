@@ -6,8 +6,6 @@ export async function createBranch(input: BranchInput) {
   return result;
 }
 
-
-
 export async function findAllBranch(filter: FilterQuery<BranchDocument> = {}) {
   const search = filter.search || "";
   const sort = filter.sort || "";
@@ -15,13 +13,11 @@ export async function findAllBranch(filter: FilterQuery<BranchDocument> = {}) {
   const limit: any = filter.limit || 5;
   const skip = (page - 1) * limit;
 
-  // console.log(search)
-
   const searchQuery: any = {
     name: { $regex: search, $options: "i" },
-
+    type: { $ne: "headquarter" }, // not include headquarter
   };
-  const count = await BranchModel.countDocuments();
+  const count = await BranchModel.countDocuments({ type: { $ne: "headquarter" } }); // not include headquarter
   const results = await BranchModel.find(searchQuery)
     .skip(skip)
     .limit(limit)

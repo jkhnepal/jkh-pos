@@ -129,6 +129,7 @@ export default function Page() {
 
     {
       id: "actions",
+      header: "Action",
       enableHiding: false,
       cell: ({ row }) => {
         const item = row.original;

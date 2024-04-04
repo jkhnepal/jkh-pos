@@ -36,6 +36,7 @@ export default function Page({}: Props) {
     setCurrentPage((prevPage) => prevPage + 1);
   };
 
+
   return (
     <>
       <Input
@@ -88,36 +89,38 @@ export default function Page({}: Props) {
         {branchInventories?.data?.results?.map((item: any) => (
           <Card key={item._id}>
             <CardHeader className=" p-0">
-              <CardTitle className="mx-auto">
-                <Image
-                  src={item.product.image}
-                  alt="img"
-                  height={100}
-                  width={100}
-                  className=" h-40 w-40  object-scale-down"
-                />
-              </CardTitle>
-              <Separator />
               <CardDescription className=" p-3 ">
-                <p className=" text-xl font-medium text-center">{item.product.name}</p>
-                <div className=" space-y-1 mt-4">
-                  <p className=" tracking-wider">
-                    <span className=" font-medium">Available Stock</span> : {item.totalStock}
-                  </p>
-                  <div className=" flex">
-                    <p
-                      onClick={() => {
-                        navigator.clipboard.writeText(item.product.sku);
-                        toast.success("SKU copy success");
-                      }}
-                      className=" tracking-wider">
-                      <span className=" font-medium">SKU</span> : {item.product.sku}
-                    </p>
+                <div className="relative  overflow-hidden ">
+                  <div className=" flex mx-auto items-center justify-center">
+                    <Image
+                      src={item.product.image}
+                      alt="img"
+                      height={100}
+                      width={100}
+                      className=" h-40 w-40  object-scale-down"
+                    />
                   </div>
-
-                  <p className=" tracking-wider">
-                    <span className=" font-medium">Price</span> :Rs {item.product.sp}
-                  </p>
+                  <Separator />
+                  <span className={`${item?.totalStock < 10 ? "bg-red-500/80" : item.totalStock > 11 ? "bg-green-500/80" : null} absolute top-0 left-0 w-28 translate-y-4 -translate-x-6 -rotate-45  text-center text-sm text-white`}>{item?.totalStock < 10 ? "Low Stock" : item.totalStock > 11 ? "High Stock" : null}</span>
+                  <div className="mt-4 px-5 pb-5">
+                    <h5 className="text-xl font-semibold tracking-tight text-zinc-700 text-center">{item.product.name}</h5>
+                    <div className=" flex">
+                      <div
+                        onClick={() => {
+                          navigator.clipboard.writeText(item.product.sku);
+                          toast.success("SKU Copied");
+                        }}
+                        className="mt-2.5 mb-3 px-2 flex gap-2 items-center rounded bg-zinc-100/50 text-lg tracking-wider font-medium ">
+                        <span>SKU :</span>
+                        <span> {item.product.sku}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <p>
+                        <span className="text-2xl font-bold text-zinc-700">Rs : {item.product.sp}</span>
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </CardDescription>
             </CardHeader>

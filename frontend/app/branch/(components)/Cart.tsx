@@ -330,6 +330,20 @@ export default function Cart({ refetch }: any) {
   //   console.log("🚀 ~ updatedSelectedProducts ~ updatedSelectedProducts:", updatedSelectedProducts);
   // };
 
+  const skuInputRef = useRef<any>(null);
+
+  useEffect(() => {
+    // Focus on the SKU input field when the component mounts
+    skuInputRef.current.focus();
+  }, []); // Emp
+
+
+  const [isSelectOpen, setIsSelectOpen] = useState(false); // State to control the visibility of the select content
+
+  const closeSelect = () => {
+    setIsSelectOpen(false); // Function to close the select content
+  };
+
   return (
     <>
       <div className="">
@@ -345,7 +359,6 @@ export default function Cart({ refetch }: any) {
             className=" bg-neutral-50 rounded-full p-2 cursor-pointer text-neutral-700 hover:bg-neutral-100"
             onClick={() => setSetShowCartDrawer(false)}
           />
-          {/* {claimPoint} {claimPointForReceiptPrint} */}
 
           <div className=" flex flex-col py-4  ">
             <Select>
@@ -374,27 +387,23 @@ export default function Cart({ refetch }: any) {
                     </p>
                   ))}
 
-                  {members?.data.results.length === 0 && (
-                    <Link href={"/branch/members/create"}>
-                      <div className=" flex items-center gap-1 text-zinc-700 cursor-pointer justify-center py-1">
-                        <Plus size={18} /> Add Member
-                      </div>
-                    </Link>
-                  )}
+                  <Link href={"/branch/members/create"}>
+                    <div className=" flex items-center gap-1 text-zinc-700 cursor-pointer justify-center py-1">
+                      <Plus size={18} /> Add New Member
+                    </div>
+                  </Link>
                 </SelectGroup>
               </SelectContent>
             </Select>
           </div>
 
-          <div className=" flex items-center gap-4 mb-8 ">
-            <div className=" flex items-center gap-4  ">
-              <Input
-                placeholder="SKU"
-                value={sku}
-                onChange={(e) => setsku(e.target.value)}
-              />
-            </div>
-            <Button type="button">Add</Button>
+          <div className=" flex items-center gap-4 mb-8  ">
+            <Input
+              ref={skuInputRef}
+              placeholder="SKU"
+              value={sku}
+              onChange={(e) => setsku(e.target.value)}
+            />
           </div>
 
           <ScrollArea className="  h-[90vh] w-[500px] rounded-md border   ">

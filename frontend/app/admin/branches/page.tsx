@@ -137,6 +137,7 @@ export default function Page() {
 
     {
       id: "actions",
+      header: "Action",
       cell: ({ row }) => {
         const item = row.original;
         return (

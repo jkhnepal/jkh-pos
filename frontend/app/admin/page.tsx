@@ -34,17 +34,17 @@ export default function Component() {
           value={stats?.data.products | 0}
           icon={<Shirt />}
         /> */}
-        
+
         <StatCard
           title="Total Revenue"
           description="Total revenue of all branches till now"
-          value={`Rs. ${stats?.data.totalSales | 0}`}
+          value={`Rs. ${stats?.data.totalSales.toLocaleString("en-IN") || "0"}`}
           icon={<BarChart4 />}
         />
         <StatCard
           title="Total Profits"
           description="Total profits of all branches till now"
-          value={`Rs. ${stats?.data.totalSales -  stats?.data.totalCp | 0}`}
+          value={`Rs. ${(stats?.data.totalSales - stats?.data.totalCp || 0).toLocaleString("en-IN")}`}
           icon={<LineChart />}
         />
       </>

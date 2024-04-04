@@ -11,7 +11,7 @@ var colors = require("colors");
 
 export async function getHeadquarterStatHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
   try {
-    const branches = await BranchModel.countDocuments();
+    const branches = await BranchModel.countDocuments({ type: { $ne: "headquarter" } }); // not include headquarter
     const categories = await CategoryModel.countDocuments();
     const products = await ProductModel.countDocuments();
     const members = await MemberModel.countDocuments();

@@ -45,11 +45,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className={`${isFullScreen ? "" : "w-2/12"} flex flex-col justify-between  h-screen overflow-y-scroll bg-primary p-4 text-primary-foreground `}>
             <div>
               <div className=" mb-8">
-                <Image
-                  src={logo}
-                  alt="img"
-                  className=" h-12 w-40"
-                />
+                <Link href={"/admin"}>
+                  <Image
+                    src={logo}
+                    alt="img"
+                    className=" h-12 w-40"
+                  />
+                </Link>
               </div>
 
               <div className=" flex  flex-col justify-between space-y-4 tracking-wider   ">
@@ -97,10 +99,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <Menu className=" cursor-pointer " />
             </Button>
 
-            <Avatar>
-              <AvatarImage src={currentBranch?.image} />
-              <AvatarFallback>{currentBranch?.name[0]}</AvatarFallback>
-            </Avatar>
+            <Link href={"/admin/admin-profile"}>
+              <Avatar>
+                <AvatarImage src={currentBranch?.image} />
+                <AvatarFallback>{currentBranch?.name[0]}</AvatarFallback>
+              </Avatar>
+            </Link>
           </div>
           <div>
             <div className=" px-4 mt-8 ">{children}</div>
@@ -108,8 +112,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
     );
-  } 
-  
+  }
+
   // else {
   //   if (!isLoading && currentBranch && currentBranch.type !== "headquarter") {
   //     router.push("/");

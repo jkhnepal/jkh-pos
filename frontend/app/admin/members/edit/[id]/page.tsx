@@ -184,14 +184,14 @@ function Breadcumb() {
     <Breadcrumb className=" mb-8">
       <BreadcrumbList>
         <BreadcrumbItem>
-          <BreadcrumbLink href="/branch">Dashboard</BreadcrumbLink>
+          <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator>
           <SlashIcon />
         </BreadcrumbSeparator>
 
         <BreadcrumbItem>
-          <BreadcrumbLink href="/branch/members">Members</BreadcrumbLink>
+          <BreadcrumbLink href="/admin/members">Members</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator>
           <SlashIcon />

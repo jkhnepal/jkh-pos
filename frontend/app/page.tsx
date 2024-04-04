@@ -30,7 +30,7 @@ export default function Home() {
     },
   });
 
-  const [loginBranch, { data, error, status, isSuccess, isError, isLoading: isLogging }] = useLoginBranchMutation();
+  const [loginBranch, { error, isLoading: isLogging }] = useLoginBranchMutation();
 
   const router = useRouter();
 
