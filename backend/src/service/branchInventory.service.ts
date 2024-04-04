@@ -29,6 +29,7 @@ export async function findAllBranchInventory(filter: FilterQuery<BranchInventory
   const searchQuery: any = {
     name: { $regex: search, $options: "i" },
     branch: branch,
+    totalStock: { $gt: 0 },
   };
   const count = await BranchInventoryModel.countDocuments(searchQuery);
   const results = await BranchInventoryModel.find(searchQuery)

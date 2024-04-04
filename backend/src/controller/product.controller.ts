@@ -3,6 +3,7 @@ import AppError from "../utils/appError";
 import { CreateProductInput, UpdateProductInput } from "../schema/product.schema";
 import { findProduct, createProduct, findAllProduct, findAndUpdateProduct, deleteProduct } from "../service/product.service";
 import { createHeadquarterInventory } from "../service/headquarterInventory.service";
+import generateSKU from "../utils/generateSku";
 var colors = require("colors");
 
 export async function createProductHandler(req: Request<{}, {}, CreateProductInput["body"]>, res: Response, next: NextFunction) {
@@ -17,7 +18,8 @@ export async function createProductHandler(req: Request<{}, {}, CreateProductInp
       });
     }
 
-    const product = await createProduct(body);
+    const sku = generateSKU(6);
+    const product = await createProduct({ ...body, sku: sku });
 
     // Fist time when the product is created , the headquarterInventory must be created with totalStock=0
     const headquarterInventory = await createHeadquarterInventory({ product: product?._id, totalStock: 0 });

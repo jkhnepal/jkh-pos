@@ -22,9 +22,9 @@ const formSchema = z.object({
     message: "Name must be at least 4 characters.",
   }),
 
-  sku: z.string().min(5, {
-    message: "SKU must be at least 5 characters.",
-  }),
+  // sku: z.string().min(5, {
+  //   message: "SKU must be at least 5 characters.",
+  // }),
   category: z.string().min(5, {
     message: "Category is required",
   }),
@@ -65,7 +65,7 @@ export default function Page() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      sku: "",
+      // sku: "",
       category: product ? product.category : "",
       cp: 0,
       sp: 0,
@@ -80,7 +80,7 @@ export default function Page() {
     if (product) {
       form.reset({
         name: product.name || "",
-        sku: product.sku || "",
+        // sku: product.sku || "",
         category: product.category || "",
 
         cp: product.cp || 0,
@@ -186,7 +186,7 @@ export default function Page() {
             )}
           />
 
-          <FormField
+          {/* <FormField
             control={form.control}
             name="sku"
             render={({ field }) => (
@@ -201,7 +201,7 @@ export default function Page() {
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
 
           <FormField
             control={form.control}

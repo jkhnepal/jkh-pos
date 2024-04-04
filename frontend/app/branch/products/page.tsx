@@ -7,6 +7,8 @@ import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ArrowDown01, ArrowDown10, ChevronDown, MoreHorizontal } from "lucide-react";
+import { useAcceptTheDistributeMutation } from "@/lib/features/distributeSlice";
+
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -27,6 +29,15 @@ export default function Page() {
   let totalItem = productIncomingHistory?.data.count;
   const pageCount = Math.ceil(totalItem / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
+
+  const [acceptTheDistribute] = useAcceptTheDistributeMutation();
+
+  // const handleAccept = async (distributeId: any) => {
+  //   const updatedDistribute = {
+  //     isAcceptedByBranch: true,
+  //   };
+  //   await acceptTheDistribute({ distributeId: distributeId, updatedDistribute: updatedDistribute });
+  // };
 
   const goToPreviousPage = () => {
     setCurrentPage((prevPage) => prevPage - 1);
@@ -62,6 +73,15 @@ export default function Page() {
       header: "S.N",
       cell: ({ row }: any) => <div>{startIndex + row.index + 1} </div>,
     },
+    {
+      accessorKey: "product",
+      header: "SKU",
+      cell: ({ row }: any) => <div  onClick={() => {
+        navigator.clipboard.writeText(row.getValue("product").sku);
+        toast.success("SKU copy success");
+      }}>{row.getValue("product")?.sku}</div>,
+    },
+
 
     {
       accessorKey: "product",
@@ -69,12 +89,7 @@ export default function Page() {
       cell: ({ row }: any) => <div>{row.getValue("product")?.name}</div>,
     },
 
-    {
-      accessorKey: "product",
-      header: "SKU",
-      cell: ({ row }: any) => <div>{row.getValue("product")?.sku}</div>,
-    },
-
+   
     {
       accessorKey: "product",
       header: "C.P",
@@ -92,6 +107,20 @@ export default function Page() {
       header: "Stock",
       cell: ({ row }: any) => <div>{row.getValue("stock")}</div>,
     },
+
+    // {
+    //   accessorKey: "distributeId",
+    //   header: "Accept",
+    //   cell: ({ row }: any) => (
+    //     <div>
+    //       <Badge
+    //         variant="outline"
+    //         onClick={() => handleAccept(row.getValue("distributeId"))}>
+    //         Accept
+    //       </Badge>{" "}
+    //     </div>
+    //   ),
+    // },
 
     {
       accessorKey: "createdAt",
@@ -280,12 +309,12 @@ import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Input } from "@/components/ui/input";
 import moment from "moment";
-import { useGetAllBranchInventoryQuery } from "@/lib/features/branchInventorySlice";
-import { toast } from "sonner";
-import Link from "next/link";
 import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
 import { useDebounce } from "use-debounce";
-import { useGetAllDistributeOfABranchQuery, useGetAllDistributeQuery } from "@/lib/features/distributeSlice";
+import { useGetAllDistributeOfABranchQuery } from "@/lib/features/distributeSlice";
+import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
+import { toast } from "sonner";
 
 function Breadcumb() {
   return (

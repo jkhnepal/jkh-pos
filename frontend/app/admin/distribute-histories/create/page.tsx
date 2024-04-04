@@ -36,6 +36,7 @@ export default function Page() {
     },
   });
 
+
   // const { watch } = form;
   // const watchedFields = watch();
   // const priduct_id = watchedFields.product;
@@ -91,13 +92,23 @@ export default function Page() {
                   <SelectContent>
                     <SelectGroup>
                       <SelectLabel>Branches</SelectLabel>
-                      {branches?.data.results.map((item: any) => (
+                      {/* {branches?.data.results.map((item: any) => (
                         <SelectItem
                           key={item._id}
                           value={item._id}>
                           {item.name}
                         </SelectItem>
-                      ))}
+                      ))} */}
+
+                      {branches?.data.results
+                        .filter((branch: any) => branch.type !== "headquarter")
+                        .map((item: any) => (
+                          <SelectItem
+                            key={item._id}
+                            value={item._id}>
+                            {item.name}
+                          </SelectItem>
+                        ))}
                     </SelectGroup>
                   </SelectContent>
                 </Select>

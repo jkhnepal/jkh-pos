@@ -2,7 +2,7 @@
 import { CardTitle, CardHeader, CardContent, Card } from "@/components/ui/card";
 import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
 import { useGetBranchProfitQuery, useGetBranchStatQuery } from "@/lib/features/statSlice";
-import { Shapes, Shirt, UsersRound } from "lucide-react";
+import { LineChart, Shapes, Shirt, UsersRound } from "lucide-react";
 
 export default function Component() {
   const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
@@ -12,6 +12,13 @@ export default function Component() {
 
   const { data: profitData } = useGetBranchProfitQuery({ branch: branch_id });
   console.log("🚀 ~ Component ~ profitData:", profitData);
+
+  // Assuming branchInventories.data.results is the array containing inventory objects
+  const totalStockSum = stats?.data.inventories.reduce((acc: any, inventory: any) => {
+    return acc + inventory.totalStock;
+  }, 0);
+
+  console.log("Total Stock Sum:", totalStockSum);
 
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -28,9 +35,16 @@ export default function Component() {
             icon={<Shapes />}
           />
           <StatCard
-            title=" Products"
+            title=" Unique Products"
             value={stats.data.products}
             icon={<Shirt />}
+          />
+
+          <StatCard
+            title="Total Stock"
+            description="Total availabe stocks"
+            value={totalStockSum | 0}
+            icon={<LineChart />}
           />
 
           <StatCard

@@ -9,7 +9,7 @@ export async function createReturn(input: ReturnInput) {
 export async function findAllReturn(filter: FilterQuery<ReturnDocument> = {}) {
   const branch = filter.branch || "";
   const search = filter.search || "";
-  console.log("🚀 ~ findAllReturn ~ search:", search)
+  console.log("🚀 ~ findAllReturn ~ search:", search);
   const sort = filter.sort || "";
   const page: any = filter.page || 1;
   const limit: any = filter.limit || 5;
@@ -18,7 +18,14 @@ export async function findAllReturn(filter: FilterQuery<ReturnDocument> = {}) {
   const count = await ReturnModel.countDocuments({ branch: branch });
   const results1 = await ReturnModel.find({ branch: branch });
 
-  const results = await ReturnModel.find({ branch: branch })
+  const searchQuery: any = {
+    name: { $regex: search, $options: "i" },
+    branch: branch,
+    isReturned: true,
+  };
+
+  // const results = await ReturnModel.find({ branch: branch })
+  const results = await ReturnModel.find(searchQuery)
     .skip(skip)
     .limit(limit)
     .sort({ createdAt: sort == "latest" ? -1 : 1 })

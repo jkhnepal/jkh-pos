@@ -7,9 +7,9 @@ const payload = {
       required_error: "name is required",
     }),
 
-    sku: string({
-      required_error: "sku is required",
-    }),
+    // sku: string({
+    //   required_error: "sku is required",
+    // }),
 
     category: string({
       required_error: "category is required",

@@ -38,6 +38,7 @@ export async function findAllDistributeOfABranch(filter: FilterQuery<DistributeD
     name: { $regex: search, $options: "i" },
     branch: branch,
   };
+
   const count = await DistributeModel.countDocuments(searchQuery);
   const results = await DistributeModel.find(searchQuery)
     .skip(skip)

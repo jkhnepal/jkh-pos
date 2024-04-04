@@ -175,6 +175,26 @@ export async function updateDistributeHandler(req: Request<UpdateDistributeInput
   }
 }
 
+export async function acceptTheDistributeHandler(req: Request<UpdateDistributeInput["params"]>, res: Response, next: NextFunction) {
+  try {
+    const distributeId = req.params.distributeId;
+    console.log("🚀 ~ acceptTheDistributeHandler ~ distributeId:", distributeId);
+
+    const updatedDistribute = await findAndUpdateDistribute({ distributeId }, req.body, {
+      new: true,
+    });
+
+    return res.status(200).json({
+      status: "success",
+      msg: "Update success",
+      data: updatedDistribute,
+    });
+  } catch (error: any) {
+    console.error("Error:", error.message);
+    next(new AppError("Internal server error", 500));
+  }
+}
+
 export async function deleteDistributeHandler(req: Request<UpdateDistributeInput["params"]>, res: Response, next: NextFunction) {
   try {
     const distributeId = req.params.distributeId;

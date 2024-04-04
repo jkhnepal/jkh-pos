@@ -39,7 +39,8 @@ export async function getHeadquarterStatHandler(req: Request<{}, {}, {}>, res: R
       {
         $group: {
           _id: null,
-          cp: { $sum: "$cp" },
+          // cp: { $sum: "$cp" },
+          cp: { $sum: { $multiply: ["$cp", "$quantity"] } }, // Use $multiply
         },
       },
     ]);
@@ -66,15 +67,15 @@ export async function getBranchStatHandler(req: Request<{}, {}, {}>, res: Respon
     const members = await MemberModel.countDocuments();
     const categories = await CategoryModel.countDocuments();
 
-    const totalSales1 = await SaleModel.aggregate([
-      {
-        $match: {
-          branch: new mongoose.Types.ObjectId(queryParameter.branch as string),
-          isReturned: false,
-        },
-      },
-    ]);
-    console.log("🚀 ~ getBranchStatHandler ~ totalSales1:", totalSales1)
+    // const totalSales1 = await SaleModel.aggregate([
+    //   {
+    //     $match: {
+    //       branch: new mongoose.Types.ObjectId(queryParameter.branch as string),
+    //       isReturned: false,
+    //     },
+    //   },
+    // ]);
+    // console.log("🚀 ~ getBranchStatHandler ~ totalSales1:", totalSales1);
 
     const totalSales = await SaleModel.aggregate([
       {
@@ -101,14 +102,15 @@ export async function getBranchStatHandler(req: Request<{}, {}, {}>, res: Respon
       {
         $group: {
           _id: null,
-          cp: { $sum: "$cp" },
+          // cp: { $sum: "$cp" },
+          cp: { $sum: { $multiply: ["$cp", "$quantity"] } }, // Use $multiply
         },
       },
     ]);
     // console.log("🚀 ~ getBranchStatHandler ~ totalCp:", totalCp);
 
     const inventoryCount = await BranchInventoryModel.find(queryParameter).countDocuments();
-    const inventories = await BranchInventoryModel.find(queryParameter).populate({ path: "product", select: "name , image , totalStock productId ,sku" });
+    const inventories = await BranchInventoryModel.find(queryParameter).populate({ path: "product", select: "name  image  totalStock productId sku" });
     console.log("🚀 ~ getBranchStatHandler ~ inventories:", inventories);
 
     const totalSalesByMonth = await SaleModel.aggregate([
@@ -137,7 +139,8 @@ export async function getBranchStatHandler(req: Request<{}, {}, {}>, res: Respon
       {
         $group: {
           _id: { $month: "$createdAt" }, // Grouping by month
-          cp: { $sum: "$cp" }, // Calculating total cost price
+          // cp: { $sum: "$cp" }, // Calculating total cost price
+          cp: { $sum: { $multiply: ["$cp", "$quantity"] } }, // Use $multiply
         },
       },
     ]);
@@ -157,7 +160,6 @@ export async function getBranchStatHandler(req: Request<{}, {}, {}>, res: Respon
 export async function getBranchProfitHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
   try {
     const queryParameter = req.query;
-    const res1 = await SaleModel.find({ branch: queryParameter.branch, isReturned: false });
 
     const totalSales = await SaleModel.aggregate([
       {
@@ -184,10 +186,15 @@ export async function getBranchProfitHandler(req: Request<{}, {}, {}>, res: Resp
       {
         $group: {
           _id: null,
-          cp: { $sum: "$cp" },
+          cp: { $sum: { $multiply: ["$cp", "$quantity"] } }, // Use $multiply
         },
       },
     ]);
+
+    const res1 = await SaleModel.find({ branch: queryParameter.branch, isReturned: false });
+    console.log("🚀 ~ getBranchProfitHandler ~ res1:", res1);
+    console.log("🚀 ~ getBranchProfitHandler ~ totalSales:", totalSales);
+    console.log("🚀 ~ getBranchProfitHandler ~ totalCp:", totalCp);
 
     return res.status(200).json({
       status: "success",

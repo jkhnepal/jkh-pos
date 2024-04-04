@@ -22,9 +22,10 @@ const formSchema = z.object({
 });
 
 export default function Page() {
+  const router = useRouter();
+
   const [createMember, { error, isLoading: isCreating }] = useCreateMemberMutation();
   const { refetch } = useGetAllMemberQuery({});
-
   const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
 
   // Initialize form with default values
@@ -51,6 +52,7 @@ export default function Page() {
       refetch();
       toast.success(res.data.msg);
       form.reset();
+      router.push("/branch");
     }
   };
 
@@ -119,20 +121,21 @@ import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
 import { useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
 
 function Breadcumb() {
   return (
     <Breadcrumb className=" mb-8">
       <BreadcrumbList>
         <BreadcrumbItem>
-          <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+          <BreadcrumbLink href="/branch">Dashboard</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator>
           <SlashIcon />
         </BreadcrumbSeparator>
 
         <BreadcrumbItem>
-          <BreadcrumbLink href="/admin/members">Members</BreadcrumbLink>
+          <BreadcrumbLink href="/branch/members">Members</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator>
           <SlashIcon />
