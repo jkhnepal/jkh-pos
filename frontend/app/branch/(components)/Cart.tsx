@@ -23,6 +23,9 @@ import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import axios from "axios";
 
+import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+
 const formSchema = z.object({
   sku: z.string().length(6, { message: "SKU must be 6 characters" }),
 });
@@ -221,13 +224,38 @@ export default function Cart({ refetch }: any) {
   // selectedMember;
 
   // Calculate the claim point
+  // let claimPoint = 0;
+  // if (useRewardPoint) {
+  //   const memberPoint = selectedMemberData?.data.point || 0;
+  //   claimPoint = Math.floor(memberPoint / 1000) * 1000; // Round down to the nearest multiple of 1000
+  //   console.log("🚀 ~ Cart ~ claimPoint:", claimPoint);
+  // }
+
+  // Calculate the claim point
+  // let claimPoint = 0;
+  // if (useRewardPoint) {
+  //   const memberPoint = selectedMemberData?.data.point || 0;
+  //   if (totalAmountBeforeReward > memberPoint) {
+  //     claimPoint = memberPoint; // Claim all available points
+  //   } else {
+  //     claimPoint = Math.floor(memberPoint / 1000) * 1000; // Round down to the nearest multiple of 1000
+  //   }
+  //   console.log("🚀 ~ Cart ~ claimPoint:", claimPoint);
+  // }
+
+  // Calculate the claim point
   let claimPoint = 0;
   if (useRewardPoint) {
     const memberPoint = selectedMemberData?.data.point || 0;
-    claimPoint = Math.floor(memberPoint / 1000) * 1000; // Round down to the nearest multiple of 1000
+    if (totalAmountBeforeReward > memberPoint) {
+      claimPoint = memberPoint; // Claim all available points
+    } else {
+      claimPoint = Math.min(Math.floor(memberPoint / 1000) * 1000, totalAmountBeforeReward); // Round down to the nearest multiple of 1000 and ensure it doesn't exceed totalAmountBeforeReward
+    }
     console.log("🚀 ~ Cart ~ claimPoint:", claimPoint);
   }
 
+  console.log(totalAmountBeforeReward);
   console.log(claimPoint);
 
   console.log(products);
@@ -285,6 +313,7 @@ export default function Cart({ refetch }: any) {
     ...(useRewardPoint && { claimPoint: claimPoint }),
   };
 
+  const [readModeOnly, setReadModeOnly] = useState(false);
   // Create Sale
   const [claimPointForReceiptPrint, setClaimPointForReceiptPrint] = useState<any>();
   const [createSale, { isSuccess }] = useCreateSaleMutation();
@@ -298,6 +327,7 @@ export default function Cart({ refetch }: any) {
     // setSelectedMember("");
     refetch();
     setClaimPointForReceiptPrint(claimPoint);
+    setReadModeOnly(!readModeOnly);
   };
 
   // const handleMemberChange = async (event: any) => {
@@ -337,12 +367,24 @@ export default function Cart({ refetch }: any) {
     skuInputRef.current.focus();
   }, []); // Emp
 
-
   const [isSelectOpen, setIsSelectOpen] = useState(false); // State to control the visibility of the select content
 
   const closeSelect = () => {
     setIsSelectOpen(false); // Function to close the select content
   };
+
+  const [amountGivenByCustomber, setamountGivenByCustomber] = useState<any>();
+
+  const handleCountChange = (index: number, newCount: number) => {
+    setProducts((prevProducts) => {
+      const updatedProducts = [...prevProducts];
+      updatedProducts[index].count = newCount;
+      return updatedProducts;
+    });
+  };
+
+  console.log(products, "????????????????????????????????????????????");
+  console.log(dataToSend);
 
   return (
     <>
@@ -362,7 +404,9 @@ export default function Cart({ refetch }: any) {
 
           <div className=" flex flex-col py-4  ">
             <Select>
-              <SelectTrigger className="">
+              <SelectTrigger
+                disabled={readModeOnly}
+                className="">
                 <SelectValue placeholder={`${selectedMemberData?.data.name || "Select member"} (${selectedMemberData?.data.phone || "Phone"})` || "Select member"} />
               </SelectTrigger>
               <SelectContent>
@@ -401,6 +445,7 @@ export default function Cart({ refetch }: any) {
             <Input
               ref={skuInputRef}
               placeholder="SKU"
+              disabled={readModeOnly}
               value={sku}
               onChange={(e) => setsku(e.target.value)}
             />
@@ -429,7 +474,15 @@ export default function Cart({ refetch }: any) {
                     <TableCell className="font-medium">{index + 1}.</TableCell>
                     <TableCell>{item.name}</TableCell>
                     <TableCell>{item.sp}</TableCell>
-                    <TableCell>{item.count}</TableCell>
+                    <TableCell>
+                      {/* Input field to increase/decrease count */}
+                      <Input
+                        className=" w-16 py-0 px-1 h-7 "
+                        type="number"
+                        value={item.count}
+                        onChange={(e) => handleCountChange(index, parseInt(e.target.value))}
+                      />
+                    </TableCell>
                     <TableCell className="text-right">{item.sp * item.count}</TableCell>
                   </TableRow>
                 ))}
@@ -457,6 +510,8 @@ export default function Cart({ refetch }: any) {
               </TableFooter>
             </Table>
 
+            
+
             {!isSuccess && (
               <div className=" mt-4 flex justify-end gap-4 px-4">
                 {selectedMemberData?.data.point >= 1000 && selectedProducts.length >= 1 && (
@@ -478,109 +533,162 @@ export default function Cart({ refetch }: any) {
               </div>
             )}
 
-            {isSuccess && (
-              <div className=" mt-4 flex items-center justify-end gap-4 px-4">
-                <Button
-                  onClick={() => window.location.reload()}
-                  type="button"
-                  className=" p-2 text-xs flex gap-1 ">
-                  <RefreshCcw size={14} /> New session
-                </Button>
+            <div className="mt-4 flex items-center justify-end gap-4 px-4">
 
-                <Dialog>
-                  <DialogTrigger
-                    asChild
-                    className=" mx-4">
-                    <Button variant="outline">
-                      <Printer size={18} />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent
-                    ref={componentRef}
-                    className=" p-0">
-                    <div>
-                      <div className=" p-2 text-sm">
-                        <div className=" flex flex-col items-center ">
-                          <p className=" text-3xl font-medium">Jacket House</p>
-                          <p>Branch Name : {currentBranch?.data.branch.name}</p>
-                          <p>Address : {currentBranch?.data.branch.address}</p>
-                        </div>
-                        <div className=" flex items-center justify-between mt-2">
-                          <p>Date : {new Date().toLocaleDateString()}</p>
-                          <p className=" ">VAT No : 619738433</p>
-                        </div>
 
-                        <Separator className="mt-8 mb-2 border border-zinc-300" />
+            {isSuccess && <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline">Return Calculator</Button>
+                </PopoverTrigger>
+                <PopoverContent className=" w-96">
+                  <div className="grid gap-4">
+                    <div className="space-y-2">
+                      <h4 className="font-medium leading-none">Calculate Return</h4>
+                      <p className="text-sm text-muted-foreground">Calculate your transaction here.</p>
+                    </div>
+                    <div className="grid gap-2">
+                      <div className="grid grid-cols-3 items-center gap-4">
+                        <Label htmlFor="width">Total Amount</Label>
+                        <Input
+                          id="width"
+                          readOnly
+                          // defaultValue={`${useRewardPoint ? totalAmountBeforeReward - claimPointForReceiptPrint : totalAmountBeforeReward}`}
+                          defaultValue={`${useRewardPoint ? totalAmountBeforeReward - claimPointForReceiptPrint : totalAmountBeforeReward}`}
+                          className="col-span-2 h-8"
+                        />
+                      </div>
+                      <div className="grid grid-cols-3 items-center gap-4">
+                        <Label htmlFor="maxWidth">Amount Given by customber</Label>
+                        <Input
+                          id="maxWidth"
+                          type=""
+                          className="col-span-2 h-8"
+                          value={amountGivenByCustomber}
+                          autoFocus
+                          onChange={(e) => setamountGivenByCustomber(e.target.value)}
+                        />
+                      </div>
+                      <div className="grid grid-cols-3 items-center gap-4">
+                        <Label htmlFor="height">Return Amount</Label>
+                        <Input
+                          id="height"
+                     value={(amountGivenByCustomber  -totalAmountBeforeReward) | 0}
+                  //   value={`${amountGivenByCustomber - (useRewardPoint ? totalAmountBeforeReward - claimPointForReceiptPrint : totalAmountBeforeReward)}`}
 
-                        <p className=" font-medium mb-4"> Customers Name : {selectedMemberData?.data.name}</p>
-                        <div className=" flex items-center text-xs ">
-                          <p className=" w-1/12">S.N</p>
-                          <p className=" w-6/12 text-center">Item</p>
-                          <p className=" w-6/12 text-center">Price</p>
-                          <p className=" w-1/12">Qty</p>
-                          <p className=" w-4/12 text-end">Amount</p>
-                        </div>
 
-                        <div className=" flex flex-col gap-2 my-2   ">
-                          {products.length > 0 &&
-                            products.map((item: any, index: number) => (
-                              <p
-                                key={index}
-                                className="flex items-center   ">
-                                <span className="w-1/12">{index + 1}</span>
-                                <span className=" w-6/12 text-center"> {item?.name}</span>
-                                <span className=" w-6/12 text-center">{item?.sp}</span>
-                                <span className=" w-1/12">{item?.count}</span>
-                                <span className=" w-4/12 text-end"> {item.sp * item.count}</span>
-                              </p>
-                            ))}
-                        </div>
-
-                        <Separator className="mt-8 mb-2 border border-zinc-300" />
-
-                        <div className=" flex items-center justify-between">
-                          <p>Total Amount</p>
-                          <p className="text-right"> Rs.{totalAmountBeforeReward}</p>
-                        </div>
-
-                        {useRewardPoint && (
-                          <div className=" flex items-center justify-between">
-                            <p>Reward Amount</p>
-                            <p className="text-right">- Rs.{claimPointForReceiptPrint}</p>
-                          </div>
-                        )}
-
-                        {useRewardPoint && (
-                          <div className=" flex items-center justify-between">
-                            <p>Total Amount After Reward</p>
-                            <p className="text-right">Rs.{`${useRewardPoint ? totalAmountBeforeReward - claimPointForReceiptPrint : totalAmountBeforeReward}`}</p>
-                          </div>
-                        )}
-
-                        <Separator className="mt-8 mb-2 border border-zinc-300" />
-                        <div className=" flex   justify-between"></div>
-
-                        <div className="flex flex-col items-center mt-12">
-                          <p>*Inclusive of all tax</p>
-
-                          <p className=" mt-4">Than You!</p>
-                          <p>Please Visit Again!!</p>
-                        </div>
+                          // value={` ${amountGivenByCustomber} - ${useRewardPoint ? totalAmountBeforeReward - claimPointForReceiptPrint : totalAmountBeforeReward} | 0`}
+                          className="col-span-2 h-8"
+                        />
                       </div>
                     </div>
+                  </div>
+                </PopoverContent>
+              </Popover>}
 
-                    <DialogFooter>
-                      <Button
-                        className="printBtn px-2"
-                        onClick={handlePrint}
-                        type="submit">
-                        Print Receipt
+              {isSuccess && (
+                <div className=" flex items-center justify-end gap-4 px-4">
+                  <Button
+                    onClick={() => window.location.reload()}
+                    type="button"
+                    className=" p-2 text-xs flex gap-1 ">
+                    <RefreshCcw size={14} /> New session
+                  </Button>
+
+                  <Dialog>
+                    <DialogTrigger
+                      asChild
+                      className=" mx-4">
+                      <Button variant="outline">
+                        <Printer size={18} />
                       </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              </div>
-            )}
+                    </DialogTrigger>
+                    <DialogContent
+                      ref={componentRef}
+                      className=" p-0">
+                      <div>
+                        <div className=" p-2 text-sm">
+                          <div className=" flex flex-col items-center ">
+                            <p className=" text-3xl font-medium">Jacket House</p>
+                            <p>Branch Name : {currentBranch?.data.branch.name}</p>
+                            <p>Address : {currentBranch?.data.branch.address}</p>
+                          </div>
+                          <div className=" flex items-center justify-between mt-2">
+                            <p>Date : {new Date().toLocaleDateString()}</p>
+                            <p className=" ">VAT No : 619738433</p>
+                          </div>
+
+                          <Separator className="mt-8 mb-2 border border-zinc-300" />
+
+                          <p className=" font-medium mb-4"> Customers Name : {selectedMemberData?.data.name}</p>
+                          <div className=" flex items-center text-xs ">
+                            <p className=" w-1/12">S.N</p>
+                            <p className=" w-6/12 text-center">Item</p>
+                            <p className=" w-6/12 text-center">Price</p>
+                            <p className=" w-1/12">Qty</p>
+                            <p className=" w-4/12 text-end">Amount</p>
+                          </div>
+
+                          <div className=" flex flex-col gap-2 my-2   ">
+                            {products.length > 0 &&
+                              products.map((item: any, index: number) => (
+                                <p
+                                  key={index}
+                                  className="flex items-center   ">
+                                  <span className="w-1/12">{index + 1}</span>
+                                  <span className=" w-6/12 text-center"> {item?.name}</span>
+                                  <span className=" w-6/12 text-center">{item?.sp}</span>
+                                  <span className=" w-1/12">{item?.count}</span>
+                                  <span className=" w-4/12 text-end"> {item.sp * item.count}</span>
+                                </p>
+                              ))}
+                          </div>
+
+                          <Separator className="mt-8 mb-2 border border-zinc-300" />
+
+                          <div className=" flex items-center justify-between">
+                            <p>Total Amount</p>
+                            <p className="text-right"> Rs.{totalAmountBeforeReward}</p>
+                          </div>
+
+                          {useRewardPoint && (
+                            <div className=" flex items-center justify-between">
+                              <p>Reward Amount</p>
+                              <p className="text-right">- Rs.{claimPointForReceiptPrint}</p>
+                            </div>
+                          )}
+
+                          {useRewardPoint && (
+                            <div className=" flex items-center justify-between">
+                              <p>Total Amount After Reward</p>
+                              <p className="text-right">Rs.{`${useRewardPoint ? totalAmountBeforeReward - claimPointForReceiptPrint : totalAmountBeforeReward}`}</p>
+                            </div>
+                          )}
+
+                          <Separator className="mt-8 mb-2 border border-zinc-300" />
+                          <div className=" flex   justify-between"></div>
+
+                          <div className="flex flex-col items-center mt-12">
+                            <p>*Inclusive of all tax</p>
+
+                            <p className=" mt-4">Than You!</p>
+                            <p>Please Visit Again!!</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <DialogFooter>
+                        <Button
+                          className="printBtn px-2"
+                          onClick={handlePrint}
+                          type="submit">
+                          Print Receipt
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              )}
+            </div>
           </ScrollArea>
         </div>
       </div>

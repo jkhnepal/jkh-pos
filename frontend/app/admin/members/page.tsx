@@ -261,7 +261,7 @@ export default function Page() {
 
         <div className="flex space-x-2">
           <Link href={"/admin/members/create"}>
-            <Button>Add New</Button>
+            <Button>Add New Member</Button>
           </Link>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

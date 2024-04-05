@@ -263,7 +263,7 @@ export default function Page() {
 
         <div className=" flex space-x-2">
           <Link href={"/admin/branches/create"}>
-            <Button>Add New</Button>
+            <Button>Add New Branch</Button>
           </Link>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

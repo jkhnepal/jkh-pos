@@ -28,12 +28,26 @@ export default function Component() {
           value={stats?.data.categories | 0}
           icon={<Shapes />}
         />
-        {/* <StatCard
-          title=" Total Products"
-          description="Total number of product"
+        <StatCard
+          title=" Total Quantity Sold"
+          description="Total Quantity Sold including all branches"
+          value={stats?.data.totalQuantitySold | 0}
+          icon={<Shirt />}
+        />
+
+        <StatCard
+          title=" Total Unique Products"
+          description="Total number unique of product in the inventory"
           value={stats?.data.products | 0}
           icon={<Shirt />}
-        /> */}
+        />
+
+        <StatCard
+          title=" Total Available Stock"
+          description="Total sum of all available stock"
+          value={stats?.data.totalAvailabeStock | 0}
+          icon={<Shirt />}
+        />
 
         <StatCard
           title="Total Revenue"
@@ -41,6 +55,7 @@ export default function Component() {
           value={`Rs. ${stats?.data.totalSales.toLocaleString("en-IN") || "0"}`}
           icon={<BarChart4 />}
         />
+
         <StatCard
           title="Total Profits"
           description="Total profits of all branches till now"

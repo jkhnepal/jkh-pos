@@ -48,6 +48,12 @@ export default function Component() {
           />
 
           <StatCard
+            title=" Total Quantituy Sold  "
+            value={stats.data.totalQuantitySoldByBranch}
+            icon={<Shirt />}
+          />
+
+          <StatCard
             title=" Total Sale Amount"
             value={`Rs ${profitData.totalSales}`}
             icon={<Shirt />}

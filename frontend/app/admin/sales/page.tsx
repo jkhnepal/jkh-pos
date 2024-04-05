@@ -198,7 +198,7 @@ export default function Page() {
 
         <div className=" space-x-2">
           <Link href={"/dashboard/sales/create"}>
-            <Button>Add New</Button>
+            <Button>Add New Sale</Button>
           </Link>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

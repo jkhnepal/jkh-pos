@@ -28,6 +28,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   //   return null;
   // }
 
+  // if (currentBranch?.type !== "headquarter") {
+  //   router.push("/admin");
+  //   return null;
+  // }
+
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
     router.push("/");
@@ -70,17 +75,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
 
             {currentBranch && (
-              <div className="py-4  border-t border-zinc-700 text-primary-foreground/60 ">
+              <div className="  border-t border-zinc-700 text-primary-foreground/60 ">
                 <div className="flex items-center gap-x-4">
                   <div>
-                    <span className="block text-sm font-semibold">
+                    {/* <span className="block text-sm font-semibold">
                       {currentBranch.name} ({currentBranch.address}){" "}
                     </span>
                     <span className="block mt-px   text-xs">{currentBranch.email}</span>
-                    <span className="block mt-px   text-xs">{currentBranch.phone}</span>
+                    <span className="block mt-px   text-xs">{currentBranch.phone}</span> */}
 
                     <Button
-                      className=" px-0 mt-4  flex items-center gap-2 py-4  text-primary-foreground/60 hover:text-primary-foreground/90 "
+                      className=" px-0  flex items-center gap-2  text-primary-foreground/60 hover:text-primary-foreground/90 "
                       onClick={handleLogout}>
                       <p>Logout</p> <LogOut size={18} />
                     </Button>

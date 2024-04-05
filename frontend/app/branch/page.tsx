@@ -36,7 +36,6 @@ export default function Page({}: Props) {
     setCurrentPage((prevPage) => prevPage + 1);
   };
 
-
   return (
     <>
       <Input
@@ -104,6 +103,10 @@ export default function Page({}: Props) {
                   <span className={`${item?.totalStock < 10 ? "bg-red-500/80" : item.totalStock > 11 ? "bg-green-500/80" : null} absolute top-0 left-0 w-28 translate-y-4 -translate-x-6 -rotate-45  text-center text-sm text-white`}>{item?.totalStock < 10 ? "Low Stock" : item.totalStock > 11 ? "High Stock" : null}</span>
                   <div className="mt-4 px-5 pb-5">
                     <h5 className="text-xl font-semibold tracking-tight text-zinc-700 text-center">{item.product.name}</h5>
+                    <div className={`${item?.totalStock < 10 ? "bg-red-500/20" : item.totalStock > 11 ? "bg-green-500/20" : null}  mt-2.5 mb-3 px-2 flex gap-2 items-center rounded text-lg tracking-wider font-medium`}>
+                      <span>Available Stock :</span>
+                      <span> {item.totalStock}</span>
+                    </div>
                     <div className=" flex">
                       <div
                         onClick={() => {
@@ -115,9 +118,10 @@ export default function Page({}: Props) {
                         <span> {item.product.sku}</span>
                       </div>
                     </div>
+
                     <div className="flex items-center justify-between">
                       <p>
-                        <span className="text-2xl font-bold text-zinc-700">Rs : {item.product.sp}</span>
+                        <span className="text-2xl font-bold text-zinc-700/90">Rs : {item.product.sp}</span>
                       </p>
                     </div>
                   </div>
