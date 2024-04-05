@@ -114,7 +114,7 @@ export default function Page() {
       cell: ({ row }: any) => (
         <div>
           {" "}
-          <Badge variant="outline">{row.getValue("point") / 100}</Badge>{" "}
+          <Badge variant="outline">{(row.getValue("point") / 100).toFixed(2)}</Badge>{" "}
         </div>
       ),
     },
@@ -125,7 +125,7 @@ export default function Page() {
       cell: ({ row }: any) => (
         <div>
           {" "}
-          <Badge variant="outline">Rs. {row.getValue("point")}</Badge>{" "}
+          <Badge variant="outline">Rs. {row.getValue("point").toFixed(2)}</Badge>{" "}
         </div>
       ),
     },

@@ -31,7 +31,6 @@ const payload = {
       required_error: "sp is required",
     }),
 
-    isReturned: boolean().optional(),
   }),
 };
 

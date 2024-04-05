@@ -35,5 +35,17 @@ export default function useCloudinaryFileUpload() {
 }
 
 
-// Hooks
+// import {Cloudinary} from "@cloudinary/url-gen";
 
+// const App = () => {
+//   const cld = new Cloudinary({cloud: {cloudName: 'dgnd6ay3m'}});
+// };
+
+
+// import {v2 as cloudinary} from 'cloudinary';
+          
+// cloudinary.config({ 
+//   cloud_name: 'dgnd6ay3m', 
+//   api_key: '965714451628497', 
+//   api_secret: '1BJfl7LcXr2dABhwfX8khpxiHbs' 
+// });

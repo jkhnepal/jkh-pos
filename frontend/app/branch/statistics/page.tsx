@@ -49,19 +49,20 @@ export default function Component() {
 
           <StatCard
             title=" Total Quantituy Sold  "
-            value={stats.data.totalQuantitySoldByBranch}
+            value={stats.data.totalQuantitySoldByBranch - stats.data.totalReturnedQuantity}
             icon={<Shirt />}
           />
 
           <StatCard
             title=" Total Sale Amount"
-            value={`Rs ${profitData.totalSales}`}
+            value={`Rs ${profitData.totalSales - stats.data.totalreturnSale}`}
             icon={<Shirt />}
           />
 
           <StatCard
             title=" Total Profit"
-            value={`Rs ${profitData?.totalSales - profitData?.totalCp}`}
+            // value={`Rs ${profitData?.totalSales - profitData?.totalCp}`}
+ value={`Rs ${profitData?.totalSales - profitData?.totalCp - stats.data.totalReturnCp}`}
             icon={<Shirt />}
           />
         </>

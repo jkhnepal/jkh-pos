@@ -37,7 +37,7 @@ export default function Home() {
   // Define a submit handler.
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const res: any = await loginBranch(values);
-    console.log(res)
+    console.log(res);
 
     if (res.data) {
       localStorage.setItem("accessToken", res.data.accessToken); // Corrected the syntax here

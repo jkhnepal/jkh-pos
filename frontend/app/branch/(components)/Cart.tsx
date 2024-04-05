@@ -168,7 +168,7 @@ export default function Cart({ refetch }: any) {
 
   // // Get all members with search
   const [searchText, setSearchText] = useState("");
-  const { data: members } = useGetAllMemberQuery({ sort: "latest", page: 1, limit: 4, search: searchText });
+  const { data: members } = useGetAllMemberQuery({ sort: "latest", page: 1, limit: 2, search: searchText });
 
   // Selected member
   const [selectedMember, setSelectedMember] = useState("");
@@ -297,7 +297,7 @@ export default function Cart({ refetch }: any) {
         sp: sp,
         quantity: count,
         totalAmount: sp * count,
-        isReturned: false,
+        // isReturned: false,
       };
     });
 
@@ -386,6 +386,7 @@ export default function Cart({ refetch }: any) {
   console.log(products, "????????????????????????????????????????????");
   console.log(dataToSend);
 
+  const [open, setOpen] = useState(false);
   return (
     <>
       <div className="">
@@ -403,7 +404,9 @@ export default function Cart({ refetch }: any) {
           />
 
           <div className=" flex flex-col py-4  ">
-            <Select>
+            <Select
+              open={open}
+              onOpenChange={setOpen}>
               <SelectTrigger
                 disabled={readModeOnly}
                 className="">
@@ -425,6 +428,7 @@ export default function Cart({ refetch }: any) {
                       className="shadow-sm p-1 cursor-pointer hover:bg-zinc-100 text-zinc-500"
                       onClick={() => {
                         setSelectedMember_Id(item._id), setSelectedMember(item.memberId);
+                        setOpen(false);
                       }}
                       key={item._id}>
                       {item.name} ({item.phone})
@@ -456,7 +460,7 @@ export default function Cart({ refetch }: any) {
               <TableCaption>
                 {selectedMember && <div className=" flex flex-col  shadow p-2">{useRewardPoint && <span className=" text-[14px] ">Total Reward Amount Rs.{claimPoint}</span>}</div>}
 
-                <div>{selectedMember && <div className=" flex flex-col  shadow p-2">{useRewardPoint && <span className=" text-[14px] ">Remaining Reward Amount Rs.{selectedMemberData?.data.point - claimPoint}</span>}</div>}</div>
+                <div>{selectedMember && <div className=" flex flex-col  shadow p-2">{useRewardPoint && <span className=" text-[14px] ">Remaining Reward Amount Rs.{(selectedMemberData?.data.point - claimPoint).toFixed(2)}</span>}</div>}</div>
               </TableCaption>
 
               <TableHeader>
@@ -510,8 +514,6 @@ export default function Cart({ refetch }: any) {
               </TableFooter>
             </Table>
 
-            
-
             {!isSuccess && (
               <div className=" mt-4 flex justify-end gap-4 px-4">
                 {selectedMemberData?.data.point >= 1000 && selectedProducts.length >= 1 && (
@@ -534,56 +536,55 @@ export default function Cart({ refetch }: any) {
             )}
 
             <div className="mt-4 flex items-center justify-end gap-4 px-4">
+              {isSuccess && (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline">Return Calculator</Button>
+                  </PopoverTrigger>
+                  <PopoverContent className=" w-96">
+                    <div className="grid gap-4">
+                      <div className="space-y-2">
+                        <h4 className="font-medium leading-none">Calculate Return</h4>
+                        <p className="text-sm text-muted-foreground">Calculate your transaction here.</p>
+                      </div>
+                      <div className="grid gap-2">
+                        <div className="grid grid-cols-3 items-center gap-4">
+                          <Label htmlFor="width">Total Amount</Label>
+                          <Input
+                            id="width"
+                            readOnly
+                            // defaultValue={`${useRewardPoint ? totalAmountBeforeReward - claimPointForReceiptPrint : totalAmountBeforeReward}`}
+                            defaultValue={`${useRewardPoint ? totalAmountBeforeReward - claimPointForReceiptPrint : totalAmountBeforeReward}`}
+                            className="col-span-2 h-8"
+                          />
+                        </div>
+                        <div className="grid grid-cols-3 items-center gap-4">
+                          <Label htmlFor="maxWidth">Amount Given by customber</Label>
+                          <Input
+                            id="maxWidth"
+                            type=""
+                            className="col-span-2 h-8"
+                            value={amountGivenByCustomber}
+                            autoFocus
+                            onChange={(e) => setamountGivenByCustomber(e.target.value)}
+                          />
+                        </div>
+                        <div className="grid grid-cols-3 items-center gap-4">
+                          <Label htmlFor="height">Return Amount</Label>
+                          <Input
+                            id="height"
+                            value={(amountGivenByCustomber - totalAmountBeforeReward) | 0}
+                            //   value={`${amountGivenByCustomber - (useRewardPoint ? totalAmountBeforeReward - claimPointForReceiptPrint : totalAmountBeforeReward)}`}
 
-
-            {isSuccess && <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline">Return Calculator</Button>
-                </PopoverTrigger>
-                <PopoverContent className=" w-96">
-                  <div className="grid gap-4">
-                    <div className="space-y-2">
-                      <h4 className="font-medium leading-none">Calculate Return</h4>
-                      <p className="text-sm text-muted-foreground">Calculate your transaction here.</p>
+                            // value={` ${amountGivenByCustomber} - ${useRewardPoint ? totalAmountBeforeReward - claimPointForReceiptPrint : totalAmountBeforeReward} | 0`}
+                            className="col-span-2 h-8"
+                          />
+                        </div>
+                      </div>
                     </div>
-                    <div className="grid gap-2">
-                      <div className="grid grid-cols-3 items-center gap-4">
-                        <Label htmlFor="width">Total Amount</Label>
-                        <Input
-                          id="width"
-                          readOnly
-                          // defaultValue={`${useRewardPoint ? totalAmountBeforeReward - claimPointForReceiptPrint : totalAmountBeforeReward}`}
-                          defaultValue={`${useRewardPoint ? totalAmountBeforeReward - claimPointForReceiptPrint : totalAmountBeforeReward}`}
-                          className="col-span-2 h-8"
-                        />
-                      </div>
-                      <div className="grid grid-cols-3 items-center gap-4">
-                        <Label htmlFor="maxWidth">Amount Given by customber</Label>
-                        <Input
-                          id="maxWidth"
-                          type=""
-                          className="col-span-2 h-8"
-                          value={amountGivenByCustomber}
-                          autoFocus
-                          onChange={(e) => setamountGivenByCustomber(e.target.value)}
-                        />
-                      </div>
-                      <div className="grid grid-cols-3 items-center gap-4">
-                        <Label htmlFor="height">Return Amount</Label>
-                        <Input
-                          id="height"
-                     value={(amountGivenByCustomber  -totalAmountBeforeReward) | 0}
-                  //   value={`${amountGivenByCustomber - (useRewardPoint ? totalAmountBeforeReward - claimPointForReceiptPrint : totalAmountBeforeReward)}`}
-
-
-                          // value={` ${amountGivenByCustomber} - ${useRewardPoint ? totalAmountBeforeReward - claimPointForReceiptPrint : totalAmountBeforeReward} | 0`}
-                          className="col-span-2 h-8"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </PopoverContent>
-              </Popover>}
+                  </PopoverContent>
+                </Popover>
+              )}
 
               {isSuccess && (
                 <div className=" flex items-center justify-end gap-4 px-4">

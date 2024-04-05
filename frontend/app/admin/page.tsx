@@ -31,7 +31,7 @@ export default function Component() {
         <StatCard
           title=" Total Quantity Sold"
           description="Total Quantity Sold including all branches"
-          value={stats?.data.totalQuantitySold | 0}
+          value={(stats?.data.totalQuantitySold - stats?.data.totalQuantityReturned) | 0}
           icon={<Shirt />}
         />
 
@@ -52,14 +52,14 @@ export default function Component() {
         <StatCard
           title="Total Revenue"
           description="Total revenue of all branches till now"
-          value={`Rs. ${stats?.data.totalSales.toLocaleString("en-IN") || "0"}`}
+          value={`Rs. ${((stats?.data.totalSales || 0) - (stats?.data.totalreturnSale || 0)).toLocaleString("en-IN")}`}
           icon={<BarChart4 />}
         />
 
         <StatCard
           title="Total Profits"
           description="Total profits of all branches till now"
-          value={`Rs. ${(stats?.data.totalSales - stats?.data.totalCp || 0).toLocaleString("en-IN")}`}
+          value={`Rs. ${(stats?.data.totalSales - stats?.data.totalCp - stats?.data.totalReturnCp || 0).toLocaleString("en-IN")}`}
           icon={<LineChart />}
         />
       </>

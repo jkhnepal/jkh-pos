@@ -21,7 +21,6 @@ export async function findAllReturn(filter: FilterQuery<ReturnDocument> = {}) {
   const searchQuery: any = {
     name: { $regex: search, $options: "i" },
     branch: branch,
-    isReturned: true,
   };
 
   // const results = await ReturnModel.find({ branch: branch })

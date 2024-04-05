@@ -4,23 +4,68 @@ import BranchInventoryModel from "../models/branchInventory.model";
 import { CreateReturnInput, UpdateReturnInput } from "../schema/return.schema";
 import { findAndUpdateBranchInventory } from "../service/branchInventory.service";
 import { createReturn, findAllReturn, findReturn, findAndUpdateReturn, deleteReturn } from "../service/return.service";
-import { findAndUpdateSale } from "../service/sale.service";
+import { findAndUpdateSale, findSale } from "../service/sale.service";
 import { findAndUpdateMember, findMember } from "../service/member.service";
 var colors = require("colors");
+
+// export async function createReturnHandler(req: Request<{}, {}, CreateReturnInput["body"]>, res: Response, next: NextFunction) {
+//   try {
+//     const body = req.body;
+//     console.log("🚀 ~ createReturnHandler ~ body:", body);
+
+//     const returnHistory = await createReturn(body);
+//     const updatedSale: any = await findAndUpdateSale(
+//       { _id: body.sale },
+//       { isReturned: true },
+//       {
+//         new: true,
+//       }
+//     );
+
+//     // // add that item in branch inventory
+//     const branchInventory: any = await BranchInventoryModel.findOne({ branch: body.branch, product: updatedSale.product });
+//     const updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, { $inc: { totalStock: +body.quantity } }, { new: true });
+
+//     const pointsToSubtract = updatedSale.sp * 0.1;
+
+//     const member: any = await findMember({ _id: body.member });
+//     const updatedMember = await findAndUpdateMember({ _id: member._id }, { $inc: { point: -pointsToSubtract } }, { new: true });
+
+//     return res.status(200).json({
+//       status: "success",
+//       msg: "Return success",
+//       data: { returnHistory, updatedSale, updatedBranchInventory, updatedMember },
+//     });
+//   } catch (error: any) {
+//     console.error(colors.red("msg:", error.message));
+//     next(new AppError("Internal server error", 500));
+//   }
+// }
 
 export async function createReturnHandler(req: Request<{}, {}, CreateReturnInput["body"]>, res: Response, next: NextFunction) {
   try {
     const body = req.body;
     console.log("🚀 ~ createReturnHandler ~ body:", body);
+    const sale: any = await findSale({ _id: body.sale });
+    console.log("🚀 ~ createReturnHandler ~ sale:", sale);
+
+    if (body.quantity > sale.quantity) {
+      return res.status(400).json({
+        status: "failure",
+        msg: "Quantity is greater than the quantity sold",
+      });
+    }
 
     const returnHistory = await createReturn(body);
     const updatedSale: any = await findAndUpdateSale(
       { _id: body.sale },
-      { isReturned: true },
+      { $inc: { returnedQuantity: +body.quantity } },
       {
         new: true,
       }
     );
+
+    console.log(updatedSale)
 
     // // add that item in branch inventory
     const branchInventory: any = await BranchInventoryModel.findOne({ branch: body.branch, product: updatedSale.product });
@@ -41,6 +86,45 @@ export async function createReturnHandler(req: Request<{}, {}, CreateReturnInput
     next(new AppError("Internal server error", 500));
   }
 }
+
+// export async function createReturnHandler(req: Request<{}, {}, CreateReturnInput["body"]>, res: Response, next: NextFunction) {
+//   try {
+//     const body = req.body;
+//     console.log("🚀 ~ createReturnHandler ~ body:", body);
+
+//     // const returnHistory = await createReturn(body);
+//     const sale = await findSale({ _id: body.sale });
+//     console.log("🚀 ~ createReturnHandler ~ sale:", sale);
+
+//     // Reduce the quantity of the product in the sale
+//     const updatedSale: any = await findAndUpdateSale(
+//       { _id: body.sale },
+//       { $inc: { quantity: -body.quantity } },
+//       {
+//         new: true,
+//       }
+//     );
+//     console.log("🚀 ~ createReturnHandler ~ updatedSale:", updatedSale);
+
+//     // // // add that item in branch inventory
+//     // const branchInventory: any = await BranchInventoryModel.findOne({ branch: body.branch, product: updatedSale.product });
+//     // const updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, { $inc: { totalStock: +body.quantity } }, { new: true });
+
+//     // const pointsToSubtract = updatedSale.sp * 0.1;
+
+//     // const member: any = await findMember({ _id: body.member });
+//     // const updatedMember = await findAndUpdateMember({ _id: member._id }, { $inc: { point: -pointsToSubtract } }, { new: true });
+
+//     return res.status(200).json({
+//       status: "success",
+//       msg: "Return success",
+//       // data: { returnHistory, updatedSale, updatedBranchInventory, updatedMember },
+//     });
+//   } catch (error: any) {
+//     console.error(colors.red("msg:", error.message));
+//     next(new AppError("Internal server error", 500));
+//   }
+// }
 
 export async function getAllReturnHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
   try {
