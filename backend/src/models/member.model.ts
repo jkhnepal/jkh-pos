@@ -24,7 +24,12 @@ const memberSchema = new mongoose.Schema(
     },
     name: { type: String, required: true },
     phone: { type: String, required: true },
-    point: { type: Number, default: 0 },
+    // point: { type: Number, default: 0 },
+    point: {
+      type: Number,
+      default: 0,
+      set: (value: number) => parseFloat(value.toFixed(2)), // Round to 2 decimal places
+    },
     creatorBranch: { type: mongoose.Schema.Types.ObjectId, ref: "Branch", required: true },
   },
   {

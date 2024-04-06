@@ -39,6 +39,8 @@ export default function Page() {
     setCurrentPage((prevPage) => prevPage + 1);
   };
 
+  const { data: salesOfABranch, isLoading: isFetching } = useGetAllSaleQuery({ branch: branch_id, sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue  });
+
   const columns: ColumnDef<any>[] = [
     {
       id: "select",
@@ -110,6 +112,7 @@ export default function Page() {
 
     {
       id: "actions",
+      header: "Action",
       enableHiding: false,
       cell: ({ row }) => {
         const item = row.original;
@@ -282,6 +285,7 @@ import { useGetAllReturnQuery } from "@/lib/features/returnSlice";
 import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
 import moment from "moment";
 import { Badge } from "@/components/ui/badge";
+import { useGetAllSaleQuery } from "@/lib/features/saleSlice";
 
 function Breadcumb() {
   return (

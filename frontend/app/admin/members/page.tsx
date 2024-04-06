@@ -114,7 +114,7 @@ export default function Page() {
       cell: ({ row }: any) => (
         <div>
           {" "}
-          <Badge variant="outline">{row.getValue("point") / 100}</Badge>{" "}
+          <Badge variant="outline">{(row.getValue("point") / 100).toFixed(2)}</Badge>{" "}
         </div>
       ),
     },
@@ -125,13 +125,14 @@ export default function Page() {
       cell: ({ row }: any) => (
         <div>
           {" "}
-          <Badge variant="outline">Rs. {row.getValue("point")}</Badge>{" "}
+          <Badge variant="outline">Rs. {row.getValue("point").toFixed(2)}</Badge>{" "}
         </div>
       ),
     },
 
     {
       id: "actions",
+      header: "Action",
       enableHiding: false,
       cell: ({ row }) => {
         const item = row.original;
@@ -260,7 +261,7 @@ export default function Page() {
 
         <div className="flex space-x-2">
           <Link href={"/admin/members/create"}>
-            <Button>Add New</Button>
+            <Button>Add New Member</Button>
           </Link>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

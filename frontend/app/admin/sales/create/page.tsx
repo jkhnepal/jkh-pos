@@ -222,7 +222,6 @@ export default function Page() {
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useGetAllProductQuery } from "@/lib/features/product.sclice";
-import { useGetAllBranchQuery } from "@/lib/features/branchSlice";
 import { useGetAllMemberQuery } from "@/lib/features/memberSlice";
 import OptionalLabel from "@/app/custom-components/OptionalLabel";
 

@@ -18,7 +18,6 @@ export async function findAllSale(filter: FilterQuery<SaleDocument> = {}) {
   const searchQuery: any = {
     name: { $regex: search, $options: "i" },
     branch: branch,
-    isReturned: false,
   };
   const count = await SaleModel.countDocuments({ branch: branch });
   const results = await SaleModel.find(searchQuery)

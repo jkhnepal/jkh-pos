@@ -129,6 +129,7 @@ export default function Page() {
 
     {
       id: "actions",
+      header: "Action",
       enableHiding: false,
       cell: ({ row }) => {
         const item = row.original;
@@ -256,7 +257,7 @@ export default function Page() {
 
         <div className="flex space-x-2">
           <Link href={"/admin/categories/create"}>
-            <Button>Add New</Button>
+            <Button>Add New Category</Button>
           </Link>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

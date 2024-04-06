@@ -31,6 +31,47 @@ export default function Page() {
   const startIndex = (currentPage - 1) * itemsPerPage;
 
   const [acceptTheDistribute] = useAcceptTheDistributeMutation();
+  console.log(productIncomingHistory?.data.results);
+
+
+
+
+
+
+
+
+// Initialize an empty array to store the results
+// const soldQuantities:any = [];
+
+// // Iterate over each object in InventoryHistories
+// InventoryHistories.forEach(history => {
+//     // Find the corresponding object in availableStocksHistory
+//     const availableStock = availableStocksHistory.find(stock => stock.product._id === history.product._id);
+    
+//     // If a corresponding object is found
+//     if (availableStock) {
+//         // Calculate the sold quantity by subtracting the stock from totalStock
+//         const soldQuantity = history.stock - availableStock.totalStock;
+        
+//         // Push the result into the soldQuantities array
+//         soldQuantities.push({
+//             productId: history.product._id,
+//             productName: history.product.name,
+//             soldQuantity: soldQuantity
+//         });
+//     }
+// });
+
+// console.log(soldQuantities);
+
+
+
+
+
+
+
+
+
 
   // const handleAccept = async (distributeId: any) => {
   //   const updatedDistribute = {
@@ -130,6 +171,7 @@ export default function Page() {
 
     {
       id: "actions",
+      header: "Action",
       enableHiding: false,
       cell: ({ row }) => {
         const item = row.original;

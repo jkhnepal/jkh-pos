@@ -66,16 +66,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
 
             {currentBranch && (
-              <div className="py-4  border-t border-zinc-700 text-primary-foreground/60 ">
+              <div className="  border-t border-zinc-700 text-primary-foreground/60 ">
                 <div className="flex items-center gap-x-4">
                   <div>
-                    <span className="block text-sm font-semibold">
+                    {/* <span className="block text-sm font-semibold">
                       {currentBranch.name} ({currentBranch.address}){" "}
                     </span>
                     <span className="block mt-px   text-xs">{currentBranch.email}</span>
-                    <span className="block mt-px   text-xs">{currentBranch.phone}</span>
+                    <span className="block mt-px   text-xs">{currentBranch.phone}</span> */}
+
                     <Button
-                      className=" px-0 mt-4  flex items-center gap-2 py-4  text-primary-foreground/60 hover:text-primary-foreground/90 "
+                      className=" px-0  flex items-center gap-2  text-primary-foreground/60 hover:text-primary-foreground/90 "
                       onClick={handleLogout}>
                       <p>Logout</p> <LogOut size={18} />
                     </Button>
@@ -98,11 +99,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <LogOut />
               </Button>
             </div> */}
-
-            <Avatar>
-              <AvatarImage src={currentBranch?.image} />
-              <AvatarFallback>{currentBranch?.name[0]}</AvatarFallback>
-            </Avatar>
+            <Link href={"/branch/branch-profile"}>
+              <Avatar>
+                <AvatarImage
+                  className=" object-cover"
+                  src={currentBranch?.image}
+                />
+                <AvatarFallback>{currentBranch?.name[0]}</AvatarFallback>
+              </Avatar>
+            </Link>
           </div>
           <div>
             <div className=" px-4 mt-8 ">{children}</div>
@@ -111,7 +116,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </div>
     );
   }
-  
+
   // else if (!isLoading && currentBranch && currentBranch.type !== "branch") {
   //   router.push("/");
   //   return null;
@@ -134,7 +139,7 @@ const navItems = [
   },
 
   {
-    name: "Inventory History",
+    name: "Inventory",
     icon: <LayoutList size={18} />,
     href: "/branch/products",
   },
@@ -151,9 +156,9 @@ const navItems = [
     href: "/branch/sales",
   },
 
-  // {
-  //   name: "Returns",
-  //   icon: <CornerDownLeft size={18} />,
-  //   href: "/branch/returns",
-  // },
+  {
+    name: "Returns",
+    icon: <CornerDownLeft size={18} />,
+    href: "/branch/returns",
+  },
 ];

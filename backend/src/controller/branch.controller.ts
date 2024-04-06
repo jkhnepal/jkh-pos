@@ -49,7 +49,6 @@ export async function createBranchHandler(req: Request<{}, {}, CreateBranchInput
 export async function getAllBranchHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
   try {
     const queryParameters = req.query;
-
     const results = await findAllBranch(queryParameters);
     return res.json({
       status: "success",

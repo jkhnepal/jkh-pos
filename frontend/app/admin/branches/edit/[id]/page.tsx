@@ -373,7 +373,6 @@ export default function Page() {
                   ))}
                 </TableBody>
                 {stats?.data.inventories.length === 0 && <TableCaption className=" w-full">No any inventory.</TableCaption>}
-               
               </Table>
             </CardContent>
           </Card>
@@ -391,13 +390,15 @@ export default function Page() {
                   <StatCard
                     title="Total Sales"
                     description="Total sales of a branches till now"
-                    value={`Rs. ${stats?.data.totalSales | 0}`}
+                    value={`Rs. ${(stats?.data.totalSales - stats?.data.totalreturnSale || 0).toLocaleString("en-IN")}`}
+                    // value={`Rs. ${stats?.data.totalSales | 0}`}
                     icon={<BarChart4 />}
                   />
                   <StatCard
                     title="Total Profits"
                     description="Total prodits of a branches till now"
-                    value={`Rs. ${stats?.data.totalSales - stats?.data.totalCp | 0}  `}
+                    value={`Rs. ${(stats?.data.totalSales - stats?.data.totalCp - stats?.data.totalReturnCp || 0).toLocaleString("en-IN")}`}
+                    // value={`Rs. ${stats?.data.totalSales - stats?.data.totalCp | 0}  `}
                     icon={<LineChart />}
                   />
 
@@ -432,7 +433,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import { useGetAllBranchQuery, useGetBranchQuery, useUpdateBranchMutation } from "@/lib/features/branchSlice";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { BarChart4, LineChart, Store } from "lucide-react";
+import { BarChart4, LineChart } from "lucide-react";
 import { useGetAllBranchInventoryQuery } from "@/lib/features/branchInventorySlice";
 
 function Breadcumb() {

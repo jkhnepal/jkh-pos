@@ -84,16 +84,23 @@ export default function Page() {
       cell: ({ row }: any) => <div>{row.getValue("member")?.phone}</div>,
     },
 
-    {
-      accessorKey: "isReturned",
-      header: "Quantity",
-      cell: ({ row }: any) => <div className=" flex">{row.getValue("isReturned") ? <p className="bg-red-400/20 flex text-sm font-medium text-red-700 rounded-full px-4">Returned</p> : <p className="bg-green-400/20 flex text-sm font-medium text-red-green rounded-full px-4">Sold</p>}</div>,
-    },
+    // {
+    //   accessorKey: "isReturned",
+    //   header: "Quantity",
+    //   cell: ({ row }: any) => <div className=" flex">{row.getValue("isReturned") ? <p className="bg-red-400/20 flex text-sm font-medium text-red-700 rounded-full px-4">Returned</p> : <p className="bg-green-400/20 flex text-sm font-medium text-red-green rounded-full px-4">Sold</p>}</div>,
+    // },
 
     {
       accessorKey: "quantity",
-      header: "Quantity",
+      header: "Sold Quantity",
       cell: ({ row }: any) => <div>{row.getValue("quantity")}</div>,
+    },
+
+
+    {
+      accessorKey: "returnedQuantity",
+      header: "Returned Quantity",
+      cell: ({ row }: any) => <div>{row.getValue("returnedQuantity")}</div>,
     },
 
     {
@@ -104,6 +111,7 @@ export default function Page() {
 
     {
       id: "actions",
+      header: "Action",
       enableHiding: false,
       cell: ({ row }) => {
         const item = row.original;
