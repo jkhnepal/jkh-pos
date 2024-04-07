@@ -33,6 +33,7 @@ const formSchema = z.object({
 });
 
 export default function Page() {
+  const router = useRouter();
   const { data: currentUserData } = useGetCurrentUserFromTokenQuery({});
   const currentBranch = currentUserData?.data.branch;
 
@@ -82,6 +83,17 @@ export default function Page() {
     }
   };
 
+  const [resetPassword, { isLoading }] = useResetPasswordMutation();
+  const handleResetPassword = async () => {
+    const res: any = await resetPassword(branch?.email);
+    if (res.data) {
+      toast.success(res.data.msg);
+      refetch();
+      localStorage.removeItem("accessToken");
+      router.push("/");
+    }
+  };
+
   if (updateError) {
     if ("status" in updateError) {
       const errMsg = "error" in updateError ? updateError.error : JSON.stringify(updateError.data);
@@ -108,7 +120,21 @@ export default function Page() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Admin Profile</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>Admin Profile</CardTitle>
+
+            <Button
+              disabled={isLoading}
+              onClick={handleResetPassword}>
+              {isLoading ? (
+                <>
+                  <LoaderPre /> Please wait...
+                </>
+              ) : (
+                "Reset Password"
+              )}
+            </Button>
+          </div>
           <CardDescription>This admin control all the other branches created.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-2">
@@ -235,8 +261,9 @@ export default function Page() {
 // Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { useGetBranchQuery, useUpdateBranchMutation } from "@/lib/features/branchSlice";
+import { useGetBranchQuery, useResetPasswordMutation, useUpdateBranchMutation } from "@/lib/features/branchSlice";
 import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
+import { useRouter } from "next/navigation";
 
 function Breadcumb() {
   return (
