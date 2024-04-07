@@ -10,8 +10,8 @@ export default function useCloudinaryFileUpload() {
       setUploading(true);
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("upload_preset", "notes-app-unsigned");
-      fetch("https://api.cloudinary.com/v1_1/dubzpy7hn/image/upload", {
+      formData.append("upload_preset", "jkh-preset");
+       fetch("https://api.cloudinary.com/v1_1/dgnd6ay3m/image/upload", {
         method: "POST",
         body: formData,
       })
@@ -34,18 +34,3 @@ export default function useCloudinaryFileUpload() {
   return { uploading, handleFileUpload };
 }
 
-
-// import {Cloudinary} from "@cloudinary/url-gen";
-
-// const App = () => {
-//   const cld = new Cloudinary({cloud: {cloudName: 'dgnd6ay3m'}});
-// };
-
-
-// import {v2 as cloudinary} from 'cloudinary';
-          
-// cloudinary.config({ 
-//   cloud_name: 'dgnd6ay3m', 
-//   api_key: '965714451628497', 
-//   api_secret: '1BJfl7LcXr2dABhwfX8khpxiHbs' 
-// });

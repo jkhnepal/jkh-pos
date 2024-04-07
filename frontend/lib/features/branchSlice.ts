@@ -45,6 +45,8 @@ export const branchApi = createApi({
       }),
     }),
 
+
+    
     deleteBranch: builder.mutation({
       query: (branchId) => ({
         url: `/branches/${branchId}`,
@@ -63,10 +65,9 @@ export const branchApi = createApi({
     }),
 
     resetPassword: builder.mutation({
-      query: ({ email_phone }) => {
-        console.log("Resetting password for:", email_phone);
+      query: (email) => {
         return {
-          url: `/branches/reset-password/${email_phone}`,
+          url: `/branches/reset-password/${email}`,
           method: "PATCH",
           headers,
         };

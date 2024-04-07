@@ -113,6 +113,15 @@ export default function Page() {
     }
   };
 
+  const [resetPassword, { isLoading }] = useResetPasswordMutation();
+  const handleResetPassword = async () => {
+    const res: any = await resetPassword(branch?.email);
+    if (res.data) {
+      toast.success(res.data.msg);
+      refetch();
+    }
+  };
+
   if (updateError) {
     if ("status" in updateError) {
       const errMsg = "error" in updateError ? updateError.error : JSON.stringify(updateError.data);
@@ -145,6 +154,7 @@ export default function Page() {
           <TabsTrigger value="inventory">Inventory</TabsTrigger>
           <TabsTrigger value="sales-report">Sales Report</TabsTrigger>
           <TabsTrigger value="statistics">Statistics</TabsTrigger>
+          <TabsTrigger value="reset-password">Reset Paassword</TabsTrigger>
           {/* <TabsTrigger value="password">Password</TabsTrigger> */}
         </TabsList>
 
@@ -420,6 +430,28 @@ export default function Page() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        <TabsContent value="reset-password">
+          <Card>
+            <CardHeader>
+              <CardTitle>Reset Branch Password</CardTitle>
+              <CardDescription>The new password will be automatically created and wiil be sent to you email (Admin Email)</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <Button
+                disabled={isLoading}
+                onClick={handleResetPassword}>
+                {isLoading ? (
+                  <>
+                    <LoaderPre /> Please wait...
+                  </>
+                ) : (
+                  "Reset Password"
+                )}
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
     </div>
   );
@@ -430,7 +462,7 @@ const monthNames = ["January", "February", "March", "April", "May", "June", "Jul
 // Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { useGetAllBranchQuery, useGetBranchQuery, useUpdateBranchMutation } from "@/lib/features/branchSlice";
+import { useGetAllBranchQuery, useGetBranchQuery, useResetPasswordMutation, useUpdateBranchMutation } from "@/lib/features/branchSlice";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { BarChart4, LineChart } from "lucide-react";
