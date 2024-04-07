@@ -222,11 +222,11 @@ export async function resetBranchPasswordHandler(req: Request, res: Response, ne
       });
     }
 
-    const admin:any = await BranchModel.findOne({ type: "headquarter" });
-    console.log("🚀 ~ resetBranchPasswordHandler ~ admin:", admin)
+    const admin: any = await BranchModel.findOne({ type: "headquarter" });
+    console.log("🚀 ~ resetBranchPasswordHandler ~ admin:", admin);
 
     const newPassword = generateRandomPassword(10);
-    console.log("🚀 ~ resetBranchPasswordHandler ~ newPassword:", newPassword)
+    console.log("🚀 ~ resetBranchPasswordHandler ~ newPassword:", newPassword);
 
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
@@ -255,14 +255,14 @@ export async function resetBranchPasswordHandler(req: Request, res: Response, ne
  </div>
    </div>`,
     });
-    console.log("🚀 ~ resetBranchPasswordHandler ~ info:", info)
+    console.log("🚀 ~ resetBranchPasswordHandler ~ info:", info);
 
     // Update password
     const hashedPassword = await generateHashedPassword(newPassword);
-    console.log("🚀 ~ resetBranchPasswordHandler ~ hashedPassword:", hashedPassword)
-    
+    console.log("🚀 ~ resetBranchPasswordHandler ~ hashedPassword:", hashedPassword);
+
     const updatedBranch = await BranchModel.findOneAndUpdate({ branchId: branch?.branchId }, { password: hashedPassword }, { new: true });
-    console.log("🚀 ~ resetBranchPasswordHandler ~ updatedBranch:", updatedBranch)
+    console.log("🚀 ~ resetBranchPasswordHandler ~ updatedBranch:", updatedBranch);
 
     return res.status(200).json({
       status: "success",
