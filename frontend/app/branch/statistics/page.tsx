@@ -62,7 +62,8 @@ export default function Component() {
           <StatCard
             title=" Total Profit"
             // value={`Rs ${profitData?.totalSales - profitData?.totalCp}`}
- value={`Rs ${profitData?.totalSales - profitData?.totalCp - stats.data.totalReturnCp}`}
+//  value={`Rs ${profitData?.totalSales - profitData?.totalCp - stats.data.totalReturnCp}`}
+ value={`Rs ${profitData?.totalSales  - stats.data.totalreturnSale -  stats.data?.totalReturnCp}`}
             icon={<Shirt />}
           />
         </>

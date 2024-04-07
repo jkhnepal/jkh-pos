@@ -407,8 +407,9 @@ export default function Page() {
                   <StatCard
                     title="Total Profits"
                     description="Total prodits of a branches till now"
-                    value={`Rs. ${(stats?.data.totalSales - stats?.data.totalCp - stats?.data.totalReturnCp || 0).toLocaleString("en-IN")}`}
+                    // value={`Rs. ${(stats?.data.totalSales - stats?.data.totalCp - stats?.data.totalReturnCp || 0).toLocaleString("en-IN")}`}
                     // value={`Rs. ${stats?.data.totalSales - stats?.data.totalCp | 0}  `}
+                    value={`Rs ${(stats?.data.totalSales  - stats?.data.totalreturnSale -  stats?.data.totalReturnCp).toLocaleString("en-IN")}`}
                     icon={<LineChart />}
                   />
 
