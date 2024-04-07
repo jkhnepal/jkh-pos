@@ -14,6 +14,16 @@ import crypto from "crypto";
 import bcrypt from "bcrypt";
 import nodemailer from "nodemailer";
 
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
+  auth: {
+    user: "lokendrachaulagain803@gmail.com",
+    pass: "sgep kquk bfrw spdl",
+  },
+});
+
 export async function createBranchHandler(req: Request<{}, {}, CreateBranchInput["body"]>, res: Response, next: NextFunction) {
   try {
     const body = req.body;
@@ -38,6 +48,23 @@ export async function createBranchHandler(req: Request<{}, {}, CreateBranchInput
 
     const hashedPassword = await generateHashedPassword(req.body.password);
     const branch = await createBranch({ ...req.body, password: hashedPassword });
+
+    const admin: any = await BranchModel.findOne({ type: "headquarter" });
+    const info = await transporter.sendMail({
+      from: "JKH",
+      to: admin.email,
+      subject: "New password created",
+      html: `<div>
+    <div class="container">
+     <div class="content">
+     <p class="heading">Password of the branch (${body.name}) is: <span style="font-weight: bold; color: blue;">${body.password}</span></p>  
+     </div>
+     <div class="footer">
+      <p>Thanks and Regards, JKH .</p>
+ </div>
+ </div>
+   </div>`,
+    });
 
     return res.status(201).json({
       status: "success",
@@ -228,16 +255,6 @@ export async function resetBranchPasswordHandler(req: Request, res: Response, ne
     const newPassword = generateRandomPassword(10);
     console.log("🚀 ~ resetBranchPasswordHandler ~ newPassword:", newPassword);
 
-    const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
-      auth: {
-        user: "lokendrachaulagain803@gmail.com",
-        pass: "sgep kquk bfrw spdl",
-      },
-    });
-
     const info = await transporter.sendMail({
       from: "JKH",
       to: admin.email,
@@ -245,12 +262,10 @@ export async function resetBranchPasswordHandler(req: Request, res: Response, ne
       html: `<div>
     <div class="container">
      <div class="content">
-     <p class="heading">Branch (${branch.name}) password has been changed . New Password: <span style="font-weight: bold; color: blue;">${newPassword}</span></p>
-       
-        
+     <p class="heading">Branch (${branch.name}) password has been changed . New Password: <span style="font-weight: bold; color: blue;">${newPassword}</span></p>  
      </div>
      <div class="footer">
-         <p>Thanks and Regards, JKH .</p>
+      <p>Thanks and Regards, JKH .</p>
  </div>
  </div>
    </div>`,
