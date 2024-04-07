@@ -8,7 +8,11 @@ import { validatePassword } from "../utils/validatePassword";
 import jwt from "jsonwebtoken";
 import generateRandomPassword from "../utils/generateRandomPassword";
 import { sendResetPassword } from "../utils/mailService";
+import BranchModel from "../models/branch.model";
 var colors = require("colors");
+import crypto from "crypto";
+import bcrypt from "bcrypt";
+import nodemailer from "nodemailer";
 
 export async function createBranchHandler(req: Request<{}, {}, CreateBranchInput["body"]>, res: Response, next: NextFunction) {
   try {
@@ -196,6 +200,69 @@ export async function resetPasswordHandler(req: Request<UpdateBranchInput["param
         new: true,
       }
     );
+
+    return res.status(200).json({
+      status: "success",
+      msg: "Password reset successful , check your email",
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    next(new AppError("Internal server error", 500));
+  }
+}
+
+export async function resetBranchPasswordHandler(req: Request, res: Response, next: NextFunction) {
+  try {
+    const branch: any = await findBranch({ email: req.params.email });
+
+    if (!branch) {
+      return res.status(404).json({
+        status: "failure",
+        msg: "Branch does not exist.",
+      });
+    }
+
+    const admin:any = await BranchModel.findOne({ type: "headquarter" });
+    console.log("🚀 ~ resetBranchPasswordHandler ~ admin:", admin)
+
+    const newPassword = generateRandomPassword(10);
+    console.log("🚀 ~ resetBranchPasswordHandler ~ newPassword:", newPassword)
+
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: "lokendrachaulagain803@gmail.com",
+        pass: "sgep kquk bfrw spdl",
+      },
+    });
+
+    const info = await transporter.sendMail({
+      from: "JKH",
+      to: admin.email,
+      subject: "Password Has Been Changed",
+      html: `<div>
+    <div class="container">
+     <div class="content">
+     <p class="heading">Branch (${branch.name}) password has been changed . New Password: <span style="font-weight: bold; color: blue;">${newPassword}</span></p>
+       
+        
+     </div>
+     <div class="footer">
+         <p>Thanks and Regards, JKH .</p>
+ </div>
+ </div>
+   </div>`,
+    });
+    console.log("🚀 ~ resetBranchPasswordHandler ~ info:", info)
+
+    // Update password
+    const hashedPassword = await generateHashedPassword(newPassword);
+    console.log("🚀 ~ resetBranchPasswordHandler ~ hashedPassword:", hashedPassword)
+    
+    const updatedBranch = await BranchModel.findOneAndUpdate({ branchId: branch?.branchId }, { password: hashedPassword }, { new: true });
+    console.log("🚀 ~ resetBranchPasswordHandler ~ updatedBranch:", updatedBranch)
 
     return res.status(200).json({
       status: "success",
