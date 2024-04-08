@@ -49,13 +49,13 @@ export default function Component() {
 
           <StatCard
             title=" Total Quantituy Sold  "
-            value={stats.data.totalQuantitySoldByBranch - stats.data.totalReturnedQuantity}
+            value={(stats.data.totalQuantitySoldByBranch - stats.data.totalReturnedQuantity).toLocaleString("en-IN")}
             icon={<Shirt />}
           />
 
           <StatCard
             title=" Total Sale Amount"
-            value={`Rs ${profitData.totalSales - stats.data.totalreturnSale}`}
+            value={`Rs ${(profitData.totalSales - stats.data.totalreturnSale).toLocaleString("en-IN")}`}
             icon={<Shirt />}
           />
 
@@ -63,7 +63,8 @@ export default function Component() {
             title=" Total Profit"
             // value={`Rs ${profitData?.totalSales - profitData?.totalCp}`}
 //  value={`Rs ${profitData?.totalSales - profitData?.totalCp - stats.data.totalReturnCp}`}
- value={`Rs ${profitData?.totalSales  - stats.data.totalreturnSale -  stats.data?.totalReturnCp}`}
+//  value={`Rs ${profitData?.totalSales  - stats.data.totalreturnSale -  stats.data?.totalReturnCp}`}
+value={`Rs ${(stats?.data.totalSales  - stats?.data.totalreturnSale - stats?.data.totalCp +  stats?.data.totalReturnCp).toLocaleString("en-IN")}`}
             icon={<Shirt />}
           />
         </>
