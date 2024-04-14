@@ -19,7 +19,7 @@ export default function Page({}: Props) {
 
   return (
     <>
-      <Breadcumb />
+      {/* <Breadcumb /> */}
       {returnItem && (
         <div className=" grid grid-cols-2 gap-4">
           <div>
@@ -82,7 +82,7 @@ export default function Page({}: Props) {
             <Label>Sell date</Label>
             <Input
               readOnly
-              value={moment(returnItem.sale.createdAt).format("MMM Do YY")}
+              value={moment(returnItem.sale.createdAt).format('MMMM Do YYYY, h:mm:ss a')}
             />
           </div>
 
@@ -90,7 +90,7 @@ export default function Page({}: Props) {
             <Label>Returned date</Label>
             <Input
               readOnly
-              value={moment(returnItem.createdAt).format("MMM Do YY")}
+              value={moment(returnItem.createdAt).format('MMMM Do YYYY, h:mm:ss a')}
             />
           </div>
 

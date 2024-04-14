@@ -10,7 +10,6 @@ import { useEffect, useState } from "react";
 import defaultImage from "../../../../../public/default-images/unit-default-image.png";
 import { toast } from "sonner";
 import { useParams } from "next/navigation";
-
 import { useGetAllCategoryQuery, useGetCategoryQuery, useUpdateCategoryMutation } from "@/lib/features/categorySlice";
 import useCloudinaryFileUpload from "@/app/hooks/useCloudinaryFileUpload";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
@@ -141,7 +140,7 @@ export default function Page() {
               <FormLabel>
                 Image <OptionalLabel /> <span className="text-primary/85  text-xs">[image must be less than 1MB]</span>
               </FormLabel>
-              <div className=" flex items-center  gap-2">
+              <div className=" flex flex-col   gap-2">
                 <Input
                   type="file"
                   onChange={(event) => handleFileUpload(event.target.files?.[0], setImageUrl)}
@@ -149,7 +148,7 @@ export default function Page() {
 
                 <>
                   {uploading ? (
-                    <div className=" flex flex-col gap-2 rounded-md items-center justify-center h-9 w-9 border">
+                    <div className=" flex flex-col gap-2 rounded-md  justify-center h-52 w-52 border">
                       <LoaderSpin />
                     </div>
                   ) : (
@@ -158,7 +157,7 @@ export default function Page() {
                       height={100}
                       src={imageUrl || defaultImage}
                       alt="img"
-                      className="p-0.5 rounded-md overflow-hidden h-9 w-9 border"
+                      className="p-0.5 rounded-md overflow-hidden h-52 w-52 border"
                     />
                   )}
                 </>

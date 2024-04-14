@@ -6,7 +6,7 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { useGetAllDistributeQuery } from "@/lib/features/distributeSlice";
+import { useGetAllDistributeQuery, useGetDistributeQuery } from "@/lib/features/distributeSlice";
 
 const formSchema = z.object({
   branch: z.string(),
@@ -18,8 +18,8 @@ export default function Page() {
   const router = useRouter();
 
   const params = useParams();
-  console.log(params);
-  
+  console.log(params.id);
+
   const { refetch } = useGetAllDistributeQuery({ name: "" });
 
   // 1. Define your form.
@@ -32,31 +32,32 @@ export default function Page() {
     },
   });
 
-  const { data: saleData, refetch: refetchSale } = useGetSaleQuery(params.id);
-  const sale = saleData?.data;
+  const { data: inventoryData, refetch: refetchBranchInventory } = useGetBranchInventoryQuery(params.id);
+  const sale = inventoryData?.data;
+  console.log(sale);
 
   // To be return quantity
   const [quantity, setQuantity] = React.useState<number>(1);
 
-  const [createReturn] = useCreateReturnMutation();
+  const [createReturnToHeadquarter] = useCreateReturnToHeadquarterMutation();
   const dataToBeSend = {
-    branch: sale?.branch._id,
-    member: sale?.member._id,
-    sale: sale?._id,
-    quantity: quantity,
+    branch: sale?.branch,
+    product: sale?.product,
+    returnedQuantity: quantity,
+    branchInventoryId: sale?.branchInventoryId,
   };
 
   const handleReturn = async (e: any) => {
     e.preventDefault();
-    const res: any = await createReturn(dataToBeSend);
+    const res: any = await createReturnToHeadquarter(dataToBeSend);
     toast.success(res.data.msg);
-    refetchSale();
-    router.push("/branch/sales");
+    refetchBranchInventory();
+    // router.push("/branch/sales");
   };
 
   return (
     <div className="   ">
-      <Breadcumb />
+      {/* <Breadcumb /> */}
       <div className="flex gap-4 items-center w-3/12">
         <Input
           disabled={sale?.isReturned}
@@ -81,6 +82,9 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import { useCreateReturnMutation } from "@/lib/features/returnSlice";
 import { useParams, useRouter } from "next/navigation";
 import { useGetSaleQuery } from "@/lib/features/saleSlice";
+import { useGetBranchInventoryByProductQuery, useGetBranchInventoryQuery } from "@/lib/features/branchInventorySlice";
+import { useGetProductQuery } from "@/lib/features/product.sclice";
+import { useCreateReturnToHeadquarterMutation } from "@/lib/features/returnToHeadquarterSlice";
 
 function Breadcumb() {
   return (

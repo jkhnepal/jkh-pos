@@ -43,6 +43,7 @@ export default function Page() {
 
   const { data, isFetching } = useGetBranchQuery(branchId);
   const branch = data?.data;
+  console.log(branch);
 
   const { data: stats } = useGetBranchStatQuery({ branch: branch?._id });
   console.log("🚀 ~ Component ~ stats:", stats);
@@ -237,15 +238,31 @@ export default function Page() {
                     )}
                   />
 
+                  <div>
+                    <FormLabel>Branch Created Date </FormLabel>
+                    <Input
+                      disabled
+                      value={moment(branch?.createdAt).format("MMMM Do YYYY, h:mm:ss a")}
+                    />
+                  </div>
+
+                  <div>
+                    <FormLabel>Branch Created Date </FormLabel>
+                    <Input
+                      disabled
+                      value={moment(branch?.createdAt).format("MMMM Do YYYY, h:mm:ss a")}
+                    />
+                  </div>
+
                   <FormField
                     control={form.control}
                     name="image"
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem className=" flex">
                         <FormLabel>
                           Image <OptionalLabel /> <span className="text-primary/85  text-xs">[image must be less than 1MB]</span>
                         </FormLabel>
-                        <div className=" flex items-center  gap-2">
+                        <div className=" flex flex-col   gap-2">
                           <Input
                             type="file"
                             onChange={(event) => handleFileUpload(event.target.files?.[0], setImageUrl)}
@@ -253,16 +270,16 @@ export default function Page() {
 
                           <>
                             {uploading ? (
-                              <div className=" flex flex-col gap-2 rounded-md items-center justify-center h-9 w-9 border">
+                              <div className=" flex flex-col gap-2 rounded-md  justify-center h-52 w-52 border">
                                 <LoaderSpin />
                               </div>
                             ) : (
                               <Image
-                                width={100}
-                                height={100}
+                                width={200}
+                                height={200}
                                 src={imageUrl || defaultImage}
                                 alt="img"
-                                className="p-0.5 rounded-md overflow-hidden h-9 w-9 border"
+                                className="p-0.5 rounded-md overflow-hidden h-52 w-52 border"
                               />
                             )}
                           </>
@@ -410,7 +427,7 @@ export default function Page() {
                     // value={`Rs. ${(stats?.data.totalSales - stats?.data.totalCp - stats?.data.totalReturnCp || 0).toLocaleString("en-IN")}`}
                     // value={`Rs. ${stats?.data.totalSales - stats?.data.totalCp | 0}  `}
                     // value={`Rs ${(stats?.data.totalSales  - stats?.data.totalreturnSale -  stats?.data.totalReturnCp).toLocaleString("en-IN")}`}
-                    value={`Rs ${(stats?.data.totalSales  - stats?.data.totalreturnSale - stats?.data.totalCp +  stats?.data.totalReturnCp).toLocaleString("en-IN")}`}
+                    value={`Rs ${(stats?.data.totalSales - stats?.data.totalreturnSale - stats?.data.totalCp + stats?.data.totalReturnCp).toLocaleString("en-IN")}`}
                     icon={<LineChart />}
                   />
 
@@ -469,6 +486,7 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { BarChart4, LineChart } from "lucide-react";
 import { useGetAllBranchInventoryQuery } from "@/lib/features/branchInventorySlice";
+import moment from "moment";
 
 function Breadcumb() {
   return (

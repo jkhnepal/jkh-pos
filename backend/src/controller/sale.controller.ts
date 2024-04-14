@@ -78,7 +78,8 @@ export async function createSaleHandler(req: Request<{}, {}, CreateSaleInput["bo
       return;
     }
 
-    await findAndUpdateMember({ _id: member._id }, { $inc: { point: totalPointsToAdd } }, { new: true });
+    // await findAndUpdateMember({ _id: member._id }, { $inc: { point: totalPointsToAdd } }, { new: true });
+    await findAndUpdateMember({ _id: member._id }, { $inc: { point: totalPointsToAdd, numberOfTimeBuyCount: 1 } }, { new: true });
 
     if (body.claimPoint) {
       const pointClaimHistory = await createPointClaimHistory({

@@ -51,6 +51,16 @@ export default function Page() {
   const { refetch } = useGetAllProductQuery({ name: "" });
   const { uploading, handleFileUpload } = useCloudinaryFileUpload();
   const [imageUrl, setImageUrl] = useState<string>("");
+  const [recentlyCreatedProductId, setrecentlyCreatedProductId] = useState<string>("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setrecentlyCreatedProductId("");
+    }, 15000); //
+
+    // Clear the timeout if the component unmounts before 3 seconds
+    return () => clearTimeout(timer);
+  }, [recentlyCreatedProductId]);
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -68,6 +78,9 @@ export default function Page() {
     },
   });
 
+  // console the form values
+  console.log(form.getValues());
+
   useEffect(() => {
     form.setValue("image", imageUrl);
   }, [form, imageUrl]);
@@ -76,6 +89,7 @@ export default function Page() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const res: any = await createProduct(values);
     if (res.data) {
+      setrecentlyCreatedProductId(res.data.data.product.productId);
       refetch();
       toast.success(res.data.msg);
       form.reset();
@@ -95,62 +109,63 @@ export default function Page() {
   }
 
   return (
-    <Form {...form}>
-      <Breadcumb />
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className=" grid grid-cols-2 gap-4">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Product Name *</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Product Name"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <div>
+      <Form {...form}>
+        <Breadcumb />
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className=" grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Product Name *</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Product Name"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="category"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Categories</FormLabel>
-              <FormControl>
-                <Select
-                  {...field}
-                  onValueChange={field.onChange}
-                  defaultValue={field.name}>
-                  <SelectTrigger className="">
-                    <SelectValue placeholder="Select Category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Categories (Expense)</SelectLabel>
-                      {categories?.data.results.map((item: any) => (
-                        <SelectItem
-                          key={item._id}
-                          value={item._id}>
-                          {item.name}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="category"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Categories</FormLabel>
+                <FormControl>
+                  <Select
+                    {...field}
+                    onValueChange={field.onChange}
+                    defaultValue={field.name}>
+                    <SelectTrigger className="">
+                      <SelectValue placeholder="Select Category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Categories (Expense)</SelectLabel>
+                        {categories?.data.results.map((item: any) => (
+                          <SelectItem
+                            key={item._id}
+                            value={item._id}>
+                            {item.name}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        {/* <FormField
+          {/* <FormField
           control={form.control}
           name="sku"
           render={({ field }) => (
@@ -167,141 +182,150 @@ export default function Page() {
           )}
         /> */}
 
-        <FormField
-          control={form.control}
-          name="cp"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Cost Price *</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  placeholder="Cost Price"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="cp"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Cost Price *</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="Cost Price"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="sp"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Selling Price *</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  placeholder="Selling Price"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="sp"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Selling Price *</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="Selling Price"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="note"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Product Note *</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Product Note"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="note"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Product Note *</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Product Note"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="colors"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>colors </FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Red,Green,Blue"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="colors"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>colors </FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Red,Green,Blue"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="sizes"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>sizes</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="XS,S,M"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="sizes"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>sizes</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="XS,S,M"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="image"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                Image <OptionalLabel /> <span className="text-primary/85  text-xs">[image must be less than 1MB]</span>
-              </FormLabel>
-              <div className=" flex items-center  gap-2">
-                <Input
-                  type="file"
-                  onChange={(event) => handleFileUpload(event.target.files?.[0], setImageUrl)}
-                />
+          <FormField
+            control={form.control}
+            name="image"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  Image <OptionalLabel /> <span className="text-primary/85  text-xs">[image must be less than 1MB]</span>
+                </FormLabel>
+                <div className=" flex items-center  gap-2">
+                  <Input
+                    type="file"
+                    onChange={(event) => handleFileUpload(event.target.files?.[0], setImageUrl)}
+                  />
 
-                <>
-                  {uploading ? (
-                    <div className=" flex flex-col gap-2 rounded-md items-center justify-center h-9 w-9 border">
-                      <LoaderSpin />
-                    </div>
-                  ) : (
-                    <Image
-                      width={100}
-                      height={100}
-                      src={imageUrl || defaultImage}
-                      alt="img"
-                      className="p-0.5 rounded-md overflow-hidden h-9 w-9 border"
-                    />
-                  )}
-                </>
-              </div>
-            </FormItem>
-          )}
-        />
+                  <>
+                    {uploading ? (
+                      <div className=" flex flex-col gap-2 rounded-md items-center justify-center h-9 w-9 border">
+                        <LoaderSpin />
+                      </div>
+                    ) : (
+                      <Image
+                        width={100}
+                        height={100}
+                        src={imageUrl || defaultImage}
+                        alt="img"
+                        className="p-0.5 rounded-md overflow-hidden h-9 w-9 border"
+                      />
+                    )}
+                  </>
+                </div>
+              </FormItem>
+            )}
+          />
 
-        <div className=" flex  flex-col gap-1.5">
-          <span className=" opacity-0">.</span>
-          <div>
-            <Button type="submit"> {isCreating && <LoaderPre />} Submit</Button>
+          <div className=" flex  flex-col gap-1.5">
+            <span className=" opacity-0">.</span>
+            <div className=" space-x-2">
+              <Button type="submit"> {isCreating && <LoaderPre />} Submit</Button>
+              {recentlyCreatedProductId && (
+                <Link href={`/admin/products/edit/${recentlyCreatedProductId}`}>
+                  <Button>Add Inventory</Button>
+                </Link>
+              )}
+            </div>
           </div>
-        </div>
-      </form>
-    </Form>
+        </form>
+      </Form>
+      {/* <InventoryAdd product={product} /> */}
+    </div>
   );
 }
 
 // Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import InventoryAdd from "../components/InventoryAdd";
+import Link from "next/link";
 
 function Breadcumb() {
   return (

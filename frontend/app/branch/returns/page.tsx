@@ -10,12 +10,16 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useDebounce } from "use-debounce";
+import * as Dialog from "@radix-ui/react-dialog";
 
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+
+  const [previewImage, setpreviewImage] = React.useState<string>("");
+  console.log(previewImage);
 
   const [searchName, setSearchName] = React.useState<string>("");
   const [debounceValue] = useDebounce(searchName, 1000);
@@ -30,6 +34,8 @@ export default function Page() {
   let totalItem: number = returnHistoriesOfABranchData?.data.count;
   const pageCount = Math.ceil(totalItem / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
+
+  console.log(returnHistoriesOfABranchData?.data.results)
 
   const goToPreviousPage = () => {
     setCurrentPage((prevPage) => prevPage - 1);
@@ -74,6 +80,50 @@ export default function Page() {
       cell: ({ row }: any) => <div>{row.getValue("sale")?.product?.name} </div>,
     },
 
+
+    {
+      accessorKey: "sale",
+      header: "Image",
+      cell: ({ row }) => {
+        const image: any = (row.getValue("sale") as any)?.product?.image as string;
+
+        return (
+          <div>
+            {image && (
+              <Dialog.Root>
+                <Dialog.Trigger
+                  onClick={() => setpreviewImage(image)}
+                  className=" text-sm text-start  hover:bg-primary-foreground w-full">
+                  <Image
+                    src={image}
+                    alt="Branch Image"
+                    width={40}
+                    height={40}
+                    className=" border rounded-md"
+                  />
+                </Dialog.Trigger>
+                <Dialog.Portal>
+                  <Dialog.Overlay className="fixed inset-0 w-full h-full bg-black opacity-40" />
+                  <Dialog.Content className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] px-4 w-full max-w-lg">
+                    {previewImage && (
+                      <Image
+                        src={previewImage}
+                        alt="Branch Image"
+                        width={400}
+                        height={400}
+                        className="  rounded-md"
+                      />
+                    )}
+                  </Dialog.Content>
+                </Dialog.Portal>
+              </Dialog.Root>
+            )}
+          </div>
+        );
+      },
+    },
+
+
     {
       accessorKey: "member",
       header: "Member",
@@ -83,19 +133,19 @@ export default function Page() {
     {
       accessorKey: "sale",
       header: "Sell Date",
-      cell: ({ row }: any) => <div>{moment(row.getValue("sale")?.createdAt).format("MMM Do YY")} </div>,
+      cell: ({ row }: any) => <div>{moment(row.getValue("sale")?.createdAt).format('MMMM Do YYYY, h:mm:ss a')} </div>,
     },
 
     {
       accessorKey: "quantity",
-      header: "Quantity",
+      header: "Returned Quantity",
       cell: ({ row }: any) => <div>{row.getValue("quantity")} </div>,
     },
 
     {
       accessorKey: "createdAt",
       header: "Return Date",
-      cell: ({ row }: any) => <div>{moment(row.getValue("createdAt")).format("MMM Do YY")} </div>,
+      cell: ({ row }: any) => <div>{moment(row.getValue("createdAt")).format('MMMM Do YYYY, h:mm:ss a')} </div>,
     },
 
     {
@@ -286,6 +336,7 @@ import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
 import moment from "moment";
 import { Badge } from "@/components/ui/badge";
 import { useGetAllSaleQuery } from "@/lib/features/saleSlice";
+import Image from "next/image";
 
 function Breadcumb() {
   return (

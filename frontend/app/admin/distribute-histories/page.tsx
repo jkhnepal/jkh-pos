@@ -11,12 +11,16 @@ import { useGetAllDistributeQuery } from "@/lib/features/distributeSlice";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
 import moment from "moment";
+import * as Dialog from "@radix-ui/react-dialog";
 
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+
+  const [previewImage, setpreviewImage] = React.useState<string>("");
+  console.log(previewImage);
 
   const [searchName, setSearchName] = React.useState<string>("");
   const [debounceValue] = useDebounce(searchName, 1000);
@@ -27,6 +31,8 @@ export default function Page() {
   const { data: distributes, isLoading: isFetching } = useGetAllDistributeQuery({ sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
   let totalItem = distributes?.data.count;
   const startIndex = (currentPage - 1) * itemsPerPage;
+
+  console.log(distributes?.data.results);
 
   const goToPreviousPage = () => {
     setCurrentPage((prevPage) => prevPage - 1);
@@ -85,21 +91,82 @@ export default function Page() {
     },
 
     {
+      accessorKey: "prcpduct",
+      header: "CP",
+      cell: ({ row }: any) => <div>{row.getValue("product")?.cp}</div>,
+    },
+
+
+    {
+      accessorKey: "sp",
+      header: "SP",
+      cell: ({ row }: any) => <div>{row.getValue("product")?.sp}</div>,
+    },
+
+    {
+      accessorKey: "product",
+      header: "Image",
+      cell: ({ row }) => {
+        const image = (row.getValue("product") as { image?: string })?.image;
+
+        return (
+          <div>
+            {image && (
+              <Dialog.Root>
+                <Dialog.Trigger
+                  onClick={() => setpreviewImage(image)}
+                  className=" text-sm text-start  hover:bg-primary-foreground w-full">
+                  <Image
+                    src={image}
+                    alt="Branch Image"
+                    width={40}
+                    height={40}
+                    className=" border rounded-md"
+                  />
+                </Dialog.Trigger>
+                <Dialog.Portal>
+                  <Dialog.Overlay className="fixed inset-0 w-full h-full bg-black opacity-40" />
+                  <Dialog.Content className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] px-4 w-full max-w-lg">
+                    {previewImage && (
+                      <Image
+                        src={previewImage}
+                        alt="Branch Image"
+                        width={400}
+                        height={400}
+                        className="  rounded-md"
+                      />
+                    )}
+                  </Dialog.Content>
+                </Dialog.Portal>
+              </Dialog.Root>
+            )}
+          </div>
+        );
+      },
+    },
+
+    {
       accessorKey: "product",
       header: "SKU",
       cell: ({ row }: any) => <div>{row.getValue("product")?.sku}</div>,
     },
 
     {
+      accessorKey: "availableStock",
+      header: "Available Stock",
+      cell: ({ row }: any) => <div>{row.getValue("product")?.availableStock}</div>,
+    },
+
+    {
       accessorKey: "stock",
-      header: "Quantity",
+      header: "Sent Quantity",
       cell: ({ row }: any) => <div>{row.getValue("stock")}</div>,
     },
 
     {
       accessorKey: "createdAt",
-      header: "Initiated Date",
-      cell: ({ row }: any) => <div>{moment(row.getValue("createdAt")).format("MMM Do YY")}</div>,
+      header: "Sent Date",
+      cell: ({ row }: any) => <div>{moment(row.getValue("createdAt")).format('MMMM Do YYYY, h:mm:ss a')}</div>,
     },
   ];
 
@@ -255,6 +322,7 @@ export default function Page() {
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useDebounce } from "use-debounce";
+import Image from "next/image";
 
 function Breadcumb() {
   return (

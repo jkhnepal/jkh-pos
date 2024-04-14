@@ -11,6 +11,7 @@ export default function Page({}: Props) {
 
   const { data } = useGetSaleQuery(params?.id);
   const soldItem = data?.data;
+  console.log(soldItem)
 
   return (
     <>
@@ -24,6 +25,15 @@ export default function Page({}: Props) {
               value={soldItem.product.name}
             />
           </div>
+
+          <div>
+            <Label>Branch Name</Label>
+            <Input
+              readOnly
+              value={soldItem.branch.name}
+            />
+          </div>
+
 
           <div>
             <Label>Product sku</Label>
@@ -66,10 +76,29 @@ export default function Page({}: Props) {
           </div>
 
           <div>
-            <Label>Returned quantity</Label>
+            <Label>Sold quantity</Label>
             <Input
               readOnly
               value={soldItem.quantity}
+            />
+          </div>
+
+
+          <div>
+            <Label>Returned quantity</Label>
+            <Input
+              readOnly
+              value={soldItem.returnedQuantity}
+            />
+          </div>
+
+
+
+          <div>
+            <Label>Total Sold quantity after return</Label>
+            <Input
+              readOnly
+              value={soldItem.quantity - soldItem.returnedQuantity}
             />
           </div>
 
@@ -77,13 +106,13 @@ export default function Page({}: Props) {
             <Label>Sell date</Label>
             <Input
               readOnly
-              value={moment(soldItem.createdAt).format("MMM Do YY")}
+              value={moment(soldItem.createdAt).format('MMMM Do YYYY, h:mm:ss a')}
             />
           </div>
 
-          <div>
+          <div className=" flex flex-col gap-2">
             <Label>Product Image</Label>
-            <div className=" shadow-sm border rounded-md flex items-center justify-center p-4">
+            <div className=" flex shadow-sm border rounded-md    p-2">
               <Image
                 src={soldItem.product.image}
                 alt="img"

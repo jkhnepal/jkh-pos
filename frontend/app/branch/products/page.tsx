@@ -8,12 +8,16 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ArrowDown01, ArrowDown10, ChevronDown, MoreHorizontal } from "lucide-react";
 import { useAcceptTheDistributeMutation } from "@/lib/features/distributeSlice";
+import * as Dialog from "@radix-ui/react-dialog";
 
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+
+  const [previewImage, setpreviewImage] = React.useState<string>("");
+  console.log(previewImage);
 
   const [searchName, setSearchName] = React.useState<string>("");
   const [debounceValue] = useDebounce(searchName, 1000);
@@ -33,45 +37,29 @@ export default function Page() {
   const [acceptTheDistribute] = useAcceptTheDistributeMutation();
   console.log(productIncomingHistory?.data.results);
 
+  // Initialize an empty array to store the results
+  // const soldQuantities:any = [];
 
+  // // Iterate over each object in InventoryHistories
+  // InventoryHistories.forEach(history => {
+  //     // Find the corresponding object in availableStocksHistory
+  //     const availableStock = availableStocksHistory.find(stock => stock.product._id === history.product._id);
 
+  //     // If a corresponding object is found
+  //     if (availableStock) {
+  //         // Calculate the sold quantity by subtracting the stock from totalStock
+  //         const soldQuantity = history.stock - availableStock.totalStock;
 
+  //         // Push the result into the soldQuantities array
+  //         soldQuantities.push({
+  //             productId: history.product._id,
+  //             productName: history.product.name,
+  //             soldQuantity: soldQuantity
+  //         });
+  //     }
+  // });
 
-
-
-
-// Initialize an empty array to store the results
-// const soldQuantities:any = [];
-
-// // Iterate over each object in InventoryHistories
-// InventoryHistories.forEach(history => {
-//     // Find the corresponding object in availableStocksHistory
-//     const availableStock = availableStocksHistory.find(stock => stock.product._id === history.product._id);
-    
-//     // If a corresponding object is found
-//     if (availableStock) {
-//         // Calculate the sold quantity by subtracting the stock from totalStock
-//         const soldQuantity = history.stock - availableStock.totalStock;
-        
-//         // Push the result into the soldQuantities array
-//         soldQuantities.push({
-//             productId: history.product._id,
-//             productName: history.product.name,
-//             soldQuantity: soldQuantity
-//         });
-//     }
-// });
-
-// console.log(soldQuantities);
-
-
-
-
-
-
-
-
-
+  // console.log(soldQuantities);
 
   // const handleAccept = async (distributeId: any) => {
   //   const updatedDistribute = {
@@ -117,12 +105,16 @@ export default function Page() {
     {
       accessorKey: "product",
       header: "SKU",
-      cell: ({ row }: any) => <div  onClick={() => {
-        navigator.clipboard.writeText(row.getValue("product").sku);
-        toast.success("SKU copy success");
-      }}>{row.getValue("product")?.sku}</div>,
+      cell: ({ row }: any) => (
+        <div
+          onClick={() => {
+            navigator.clipboard.writeText(row.getValue("product").sku);
+            toast.success("SKU copy success");
+          }}>
+          {row.getValue("product")?.sku}
+        </div>
+      ),
     },
-
 
     {
       accessorKey: "product",
@@ -130,7 +122,6 @@ export default function Page() {
       cell: ({ row }: any) => <div>{row.getValue("product")?.name}</div>,
     },
 
-   
     {
       accessorKey: "product",
       header: "C.P",
@@ -145,7 +136,7 @@ export default function Page() {
 
     {
       accessorKey: "stock",
-      header: "Stock",
+      header: "Stock Received",
       cell: ({ row }: any) => <div>{row.getValue("stock")}</div>,
     },
 
@@ -164,9 +155,51 @@ export default function Page() {
     // },
 
     {
+      accessorKey: "product",
+      header: "Image",
+      cell: ({ row }) => {
+        const image: string = (row.getValue("product") as any)?.image as string;
+
+        return (
+          <div>
+            {image && (
+              <Dialog.Root>
+                <Dialog.Trigger
+                  onClick={() => setpreviewImage(image)}
+                  className=" text-sm text-start  hover:bg-primary-foreground w-full">
+                  <Image
+                    src={image}
+                    alt="Branch Image"
+                    width={40}
+                    height={40}
+                    className=" border rounded-md"
+                  />
+                </Dialog.Trigger>
+                <Dialog.Portal>
+                  <Dialog.Overlay className="fixed inset-0 w-full h-full bg-black opacity-40" />
+                  <Dialog.Content className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] px-4 w-full max-w-lg">
+                    {previewImage && (
+                      <Image
+                        src={previewImage}
+                        alt="Branch Image"
+                        width={400}
+                        height={400}
+                        className="  rounded-md"
+                      />
+                    )}
+                  </Dialog.Content>
+                </Dialog.Portal>
+              </Dialog.Root>
+            )}
+          </div>
+        );
+      },
+    },
+
+    {
       accessorKey: "createdAt",
       header: "Sent Date",
-      cell: ({ row }: any) => <div> {moment(row.getValue("createdAt")).format("MMM Do YY")}</div>,
+      cell: ({ row }: any) => <div> {moment(row.getValue("createdAt")).format("MMMM Do YYYY, h:mm:ss a")}</div>,
     },
 
     {
@@ -357,6 +390,7 @@ import { useGetAllDistributeOfABranchQuery } from "@/lib/features/distributeSlic
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { toast } from "sonner";
+import Image from "next/image";
 
 function Breadcumb() {
   return (

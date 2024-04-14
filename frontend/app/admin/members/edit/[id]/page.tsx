@@ -157,7 +157,7 @@ export default function Page() {
               <TableCell>{item.product.sku}</TableCell>
               <TableCell>{item.sp}</TableCell>
               <TableCell>{item.quantity}</TableCell>
-              <TableCell>{moment(item.createdAt).format("MMM Do YY")}</TableCell>
+              <TableCell>{moment(item.createdAt).format('MMMM Do YYYY, h:mm:ss a')}</TableCell>
               <TableCell className="text-right">{item.totalAmount}</TableCell>
             </TableRow>
           ))}

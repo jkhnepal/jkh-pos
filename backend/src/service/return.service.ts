@@ -33,7 +33,7 @@ export async function findAllReturn(filter: FilterQuery<ReturnDocument> = {}) {
       path: "sale",
       populate: {
         path: "product",
-        select: "name",
+        select: "name image",
       },
     });
 

@@ -19,6 +19,8 @@ import statRoute from "../src/routes/stat.route";
 import returnRoute from "../src/routes/return.route";
 import pointClaimRoute from "../src/routes/pointClaim.route";
 
+import returnToHeadquarterRoute from "../src/routes/returnToHeadquarter.route";
+
 const app = express();
 // const port = process.env.PORT;
 const port = 5010;
@@ -29,7 +31,7 @@ app.use(express.json({ limit: "10kb" }));
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://jkh.webxnep.com","https://pos-h8ki.vercel.app"],
+    origin: ["http://localhost:3000", "https://jkh.webxnep.com", "https://pos-h8ki.vercel.app"],
     credentials: true,
   })
 );
@@ -54,6 +56,7 @@ app.use("/api/returns", returnRoute);
 
 app.use("/api/stats", statRoute);
 app.use("/api/point-claims", pointClaimRoute);
+app.use("/api/return-to-headquarter", returnToHeadquarterRoute);
 
 // Testing
 app.get("/healthChecker", (req: Request, res: Response, next: NextFunction) => {

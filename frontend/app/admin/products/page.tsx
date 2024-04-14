@@ -22,6 +22,9 @@ export default function Page() {
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  const [previewImage, setpreviewImage] = React.useState<string>("");
+  console.log(previewImage);
+
   const [searchName, setSearchName] = React.useState<string>("");
   const [debounceValue] = useDebounce(searchName, 1000);
   const [currentPage, setCurrentPage] = React.useState(1);
@@ -29,7 +32,7 @@ export default function Page() {
   const itemsPerPage = 10;
 
   const { data: products, isError, isLoading: isFetching, refetch } = useGetAllProductQuery({ sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
-
+  console.log(products?.data.results);
   let totalItem = products?.data.count;
   const pageCount = Math.ceil(totalItem / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -90,6 +93,32 @@ export default function Page() {
     },
 
     {
+      accessorKey: "sku",
+      header: "SKU",
+      cell: ({ row }: any) => (
+        <div
+          onClick={() => {
+            navigator.clipboard.writeText(row.getValue("sku"));
+            toast.success("SKU copy success");
+          }}>
+          {row.getValue("sku")}
+        </div>
+      ),
+    },
+
+    {
+      id: "cp",
+      header: "CP",
+      cell: ({ row }) => <div>{row.original.cp} </div>,
+    },
+
+    {
+      id: "sp",
+      header: "SP",
+      cell: ({ row }) => <div>{row.original.sp} </div>,
+    },
+
+    {
       accessorKey: "name",
       header: ({ column }) => {
         return (
@@ -117,36 +146,50 @@ export default function Page() {
     },
 
     {
-      accessorKey: "sku",
-      header: "SKU",
-      cell: ({ row }: any) => (
-        <div
-          onClick={() => {
-            navigator.clipboard.writeText(row.getValue("sku"));
-            toast.success("SKU copy success");
-          }}>
-          {row.getValue("sku")}
-        </div>
-      ),
-    },
-
-    {
       accessorKey: "image",
       header: "Image",
       cell: ({ row }) => {
         const image: string = row.getValue("image") as string;
         return (
-          <div className="">
-            <Image
-              src={image || defaultImg}
-              alt="Product Image"
-              width={30}
-              height={30}
-              className=" border p-1 rounded-md"
-            />
+          <div>
+            {image && (
+              <Dialog.Root>
+                <Dialog.Trigger
+                  onClick={() => setpreviewImage(image)}
+                  className=" text-sm text-start  hover:bg-primary-foreground w-full">
+                  <Image
+                    src={image}
+                    alt="Branch Image"
+                    width={40}
+                    height={40}
+                    className=" border rounded-md"
+                  />
+                </Dialog.Trigger>
+                <Dialog.Portal>
+                  <Dialog.Overlay className="fixed inset-0 w-full h-full bg-black opacity-40" />
+                  <Dialog.Content className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] px-4 w-full max-w-lg">
+                    {previewImage && (
+                      <Image
+                        src={previewImage}
+                        alt="Branch Image"
+                        width={400}
+                        height={400}
+                        className="  rounded-md"
+                      />
+                    )}
+                  </Dialog.Content>
+                </Dialog.Portal>
+              </Dialog.Root>
+            )}
           </div>
         );
       },
+    },
+
+    {
+      accessorKey: "createdAt",
+      header: "Product Created Date",
+      cell: ({ row }: any) => <div> {moment(row.getValue("createdAt")).format("MMMM Do YYYY, h:mm:ss a")} </div>,
     },
 
     {
@@ -390,6 +433,7 @@ export default function Page() {
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useDebounce } from "use-debounce";
+import moment from "moment";
 
 function Breadcumb() {
   return (
