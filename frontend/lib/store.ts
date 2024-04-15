@@ -14,6 +14,7 @@ import { statApi } from "./features/statSlice";
 import { returnApi } from "./features/returnSlice";
 import { pointClaimApi } from "./features/pointClaimSlice";
 import { returnToHeadquarterApi } from "./features/returnToHeadquarterSlice";
+import { rewardHistoryApi } from "./features/rewardHistorySlice";
 
 export const makeStore = () => {
   const store = configureStore({
@@ -32,6 +33,7 @@ export const makeStore = () => {
       [returnApi.reducerPath]: returnApi.reducer,
       [pointClaimApi.reducerPath]: pointClaimApi.reducer,
       [returnToHeadquarterApi.reducerPath]: returnToHeadquarterApi.reducer,
+      [rewardHistoryApi.reducerPath]: rewardHistoryApi.reducer,
 
     },
     middleware: (getDefaultMiddleware) =>
@@ -50,6 +52,7 @@ export const makeStore = () => {
         returnApi.middleware,
         pointClaimApi.middleware,
         returnToHeadquarterApi.middleware,
+        rewardHistoryApi.middleware,
       ),
   });
 

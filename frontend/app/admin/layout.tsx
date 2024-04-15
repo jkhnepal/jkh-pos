@@ -160,6 +160,14 @@ const navItems = [
     icon: <Users size={18} />,
     href: "/admin/members",
   },
+
+  
+  {
+    name: "Rewards",
+    icon: <Users size={18} />,
+    href: "/admin/rewards",
+  },
+
 ];
 
 // "use client";

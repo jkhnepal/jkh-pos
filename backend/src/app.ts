@@ -20,6 +20,9 @@ import returnRoute from "../src/routes/return.route";
 import pointClaimRoute from "../src/routes/pointClaim.route";
 
 import returnToHeadquarterRoute from "../src/routes/returnToHeadquarter.route";
+import rewardCollectedHistoryRoute from "../src/routes/rewardCollectedHistory.route";
+import MemberModel from "./models/member.model";
+import BranchModel from "./models/branch.model";
 
 const app = express();
 // const port = process.env.PORT;
@@ -57,6 +60,7 @@ app.use("/api/returns", returnRoute);
 app.use("/api/stats", statRoute);
 app.use("/api/point-claims", pointClaimRoute);
 app.use("/api/return-to-headquarter", returnToHeadquarterRoute);
+app.use("/api/reward-collected-histories", rewardCollectedHistoryRoute);
 
 // Testing
 app.get("/healthChecker", (req: Request, res: Response, next: NextFunction) => {
@@ -84,7 +88,29 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   });
 });
 
+// Function to create admin if not present
+async function createAdminIfNotPresent() {
+  try {
+    const headquarterExist = await BranchModel.exists({ role: "headquarter" });
+    if (!headquarterExist) {
+      await BranchModel.create({
+       name: "Admin",
+        email: "jackethouse002@gmail.com",
+        phone:"98637474744",
+        password:"2b$10$SxlJO6xXDU7YQDvi23WgNuQoTD5My3V28oUSIcG0bx64STdWHk/5O",
+        tyoe: "headquarter",
+      });
+      logger.info("Admin user created successfully.");
+    }
+  } catch (error:any) {
+    logger.error(`Error creating admin user: ${error.message}`);
+  }
+}
+
+
+
 app.listen(port, async () => {
   logger.info(`App is running at http://localhost:${port}`);
   await connectDB();
+  await createAdminIfNotPresent(); // Check and create admin user
 });

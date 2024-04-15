@@ -516,7 +516,7 @@ export default function Cart({ refetch }: any) {
 
             {!isSuccess && (
               <div className=" mt-4 flex justify-end gap-4 px-4">
-                {selectedMemberData?.data.point >= 1000 && selectedProducts.length >= 1 && (
+                {selectedMemberData?.data.point >= 1000 && selectedProducts.length >= 1 && selectedMemberData?.data.numberOfTimeBuyCount>=10 && (
                   <Button
                     onClick={() => setuseRewardPoint(!useRewardPoint)}
                     type="button"

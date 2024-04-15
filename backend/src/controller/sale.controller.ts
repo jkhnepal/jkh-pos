@@ -6,6 +6,7 @@ import BranchInventoryModel from "../models/branchInventory.model";
 import { findAndUpdateBranchInventory } from "../service/branchInventory.service";
 import { findAndUpdateMember, findMember } from "../service/member.service";
 import { createPointClaimHistory } from "../service/pointClaimHistory.service";
+import { createRewardCollectedHistory } from "../service/rewardCollectedHistory.service";
 var colors = require("colors");
 
 // All working before claim feature
@@ -87,7 +88,12 @@ export async function createSaleHandler(req: Request<{}, {}, CreateSaleInput["bo
         branch: body.selectedProducts[0].branch,
         claimPoint: body.claimPoint,
       });
-      await findAndUpdateMember({ _id: member._id }, { $inc: { point: -body.claimPoint } }, { new: true });
+      // await findAndUpdateMember({ _id: member._id }, { $inc: { point: -body.claimPoint } }, { new: true });
+      await findAndUpdateMember({ _id: member._id }, { $inc: { point: -body.claimPoint, numberOfTimeBuyCount: -10 } }, { new: true });
+
+      //
+
+      const rewardHistory = await createRewardCollectedHistory({ branch: body.selectedProducts[0].branch, member: body.selectedProducts[0].member, collectedAmount: body.claimPoint });
     }
 
     return res.status(201).json({
