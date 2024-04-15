@@ -27,6 +27,11 @@ export default function Page() {
   const [sort, setSort] = React.useState("latest");
   const itemsPerPage = 10;
 
+  
+  const [previewImage, setpreviewImage] = React.useState<string>("");
+  console.log(previewImage);
+
+
   const { data: categories, isLoading: isFetching, refetch } = useGetAllCategoryQuery({ sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
   let totalItem: number = categories?.data.count;
   const pageCount = Math.ceil(totalItem / itemsPerPage);
@@ -114,17 +119,45 @@ export default function Page() {
       cell: ({ row }) => {
         const image: string = row.getValue("image") as string;
         return (
-          <div className="">
-            <Image
-              src={image || defaultImg}
-              alt="Category Image"
-              width={30}
-              height={30}
-              className=" border p-1 rounded-md"
-            />
-          </div>
+          <div>
+          {image && (
+            <Dialog.Root>
+              <Dialog.Trigger
+                onClick={() => setpreviewImage(image)}
+                className=" text-sm text-start  hover:bg-primary-foreground w-full">
+                <Image
+                  src={image}
+                  alt="Branch Image"
+                  width={40}
+                  height={40}
+                  className=" border rounded-md"
+                />
+              </Dialog.Trigger>
+              <Dialog.Portal>
+                <Dialog.Overlay className="fixed inset-0 w-full h-full bg-black opacity-40" />
+                <Dialog.Content className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] px-4 w-full max-w-lg">
+                  {previewImage && (
+                    <Image
+                      src={previewImage}
+                      alt="Branch Image"
+                      width={400}
+                      height={400}
+                      className="  rounded-md"
+                    />
+                  )}
+                </Dialog.Content>
+              </Dialog.Portal>
+            </Dialog.Root>
+          )}
+        </div>
         );
       },
+    },
+
+    {
+      accessorKey: "createdAt",
+      header: "Category Created Date",
+      cell: ({ row }: any) => <div> {moment(row.getValue("createdAt")).format("MMMM Do YYYY, h:mm:ss a")} </div>,
     },
 
     {
@@ -369,6 +402,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import { Input } from "@/components/ui/input";
 import { ICategoryOut } from "@/interfaces/category";
 import { useDebounce } from "use-debounce";
+import moment from "moment";
 
 function Breadcumb() {
   return (

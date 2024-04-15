@@ -10,8 +10,15 @@ import { useGetAllBranchInventoryQuery } from "@/lib/features/branchInventorySli
 import { useDebounce } from "use-debounce";
 import { Input } from "@/components/ui/input";
 import { ArrowDown01, ArrowDown10 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import Link from "next/link";
 
 export default function Page({}: Props) {
   const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
@@ -124,6 +131,12 @@ export default function Page({}: Props) {
                         <span className="text-2xl font-bold text-zinc-700/90">Rs : {item.product.sp}</span>
                       </p>
                     </div>
+
+                   <Link href={`/branch/return-to-headquarter/${item.branchInventoryId}`}>
+                   <p>Return to Headquarter</p>
+                   
+                   </Link>
+                    
                   </div>
                 </div>
               </CardDescription>

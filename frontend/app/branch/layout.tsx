@@ -161,4 +161,10 @@ const navItems = [
     icon: <CornerDownLeft size={18} />,
     href: "/branch/returns",
   },
+
+  {
+    name: "Rewards",
+    icon: <CornerDownLeft size={18} />,
+    href: "/branch/rewards",
+  },
 ];

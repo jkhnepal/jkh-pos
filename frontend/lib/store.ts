@@ -13,6 +13,8 @@ import { branchInventoryApi } from "./features/branchInventorySlice";
 import { statApi } from "./features/statSlice";
 import { returnApi } from "./features/returnSlice";
 import { pointClaimApi } from "./features/pointClaimSlice";
+import { returnToHeadquarterApi } from "./features/returnToHeadquarterSlice";
+import { rewardHistoryApi } from "./features/rewardHistorySlice";
 
 export const makeStore = () => {
   const store = configureStore({
@@ -30,6 +32,9 @@ export const makeStore = () => {
       [statApi.reducerPath]: statApi.reducer,
       [returnApi.reducerPath]: returnApi.reducer,
       [pointClaimApi.reducerPath]: pointClaimApi.reducer,
+      [returnToHeadquarterApi.reducerPath]: returnToHeadquarterApi.reducer,
+      [rewardHistoryApi.reducerPath]: rewardHistoryApi.reducer,
+
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().concat(
@@ -45,7 +50,9 @@ export const makeStore = () => {
         branchInventoryApi.middleware,
         statApi.middleware,
         returnApi.middleware,
-        pointClaimApi.middleware
+        pointClaimApi.middleware,
+        returnToHeadquarterApi.middleware,
+        rewardHistoryApi.middleware,
       ),
   });
 

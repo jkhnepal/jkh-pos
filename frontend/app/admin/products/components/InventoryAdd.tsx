@@ -191,7 +191,7 @@ export default function InventoryAdd({ product }: Props) {
                           item.stock
                         )}
                       </TableCell>
-                      <TableCell> {moment(item.createdAt).format("MMM Do YY")} </TableCell>
+                      <TableCell> {moment(item.createdAt).format('MMMM Do YYYY, h:mm:ss a')} </TableCell>
                       <TableCell className="flex gap-4">
                         <PencilRuler
                           size={18}

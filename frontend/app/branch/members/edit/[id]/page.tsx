@@ -5,13 +5,14 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { toast } from "sonner";
 import { useParams } from "next/navigation";
 import { useGetAllMemberQuery, useGetMemberQuery, useUpdateMemberMutation } from "@/lib/features/memberSlice";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import LoaderPre from "@/app/custom-components/LoaderPre";
 import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import * as Dialog from "@radix-ui/react-dialog";
 
 const formSchema = z.object({
   name: z.string(),
@@ -25,11 +26,15 @@ export default function Page() {
   const params = useParams();
   const memberId = params.id;
 
+  const [previewImage, setpreviewImage] = React.useState<string>("");
+  console.log(previewImage);
+
   const { data, isFetching } = useGetMemberQuery(memberId);
   const member = data?.data;
   console.log("🚀 ~ Page ~ member:", member);
 
   const { data: sales } = useGetAllSalesOfAMemberQuery({ member_id: member?._id });
+  console.log(sales);
 
   // 1. Define your form.
   const form = useForm({
@@ -143,8 +148,11 @@ export default function Page() {
             <TableHead className="w-[100px]">S.N</TableHead>
             <TableHead>Name</TableHead>
             <TableHead>SKU</TableHead>
+            <TableHead>CP</TableHead>
             <TableHead>SP</TableHead>
-            <TableHead>Quantity</TableHead>
+            <TableHead>Sold Qty</TableHead>
+            <TableHead>Returned Qty</TableHead>
+            <TableHead>Product Image</TableHead>
             <TableHead>Buy Date</TableHead>
             <TableHead className="text-right">Total Amount (Rs)</TableHead>
           </TableRow>
@@ -155,16 +163,49 @@ export default function Page() {
               <TableCell className="font-medium">{index + 1}</TableCell>
               <TableCell>{item.product.name}</TableCell>
               <TableCell>{item.product.sku}</TableCell>
+              <TableCell>{item.cp}</TableCell>
               <TableCell>{item.sp}</TableCell>
-              <TableCell>{item.quantity}</TableCell>
-              <TableCell>{moment(item.createdAt).format("MMM Do YY")}</TableCell>
+              <TableCell>{item.quantity-item.returnedQuantity}</TableCell>
+              <TableCell>{item.returnedQuantity}</TableCell>
+              <TableCell>
+                <>
+                  {item?.product.image && <Dialog.Root>
+                    <Dialog.Trigger
+                      onClick={() => setpreviewImage(item?.product.image)}
+                      className=" text-sm text-start  hover:bg-primary-foreground w-full">
+                      <Image
+                        src={item.product.image}
+                        alt="Branch Image"
+                        width={40}
+                        height={40}
+                        className=" border rounded-md"
+                      />
+                    </Dialog.Trigger>
+                    <Dialog.Portal>
+                      <Dialog.Overlay className="fixed inset-0 w-full h-full bg-black opacity-40" />
+                      <Dialog.Content className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] px-4 w-full max-w-lg">
+                        {previewImage && (
+                          <Image
+                            src={previewImage}
+                            alt="Branch Image"
+                            width={400}
+                            height={400}
+                            className="  rounded-md"
+                          />
+                        )}
+                      </Dialog.Content>
+                    </Dialog.Portal>
+                  </Dialog.Root>}
+                </>
+              </TableCell>
+              <TableCell>{moment(item.createdAt).format("MMMM Do YYYY, h:mm:ss a")}</TableCell>
               <TableCell className="text-right">{item.totalAmount}</TableCell>
             </TableRow>
           ))}
         </TableBody>
         <TableFooter>
           <TableRow>
-            <TableCell colSpan={6}>Total (Rs)</TableCell>
+            <TableCell colSpan={8}>Total (Rs)</TableCell>
             <TableCell className="text-right"> Rs.{calculateTotalAmount().toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</TableCell>
           </TableRow>
         </TableFooter>
@@ -178,6 +219,7 @@ import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useGetAllSalesOfAMemberQuery } from "@/lib/features/saleSlice";
 import moment from "moment";
+import Image from "next/image";
 
 function Breadcumb() {
   return (

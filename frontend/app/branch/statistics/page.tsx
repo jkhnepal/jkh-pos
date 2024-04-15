@@ -7,7 +7,7 @@ import { LineChart, Shapes, Shirt, UsersRound } from "lucide-react";
 export default function Component() {
   const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
   const branch_id = currentUser?.data.branch._id;
-  const { data: stats } = useGetBranchStatQuery({ branch: branch_id });
+  const { data: stats, isLoading } = useGetBranchStatQuery({ branch: branch_id });
   console.log("🚀 ~ Component ~ stats:", stats);
 
   const { data: profitData } = useGetBranchProfitQuery({ branch: branch_id });
@@ -62,13 +62,20 @@ export default function Component() {
           <StatCard
             title=" Total Profit"
             // value={`Rs ${profitData?.totalSales - profitData?.totalCp}`}
-//  value={`Rs ${profitData?.totalSales - profitData?.totalCp - stats.data.totalReturnCp}`}
-//  value={`Rs ${profitData?.totalSales  - stats.data.totalreturnSale -  stats.data?.totalReturnCp}`}
-value={`Rs ${(stats?.data.totalSales  - stats?.data.totalreturnSale - stats?.data.totalCp +  stats?.data.totalReturnCp).toLocaleString("en-IN")}`}
+            //  value={`Rs ${profitData?.totalSales - profitData?.totalCp - stats.data.totalReturnCp}`}
+            //  value={`Rs ${profitData?.totalSales  - stats.data.totalreturnSale -  stats.data?.totalReturnCp}`}
+            value={`Rs ${(stats?.data.totalSales - stats?.data.totalreturnSale - stats?.data.totalCp + stats?.data.totalReturnCp).toLocaleString("en-IN")}`}
             icon={<Shirt />}
           />
         </>
       )}
+
+      {isLoading &&
+        [1, 2, 3, 4, 5, 6, 7].map((item) => (
+          <div key={item}>
+            <StactSkeletonLoader />
+          </div>
+        ))}
     </div>
   );
 }
@@ -89,4 +96,8 @@ function StatCard({ title, value, icon }: any) {
       </CardContent>
     </Card>
   );
+}
+
+function StactSkeletonLoader() {
+  return <div className="flex flex-col space-y-2 lex items-center justify-between pb-2  border rounded-xl shadow-md h-32 bg-gray-100 animate-pulse"></div>;
 }

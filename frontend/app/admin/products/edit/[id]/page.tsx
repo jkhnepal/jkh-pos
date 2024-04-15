@@ -56,6 +56,7 @@ export default function Page() {
 
   const { data, isFetching } = useGetProductQuery(productId);
   const product = data?.data;
+  console.log(product);
 
   const { uploading, handleFileUpload } = useCloudinaryFileUpload();
   const [imageUrl, setImageUrl] = useState<string>("");
@@ -131,8 +132,8 @@ export default function Page() {
 
   return (
     <div className=" space-y-8">
-      <Form {...form}>
         <Breadcumb />
+      <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className=" grid grid-cols-2 gap-4">
@@ -261,7 +262,9 @@ export default function Page() {
             name="sizes"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Sizes <OptionalLabel/></FormLabel>
+                <FormLabel>
+                  Sizes <OptionalLabel />
+                </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="XS,S,M,L"
@@ -273,12 +276,21 @@ export default function Page() {
             )}
           />
 
+          <div>
+            <FormLabel>
+              Product Created Date 
+            </FormLabel>
+            <Input disabled value={moment(product?.createdAt).format("MMMM Do YYYY, h:mm:ss a")} />
+          </div>
+
           <FormField
             control={form.control}
             name="colors"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Colors <OptionalLabel/></FormLabel>
+                <FormLabel>
+                  Colors <OptionalLabel />
+                </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Red,Green,Blue"
@@ -298,7 +310,7 @@ export default function Page() {
                 <FormLabel>
                   Image <OptionalLabel /> <span className="text-primary/85  text-xs">[image must be less than 1MB]</span>
                 </FormLabel>
-                <div className=" flex items-center  gap-2">
+                <div className=" flex flex-col   gap-2">
                   <Input
                     type="file"
                     onChange={(event) => handleFileUpload(event.target.files?.[0], setImageUrl)}
@@ -306,7 +318,7 @@ export default function Page() {
 
                   <>
                     {uploading ? (
-                      <div className=" flex flex-col gap-2 rounded-md items-center justify-center h-9 w-9 border">
+                      <div className=" flex flex-col gap-2 rounded-md items-center justify-center h-52 w-52 border">
                         <LoaderSpin />
                       </div>
                     ) : (
@@ -315,7 +327,7 @@ export default function Page() {
                         height={100}
                         src={imageUrl || defaultImage}
                         alt="img"
-                        className="p-0.5 rounded-md overflow-hidden h-9 w-9 border"
+                        className="p-0.5 rounded-md overflow-hidden h-52 w-52 border"
                       />
                     )}
                   </>
@@ -327,7 +339,7 @@ export default function Page() {
           <div className=" flex flex-col">
             <span className=" opacity-0">.</span>
             <div>
-            <Button type="submit"> {isUpdating && <LoaderPre />} Submit</Button>
+              <Button type="submit"> {isUpdating && <LoaderPre />} Submit</Button>
             </div>
           </div>
         </form>
@@ -342,6 +354,7 @@ import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useGetAllCategoryQuery } from "@/lib/features/categorySlice";
 import InventoryAdd from "../../components/InventoryAdd";
+import moment from "moment";
 
 function Breadcumb() {
   return (

@@ -257,11 +257,11 @@ export default function Page() {
                 <div className=" flex items-center  gap-2">
                   <>
                     <Image
-                      width={100}
-                      height={100}
+                      width={200}
+                      height={200}
                       src={imageUrl || defaultImage}
                       alt="img"
-                      className="p-0.5 rounded-md overflow-hidden h-9 w-9 border"
+                      className="p-0.5 rounded-md overflow-hidden h-52 w-52 border"
                     />
                   </>
                 </div>

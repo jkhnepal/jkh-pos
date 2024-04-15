@@ -6,6 +6,7 @@ export interface MemberInput {
   name: string;
   phone: string;
   point?: number; // amount
+  numberOfTimeBuyCount?: number;
   creatorBranch: BranchDocument["_id"];
 }
 
@@ -30,6 +31,7 @@ const memberSchema = new mongoose.Schema(
       default: 0,
       set: (value: number) => parseFloat(value.toFixed(2)), // Round to 2 decimal places
     },
+    numberOfTimeBuyCount: { type: Number, default: 0 },
     creatorBranch: { type: mongoose.Schema.Types.ObjectId, ref: "Branch", required: true },
   },
   {

@@ -32,6 +32,8 @@ export default function Page() {
   const pageCount = Math.ceil(totalItem / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
 
+  console.log(members?.data.results);
+
   const [deleteMember, { error: deleteError, isLoading: isDeleting }] = useDeleteMemberMutation();
   const handleDelete = async (id: string) => {
     const res: any = await deleteMember(id);
@@ -136,7 +138,7 @@ export default function Page() {
     {
       accessorKey: "createdAt",
       header: "Created Date ",
-      cell: ({ row }: any) => <div>{moment(row.getValue("createdAt")).format("MMM Do YY")}</div>,
+      cell: ({ row }: any) => <div>{moment(row.getValue("createdAt")).format('MMMM Do YYYY, h:mm:ss a')}</div>,
     },
 
     {

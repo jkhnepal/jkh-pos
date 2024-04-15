@@ -10,12 +10,16 @@ import Link from "next/link";
 import { useGetAllSaleQuery } from "@/lib/features/saleSlice";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
+import * as Dialog from "@radix-ui/react-dialog";
 
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+
+  const [previewImage, setpreviewImage] = React.useState<string>("");
+  console.log(previewImage);
 
   const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
   const branch_id = currentUser?.data.branch._id;
@@ -30,6 +34,8 @@ export default function Page() {
 
   let totalItem: number = salesOfABranch?.data.count;
   const startIndex = (currentPage - 1) * itemsPerPage;
+
+  console.log(salesOfABranch?.data.results)
 
   const goToPreviousPage = () => {
     setCurrentPage((prevPage) => prevPage - 1);
@@ -73,6 +79,21 @@ export default function Page() {
     },
 
     {
+      accessorKey: "product",
+      header: "CP",
+      cell: ({ row }: any) => <div>{row.getValue("product")?.cp}</div>,
+    },
+
+
+    {
+      accessorKey: "product",
+      header: "SP",
+      cell: ({ row }: any) => <div>{row.getValue("product")?.sp}</div>,
+    },
+
+
+
+    {
       accessorKey: "member",
       header: "Member",
       cell: ({ row }: any) => <div>{row.getValue("member")?.name}</div>,
@@ -96,6 +117,12 @@ export default function Page() {
       cell: ({ row }: any) => <div>{row.getValue("quantity")}</div>,
     },
 
+    {
+      accessorKey: "totalAmount",
+      header: "Total Amount",
+      cell: ({ row }: any) => <div>{row.getValue("totalAmount")}</div>,
+    },
+
 
     {
       accessorKey: "returnedQuantity",
@@ -104,9 +131,52 @@ export default function Page() {
     },
 
     {
+      accessorKey: "product",
+      header: "Image",
+      cell: ({ row }) => {
+        const image: string = row.getValue("product")?.image as string;
+
+        return (
+          <div>
+            {image && (
+              <Dialog.Root>
+                <Dialog.Trigger
+                  onClick={() => setpreviewImage(image)}
+                  className=" text-sm text-start  hover:bg-primary-foreground w-full">
+                  <Image
+                    src={image}
+                    alt="Branch Image"
+                    width={40}
+                    height={40}
+                    className=" border rounded-md"
+                  />
+                </Dialog.Trigger>
+                <Dialog.Portal>
+                  <Dialog.Overlay className="fixed inset-0 w-full h-full bg-black opacity-40" />
+                  <Dialog.Content className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] px-4 w-full max-w-lg">
+                    {previewImage && (
+                      <Image
+                        src={previewImage}
+                        alt="Branch Image"
+                        width={400}
+                        height={400}
+                        className="  rounded-md"
+                      />
+                    )}
+                  </Dialog.Content>
+                </Dialog.Portal>
+              </Dialog.Root>
+            )}
+          </div>
+        );
+      },
+    },
+
+
+    {
       accessorKey: "createdAt",
-      header: "Date",
-      cell: ({ row }: any) => <div>{moment(row.getValue("createdAt")).format("MMM Do YY")}</div>,
+      header: "Sold Date",
+      cell: ({ row }: any) => <div>{moment(row.getValue("createdAt")).format('MMMM Do YYYY, h:mm:ss a')}</div>,
     },
 
     {
@@ -296,6 +366,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
 import { useDebounce } from "use-debounce";
 import moment from "moment";
+import Image from "next/image";
 
 function Breadcumb() {
   return (
