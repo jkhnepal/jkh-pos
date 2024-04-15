@@ -132,8 +132,8 @@ export default function Page() {
 
   return (
     <div className=" space-y-8">
-      <Form {...form}>
         <Breadcumb />
+      <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className=" grid grid-cols-2 gap-4">
