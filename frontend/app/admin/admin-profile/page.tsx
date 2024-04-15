@@ -14,6 +14,12 @@ import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import OptionalLabel from "@/app/custom-components/OptionalLabel";
 import LoaderPre from "@/app/custom-components/LoaderPre";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+// Breadcumb
+import { SlashIcon } from "@radix-ui/react-icons";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { useGetBranchQuery, useResetPasswordMutation, useUpdateBranchMutation } from "@/lib/features/branchSlice";
+import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -258,16 +264,12 @@ export default function Page() {
   );
 }
 
-// Breadcumb
-import { SlashIcon } from "@radix-ui/react-icons";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { useGetBranchQuery, useResetPasswordMutation, useUpdateBranchMutation } from "@/lib/features/branchSlice";
-import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
-import { useRouter } from "next/navigation";
+
 
 function Breadcumb() {
   return (
-    <Breadcrumb className=" mb-8">
+  <>
+      <Breadcrumb className=" mb-8">
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
@@ -287,6 +289,7 @@ function Breadcumb() {
           <BreadcrumbPage>Edit Branch</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
-    </Breadcrumb>
+  </Breadcrumb>
+    </>
   );
 }

@@ -13,6 +13,13 @@ import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import OptionalLabel from "@/app/custom-components/OptionalLabel";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
+// Breadcumb
+import { SlashIcon } from "@radix-ui/react-icons";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { useGetBranchQuery, useUpdateBranchMutation } from "@/lib/features/branchSlice";
+import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
+
+
 const formSchema = z.object({
   name: z.string().min(2, {
     message: "Name must be at least 2 characters.",
@@ -207,15 +214,10 @@ export default function Page() {
   );
 }
 
-// Breadcumb
-import { SlashIcon } from "@radix-ui/react-icons";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { useGetBranchQuery, useUpdateBranchMutation } from "@/lib/features/branchSlice";
-import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
-
 function Breadcumb() {
   return (
-    <Breadcrumb className=" mb-8">
+  <>
+      <Breadcrumb className=" mb-8">
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink href="/branch">Dashboard</BreadcrumbLink>
@@ -235,6 +237,7 @@ function Breadcumb() {
           <BreadcrumbPage>Edit Branch</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
-    </Breadcrumb>
+  </Breadcrumb>
+    </>
   );
 }

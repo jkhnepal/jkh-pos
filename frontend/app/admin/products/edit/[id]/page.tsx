@@ -16,6 +16,12 @@ import OptionalLabel from "@/app/custom-components/OptionalLabel";
 import LoaderPre from "@/app/custom-components/LoaderPre";
 import { useGetAllProductQuery, useGetProductQuery, useUpdateProductMutation } from "@/lib/features/product.sclice";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+// Breadcumb
+import { SlashIcon } from "@radix-ui/react-icons";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { useGetAllCategoryQuery } from "@/lib/features/categorySlice";
+import InventoryAdd from "../../components/InventoryAdd";
+import moment from "moment";
 
 const formSchema = z.object({
   name: z.string().min(5, {
@@ -132,7 +138,27 @@ export default function Page() {
 
   return (
     <div className=" space-y-8">
-        <Breadcumb />
+  <Breadcrumb className=" mb-8">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <SlashIcon />
+          </BreadcrumbSeparator>
+
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/admin/products">Products</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <SlashIcon />
+          </BreadcrumbSeparator>
+
+          <BreadcrumbItem>
+            <BreadcrumbPage>Edit Product</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -277,10 +303,11 @@ export default function Page() {
           />
 
           <div>
-            <FormLabel>
-              Product Created Date 
-            </FormLabel>
-            <Input disabled value={moment(product?.createdAt).format("MMMM Do YYYY, h:mm:ss a")} />
+            <FormLabel>Product Created Date</FormLabel>
+            <Input
+              disabled
+              value={moment(product?.createdAt).format("MMMM Do YYYY, h:mm:ss a")}
+            />
           </div>
 
           <FormField
@@ -349,35 +376,5 @@ export default function Page() {
   );
 }
 
-// Breadcumb
-import { SlashIcon } from "@radix-ui/react-icons";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { useGetAllCategoryQuery } from "@/lib/features/categorySlice";
-import InventoryAdd from "../../components/InventoryAdd";
-import moment from "moment";
 
-function Breadcumb() {
-  return (
-    <Breadcrumb className=" mb-8">
-      <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator>
-          <SlashIcon />
-        </BreadcrumbSeparator>
 
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/admin/products">Products</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator>
-          <SlashIcon />
-        </BreadcrumbSeparator>
-
-        <BreadcrumbItem>
-          <BreadcrumbPage>Edit Product</BreadcrumbPage>
-        </BreadcrumbItem>
-      </BreadcrumbList>
-    </Breadcrumb>
-  );
-}

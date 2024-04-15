@@ -14,6 +14,11 @@ import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useDebounce } from "use-debounce";
 import * as Dialog from "@radix-ui/react-dialog";
+// Breadcumb
+import { SlashIcon } from "@radix-ui/react-icons";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { useCreatePointClaimMutation } from "@/lib/features/pointClaimSlice";
+import moment from "moment";
 
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -127,8 +132,7 @@ export default function Page() {
       accessorKey: "point",
       header: "Reward Point",
       cell: ({ row }: any) => <div>{(row.getValue("point") / 100).toFixed(2)}</div>,
-    }
-,
+    },
     {
       accessorKey: "point",
       header: "Reward Amount(Rs)",
@@ -138,7 +142,7 @@ export default function Page() {
     {
       accessorKey: "createdAt",
       header: "Created Date ",
-      cell: ({ row }: any) => <div>{moment(row.getValue("createdAt")).format('MMMM Do YYYY, h:mm:ss a')}</div>,
+      cell: ({ row }: any) => <div>{moment(row.getValue("createdAt")).format("MMMM Do YYYY, h:mm:ss a")}</div>,
     },
 
     {
@@ -376,15 +380,10 @@ export default function Page() {
   );
 }
 
-// Breadcumb
-import { SlashIcon } from "@radix-ui/react-icons";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { useCreatePointClaimMutation } from "@/lib/features/pointClaimSlice";
-import moment from "moment";
-
 function Breadcumb() {
   return (
-    <Breadcrumb className=" mb-8">
+  <>
+      <Breadcrumb className=" mb-8">
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink href="/branch">Dashboard</BreadcrumbLink>
@@ -397,6 +396,7 @@ function Breadcumb() {
           <BreadcrumbPage>Members</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
-    </Breadcrumb>
+  </Breadcrumb>
+    </>
   );
 }

@@ -10,6 +10,19 @@ import { ArrowDown01, ArrowDown10, ChevronDown, MoreHorizontal } from "lucide-re
 import { useAcceptTheDistributeMutation } from "@/lib/features/distributeSlice";
 import * as Dialog from "@radix-ui/react-dialog";
 
+// Breadcumb
+import { SlashIcon } from "@radix-ui/react-icons";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { Input } from "@/components/ui/input";
+import moment from "moment";
+import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
+import { useDebounce } from "use-debounce";
+import { useGetAllDistributeOfABranchQuery } from "@/lib/features/distributeSlice";
+import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
+import { toast } from "sonner";
+import Image from "next/image";
+
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -379,22 +392,12 @@ export default function Page() {
   );
 }
 
-// Breadcumb
-import { SlashIcon } from "@radix-ui/react-icons";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { Input } from "@/components/ui/input";
-import moment from "moment";
-import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
-import { useDebounce } from "use-debounce";
-import { useGetAllDistributeOfABranchQuery } from "@/lib/features/distributeSlice";
-import { Badge } from "@/components/ui/badge";
-import Link from "next/link";
-import { toast } from "sonner";
-import Image from "next/image";
+
 
 function Breadcumb() {
   return (
-    <Breadcrumb className=" mb-8">
+  <>
+      <Breadcrumb className=" mb-8">
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
@@ -407,6 +410,7 @@ function Breadcumb() {
           <BreadcrumbPage>Products</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
-    </Breadcrumb>
+  </Breadcrumb>
+    </>
   );
 }

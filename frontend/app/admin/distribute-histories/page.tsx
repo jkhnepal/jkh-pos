@@ -11,7 +11,11 @@ import { useGetAllDistributeQuery } from "@/lib/features/distributeSlice";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
 import moment from "moment";
-import * as Dialog from "@radix-ui/react-dialog";
+import * as Dialog from "@radix-ui/react-dialog";// Breadcumb
+import { SlashIcon } from "@radix-ui/react-icons";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { useDebounce } from "use-debounce";
+import Image from "next/image";
 
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -318,15 +322,12 @@ export default function Page() {
   );
 }
 
-// Breadcumb
-import { SlashIcon } from "@radix-ui/react-icons";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { useDebounce } from "use-debounce";
-import Image from "next/image";
+
 
 function Breadcumb() {
   return (
-    <Breadcrumb className=" mb-8">
+  <>
+      <Breadcrumb className=" mb-8">
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
@@ -339,6 +340,7 @@ function Breadcumb() {
           <BreadcrumbPage>Distributes</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
-    </Breadcrumb>
+  </Breadcrumb>
+    </>
   );
 }

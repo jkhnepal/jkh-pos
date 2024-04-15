@@ -9,6 +9,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import Link from "next/link";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
+// Breadcumb
+import { SlashIcon } from "@radix-ui/react-icons";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
+import { useDebounce } from "use-debounce";
+import moment from "moment";
+import Image from "next/image";
+import { useGetAllSaleQuery } from "@/lib/features/saleSlice";
+import { useGetAllRewardHistoryQuery, useGetRewardHistoryQuery, useUpdateRewardHistoryMutation } from "@/lib/features/rewardHistorySlice";
+import { toast } from "sonner";
 
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -313,20 +323,12 @@ export default function Page() {
   );
 }
 
-// Breadcumb
-import { SlashIcon } from "@radix-ui/react-icons";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
-import { useDebounce } from "use-debounce";
-import moment from "moment";
-import Image from "next/image";
-import { useGetAllSaleQuery } from "@/lib/features/saleSlice";
-import { useGetAllRewardHistoryQuery, useGetRewardHistoryQuery, useUpdateRewardHistoryMutation } from "@/lib/features/rewardHistorySlice";
-import { toast } from "sonner";
+
 
 function Breadcumb() {
   return (
-    <Breadcrumb className=" mb-8">
+  <>
+      <Breadcrumb className=" mb-8">
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
@@ -339,6 +341,7 @@ function Breadcumb() {
           <BreadcrumbPage>Rewards</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
-    </Breadcrumb>
+  </Breadcrumb>
+    </>
   );
 }

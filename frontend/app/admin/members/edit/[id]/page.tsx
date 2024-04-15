@@ -15,6 +15,12 @@ import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, Tabl
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+// Breadcumb
+import { SlashIcon } from "@radix-ui/react-icons";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { useGetAllSalesOfAMemberQuery } from "@/lib/features/saleSlice";
+import moment from "moment";
+import { useGetAllRewardHistoryQuery } from "@/lib/features/rewardHistorySlice";
 
 const formSchema = z.object({
   name: z.string(),
@@ -251,16 +257,12 @@ export default function Page() {
   );
 }
 
-// Breadcumb
-import { SlashIcon } from "@radix-ui/react-icons";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { useGetAllSalesOfAMemberQuery } from "@/lib/features/saleSlice";
-import moment from "moment";
-import { useGetAllRewardHistoryQuery } from "@/lib/features/rewardHistorySlice";
+
 
 function Breadcumb() {
   return (
-    <Breadcrumb className=" mb-8">
+  <>
+      <Breadcrumb className=" mb-8">
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
@@ -280,6 +282,7 @@ function Breadcumb() {
           <BreadcrumbPage>Edit Member</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
-    </Breadcrumb>
+  </Breadcrumb>
+    </>
   );
 }

@@ -11,6 +11,14 @@ import { useCreateDistributeMutation, useGetAllDistributeQuery } from "@/lib/fea
 import LoaderPre from "@/app/custom-components/LoaderPre";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
+// Breadcumb
+import { SlashIcon } from "@radix-ui/react-icons";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { useGetAllBranchQuery } from "@/lib/features/branchSlice";
+import { useGetAllProductQuery, useGetProductQuery } from "@/lib/features/product.sclice";
+import { useDebounce } from "use-debounce";
+
+
 const formSchema = z.object({
   branch: z.string(),
   product: z.string(),
@@ -188,16 +196,10 @@ export default function Page() {
   );
 }
 
-// Breadcumb
-import { SlashIcon } from "@radix-ui/react-icons";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { useGetAllBranchQuery } from "@/lib/features/branchSlice";
-import { useGetAllProductQuery, useGetProductQuery } from "@/lib/features/product.sclice";
-import { useDebounce } from "use-debounce";
-
 function Breadcumb() {
   return (
-    <Breadcrumb className=" mb-8">
+  <>
+      <Breadcrumb className=" mb-8">
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
@@ -217,6 +219,7 @@ function Breadcumb() {
           <BreadcrumbPage>New Distribute</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
-    </Breadcrumb>
+  </Breadcrumb>
+    </>
   );
 }
