@@ -15,6 +15,11 @@ import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useDeleteProductMutation, useGetAllProductQuery } from "@/lib/features/product.sclice";
 import * as Dialog from "@radix-ui/react-dialog";
+// Breadcumb
+import { SlashIcon } from "@radix-ui/react-icons";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { useDebounce } from "use-debounce";
+import moment from "moment";
 
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -312,7 +317,34 @@ export default function Page() {
 
   return (
     <div className="w-full">
-      <Breadcumb />
+      <Breadcrumb className=" mb-8">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <SlashIcon />
+          </BreadcrumbSeparator>
+
+          <BreadcrumbItem>
+            <BreadcrumbPage>Products</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>{" "}
+      <Breadcrumb className=" mb-8">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <SlashIcon />
+          </BreadcrumbSeparator>
+
+          <BreadcrumbItem>
+            <BreadcrumbPage>Products</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <div className="flex justify-between items-center py-4">
         <Input
           placeholder="Search by product name..."
@@ -426,30 +458,5 @@ export default function Page() {
         </div>
       </div>
     </div>
-  );
-}
-
-// Breadcumb
-import { SlashIcon } from "@radix-ui/react-icons";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { useDebounce } from "use-debounce";
-import moment from "moment";
-
-function Breadcumb() {
-  return (
-    <Breadcrumb className=" mb-8">
-      <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator>
-          <SlashIcon />
-        </BreadcrumbSeparator>
-
-        <BreadcrumbItem>
-          <BreadcrumbPage>Products</BreadcrumbPage>
-        </BreadcrumbItem>
-      </BreadcrumbList>
-    </Breadcrumb>
   );
 }

@@ -14,6 +14,13 @@ import LoaderPre from "@/app/custom-components/LoaderPre";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
 import * as Dialog from "@radix-ui/react-dialog";
+// Breadcumb
+import { SlashIcon } from "@radix-ui/react-icons";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { Input } from "@/components/ui/input";
+import { ICategoryOut } from "@/interfaces/category";
+import { useDebounce } from "use-debounce";
+import moment from "moment";
 
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -396,17 +403,12 @@ export default function Page() {
   );
 }
 
-// Breadcumb
-import { SlashIcon } from "@radix-ui/react-icons";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { Input } from "@/components/ui/input";
-import { ICategoryOut } from "@/interfaces/category";
-import { useDebounce } from "use-debounce";
-import moment from "moment";
+
 
 function Breadcumb() {
   return (
-    <Breadcrumb className=" mb-8">
+  <>
+      <Breadcrumb className=" mb-8">
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
@@ -419,6 +421,7 @@ function Breadcumb() {
           <BreadcrumbPage>Categories</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
-    </Breadcrumb>
+  </Breadcrumb>
+    </>
   );
 }

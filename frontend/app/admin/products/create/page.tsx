@@ -16,6 +16,11 @@ import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { useCreateProductMutation, useGetAllProductQuery } from "@/lib/features/product.sclice";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useGetAllCategoryQuery } from "@/lib/features/categorySlice";
+// Breadcumb
+import { SlashIcon } from "@radix-ui/react-icons";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import InventoryAdd from "../components/InventoryAdd";
+import Link from "next/link";
 
 const formSchema = z.object({
   name: z.string().min(5, {
@@ -110,8 +115,8 @@ export default function Page() {
 
   return (
     <div>
+      <Breadcumb />
       <Form {...form}>
-        <Breadcumb />
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className=" grid grid-cols-2 gap-4">
@@ -321,34 +326,31 @@ export default function Page() {
   );
 }
 
-// Breadcumb
-import { SlashIcon } from "@radix-ui/react-icons";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import InventoryAdd from "../components/InventoryAdd";
-import Link from "next/link";
-
 function Breadcumb() {
   return (
-    <Breadcrumb className=" mb-8">
-      <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator>
-          <SlashIcon />
-        </BreadcrumbSeparator>
+    
+    <>
+      <Breadcrumb className=" mb-8">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <SlashIcon />
+          </BreadcrumbSeparator>
 
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/admin/products">Products</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator>
-          <SlashIcon />
-        </BreadcrumbSeparator>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/admin/products">Products</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <SlashIcon />
+          </BreadcrumbSeparator>
 
-        <BreadcrumbItem>
-          <BreadcrumbPage>New Product</BreadcrumbPage>
-        </BreadcrumbItem>
-      </BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbPage>New Product</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
     </Breadcrumb>
+    </>
   );
 }

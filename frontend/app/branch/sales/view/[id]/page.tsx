@@ -4,6 +4,11 @@ import { Label } from "@/components/ui/label";
 import moment from "moment";
 import { useParams } from "next/navigation";
 type Props = {};
+// Breadcumb
+import { SlashIcon } from "@radix-ui/react-icons";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import Image from "next/image";
+import { useGetSaleQuery } from "@/lib/features/saleSlice";
 
 export default function Page({}: Props) {
   const params = useParams();
@@ -127,15 +132,12 @@ export default function Page({}: Props) {
   );
 }
 
-// Breadcumb
-import { SlashIcon } from "@radix-ui/react-icons";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import Image from "next/image";
-import { useGetSaleQuery } from "@/lib/features/saleSlice";
+
 
 function Breadcumb() {
   return (
-    <Breadcrumb className=" mb-8">
+  <>
+      <Breadcrumb className=" mb-8">
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink href="/branch">Dashboard</BreadcrumbLink>
@@ -155,6 +157,7 @@ function Breadcumb() {
           <BreadcrumbPage>View Detail</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
-    </Breadcrumb>
+  </Breadcrumb>
+    </>
   );
 }

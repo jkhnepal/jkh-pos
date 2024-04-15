@@ -9,6 +9,13 @@ import { toast } from "sonner";
 import { useCreateSaleMutation, useGetAllSaleQuery } from "@/lib/features/saleSlice";
 import LoaderPre from "@/app/custom-components/LoaderPre";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+// Breadcumb
+import { SlashIcon } from "@radix-ui/react-icons";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { useGetAllProductQuery } from "@/lib/features/product.sclice";
+import { useGetAllMemberQuery } from "@/lib/features/memberSlice";
+import OptionalLabel from "@/app/custom-components/OptionalLabel";
+
 
 const formSchema = z.object({
   branch: z.string(),
@@ -218,16 +225,11 @@ export default function Page() {
   );
 }
 
-// Breadcumb
-import { SlashIcon } from "@radix-ui/react-icons";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { useGetAllProductQuery } from "@/lib/features/product.sclice";
-import { useGetAllMemberQuery } from "@/lib/features/memberSlice";
-import OptionalLabel from "@/app/custom-components/OptionalLabel";
 
 function Breadcumb() {
   return (
-    <Breadcrumb className=" mb-8">
+  <>
+      <Breadcrumb className=" mb-8">
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
@@ -247,6 +249,7 @@ function Breadcumb() {
           <BreadcrumbPage>New Sale</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
-    </Breadcrumb>
+  </Breadcrumb>
+    </>
   );
 }

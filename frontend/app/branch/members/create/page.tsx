@@ -8,6 +8,12 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useCreateMemberMutation, useGetAllMemberQuery } from "@/lib/features/memberSlice";
 import LoaderPre from "@/app/custom-components/LoaderPre";
+// Breadcumb
+import { SlashIcon } from "@radix-ui/react-icons";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
+import { useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
 
 const formSchema = z.object({
   name: z.string().min(5, {
@@ -116,16 +122,12 @@ export default function Page() {
   );
 }
 
-// Breadcumb
-import { SlashIcon } from "@radix-ui/react-icons";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
-import { useEffect } from "react";
-import { usePathname, useRouter } from "next/navigation";
+
 
 function Breadcumb() {
   return (
-    <Breadcrumb className=" mb-8">
+  <>
+      <Breadcrumb className=" mb-8">
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink href="/branch">Dashboard</BreadcrumbLink>
@@ -145,6 +147,7 @@ function Breadcumb() {
           <BreadcrumbPage>New Member</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
-    </Breadcrumb>
+  </Breadcrumb>
+    </>
   );
 }

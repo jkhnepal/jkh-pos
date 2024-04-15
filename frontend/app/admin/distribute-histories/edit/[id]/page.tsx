@@ -12,6 +12,14 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { useGetAllDistributeQuery, useGetDistributeQuery, useUpdateDistributeMutation } from "@/lib/features/distributeSlice";
 import LoaderPre from "@/app/custom-components/LoaderPre";
 
+// Breadcumb
+import { SlashIcon } from "@radix-ui/react-icons";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import LoaderSpin from "@/app/custom-components/LoaderSpin";
+import { useGetAllBranchQuery } from "@/lib/features/branchSlice";
+import { useGetAllProductQuery } from "@/lib/features/product.sclice";
+
+
 const formSchema = z.object({
   branch: z.string().min(24, {
     message: "Branch is required",
@@ -192,16 +200,10 @@ export default function Page() {
   );
 }
 
-// Breadcumb
-import { SlashIcon } from "@radix-ui/react-icons";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import LoaderSpin from "@/app/custom-components/LoaderSpin";
-import { useGetAllBranchQuery } from "@/lib/features/branchSlice";
-import { useGetAllProductQuery } from "@/lib/features/product.sclice";
-
 function Breadcumb() {
   return (
-    <Breadcrumb className=" mb-8">
+  <>
+      <Breadcrumb className=" mb-8">
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
@@ -221,6 +223,7 @@ function Breadcumb() {
           <BreadcrumbPage>Edit Supply History</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
-    </Breadcrumb>
+  </Breadcrumb>
+    </>
   );
 }

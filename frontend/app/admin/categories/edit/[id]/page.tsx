@@ -15,6 +15,10 @@ import useCloudinaryFileUpload from "@/app/hooks/useCloudinaryFileUpload";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import OptionalLabel from "@/app/custom-components/OptionalLabel";
 import LoaderPre from "@/app/custom-components/LoaderPre";
+// Breadcumb
+import { SlashIcon } from "@radix-ui/react-icons";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -177,13 +181,11 @@ export default function Page() {
   );
 }
 
-// Breadcumb
-import { SlashIcon } from "@radix-ui/react-icons";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 function Breadcumb() {
   return (
-    <Breadcrumb className=" mb-8">
+  <>
+      <Breadcrumb className=" mb-8">
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
@@ -203,6 +205,7 @@ function Breadcumb() {
           <BreadcrumbPage>Edit Category</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
-    </Breadcrumb>
+  </Breadcrumb>
+    </>
   );
 }

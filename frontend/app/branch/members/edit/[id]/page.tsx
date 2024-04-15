@@ -13,6 +13,12 @@ import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import LoaderPre from "@/app/custom-components/LoaderPre";
 import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import * as Dialog from "@radix-ui/react-dialog";
+// Breadcumb
+import { SlashIcon } from "@radix-ui/react-icons";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { useGetAllSalesOfAMemberQuery } from "@/lib/features/saleSlice";
+import moment from "moment";
+import Image from "next/image";
 
 const formSchema = z.object({
   name: z.string(),
@@ -214,16 +220,12 @@ export default function Page() {
   );
 }
 
-// Breadcumb
-import { SlashIcon } from "@radix-ui/react-icons";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { useGetAllSalesOfAMemberQuery } from "@/lib/features/saleSlice";
-import moment from "moment";
-import Image from "next/image";
+
 
 function Breadcumb() {
   return (
-    <Breadcrumb className=" mb-8">
+  <>
+      <Breadcrumb className=" mb-8">
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink href="/branch">Dashboard</BreadcrumbLink>
@@ -243,6 +245,7 @@ function Breadcumb() {
           <BreadcrumbPage>Edit Member</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
-    </Breadcrumb>
+  </Breadcrumb>
+    </>
   );
 }

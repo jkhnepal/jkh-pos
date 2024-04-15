@@ -15,6 +15,11 @@ import LoaderPre from "@/app/custom-components/LoaderPre";
 import OptionalLabel from "@/app/custom-components/OptionalLabel";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 
+// Breadcumb
+import { SlashIcon } from "@radix-ui/react-icons";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+
+
 const formSchema = z.object({
   name: z.string().min(2, {
     message: "Catagory name must be at least 4 character long.",
@@ -152,13 +157,10 @@ export default function Page() {
   );
 }
 
-// Breadcumb
-import { SlashIcon } from "@radix-ui/react-icons";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-
 function Breadcumb() {
   return (
-    <Breadcrumb className=" mb-8">
+  <>
+      <Breadcrumb className=" mb-8">
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
@@ -178,6 +180,7 @@ function Breadcumb() {
           <BreadcrumbPage>New Category</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
-    </Breadcrumb>
+  </Breadcrumb>
+    </>
   );
 }

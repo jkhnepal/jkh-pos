@@ -18,6 +18,19 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGetBranchStatQuery } from "@/lib/features/statSlice";
 import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+// Breadcumb
+import { SlashIcon } from "@radix-ui/react-icons";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { useGetAllBranchQuery, useGetBranchQuery, useResetPasswordMutation, useUpdateBranchMutation } from "@/lib/features/branchSlice";
+import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
+import { BarChart4, LineChart } from "lucide-react";
+import { useGetAllBranchInventoryQuery } from "@/lib/features/branchInventorySlice";
+import moment from "moment";
+
+
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -476,21 +489,11 @@ export default function Page() {
   );
 }
 
-const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-// Breadcumb
-import { SlashIcon } from "@radix-ui/react-icons";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { useGetAllBranchQuery, useGetBranchQuery, useResetPasswordMutation, useUpdateBranchMutation } from "@/lib/features/branchSlice";
-import { Badge } from "@/components/ui/badge";
-import Link from "next/link";
-import { BarChart4, LineChart } from "lucide-react";
-import { useGetAllBranchInventoryQuery } from "@/lib/features/branchInventorySlice";
-import moment from "moment";
 
 function Breadcumb() {
   return (
-    <Breadcrumb className=" mb-8">
+  <>
+      <Breadcrumb className=" mb-8">
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
@@ -510,7 +513,8 @@ function Breadcumb() {
           <BreadcrumbPage>Edit Branch</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
-    </Breadcrumb>
+  </Breadcrumb>
+    </>
   );
 }
 

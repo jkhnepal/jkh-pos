@@ -11,6 +11,13 @@ import { useGetAllSaleQuery } from "@/lib/features/saleSlice";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
 import * as Dialog from "@radix-ui/react-dialog";
+// Breadcumb
+import { SlashIcon } from "@radix-ui/react-icons";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
+import { useDebounce } from "use-debounce";
+import moment from "moment";
+import Image from "next/image";
 
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -133,8 +140,8 @@ export default function Page() {
     {
       accessorKey: "product",
       header: "Image",
-      cell: ({ row }) => {
-        const image: string = row.getValue("product")?.image as string;
+      cell: ({ row }:any) => {
+        const image:any = row.getValue("product")?.image;
 
         return (
           <div>
@@ -360,17 +367,12 @@ export default function Page() {
   );
 }
 
-// Breadcumb
-import { SlashIcon } from "@radix-ui/react-icons";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
-import { useDebounce } from "use-debounce";
-import moment from "moment";
-import Image from "next/image";
+
 
 function Breadcumb() {
   return (
-    <Breadcrumb className=" mb-8">
+  <>
+      <Breadcrumb className=" mb-8">
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
@@ -383,6 +385,7 @@ function Breadcumb() {
           <BreadcrumbPage>Sales</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
-    </Breadcrumb>
+  </Breadcrumb>
+    </>
   );
 }
