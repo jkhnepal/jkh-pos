@@ -54,9 +54,7 @@ app.use("/api/auth", authRoute);
 
 app.use("/api/headquarter-inventories", headquarterInventoryRoute);
 app.use("/api/branch-inventories", branchInventoryRoute);
-
 app.use("/api/returns", returnRoute);
-
 app.use("/api/stats", statRoute);
 app.use("/api/point-claims", pointClaimRoute);
 app.use("/api/return-to-headquarter", returnToHeadquarterRoute);
@@ -94,20 +92,19 @@ async function createAdminIfNotPresent() {
     const headquarterExist = await BranchModel.exists({ role: "headquarter" });
     if (!headquarterExist) {
       await BranchModel.create({
-       name: "Admin",
+        name: "Admin",
         email: "jackethouse002@gmail.com",
-        phone:"98637474744",
-        password:"2b$10$SxlJO6xXDU7YQDvi23WgNuQoTD5My3V28oUSIcG0bx64STdWHk/5O",
-        tyoe: "headquarter",
+        phone: "98637474744",
+        password: "$2b$10$M7g9ZydiAb2WRJUq7wHb1.f5ixn4R8s2V5QpXo11u9tn7fh890Vb.",
+        type: "headquarter",
+        address: "kathmandu Nepal",
       });
       logger.info("Admin user created successfully.");
     }
-  } catch (error:any) {
+  } catch (error: any) {
     logger.error(`Error creating admin user: ${error.message}`);
   }
 }
-
-
 
 app.listen(port, async () => {
   logger.info(`App is running at http://localhost:${port}`);
