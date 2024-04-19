@@ -37,6 +37,9 @@ export default function Page() {
   const itemsPerPage = 10;
 
   const { data: products, isError, isLoading: isFetching, refetch } = useGetAllProductQuery({ sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
+  
+  
+  
   console.log(products?.data.results);
   let totalItem = products?.data.count;
   const pageCount = Math.ceil(totalItem / itemsPerPage);
