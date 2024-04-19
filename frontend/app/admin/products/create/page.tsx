@@ -245,7 +245,7 @@ export default function Page() {
             name="colors"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>colors </FormLabel>
+                <FormLabel>Colors <span className="text-primary/85  text-xs">(Please dont give spaces)</span> </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Red,Green,Blue"
@@ -262,7 +262,7 @@ export default function Page() {
             name="sizes"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>sizes</FormLabel>
+                <FormLabel>Sizes   <span className="text-primary/85  text-xs">(Please dont give spaces)</span></FormLabel>
                 <FormControl>
                   <Input
                     placeholder="XS,S,M"
@@ -280,7 +280,7 @@ export default function Page() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  Image <OptionalLabel /> <span className="text-primary/85  text-xs">[image must be less than 1MB]</span>
+                  Image <OptionalLabel /> <span className="text-primary/85  text-xs">[image must be less than 1MB and dimension should be 289 x 291]</span>
                 </FormLabel>
                 <div className=" flex items-center  gap-2">
                   <Input
@@ -328,7 +328,6 @@ export default function Page() {
 
 function Breadcumb() {
   return (
-    
     <>
       <Breadcrumb className=" mb-8">
         <BreadcrumbList>
@@ -350,7 +349,7 @@ function Breadcumb() {
             <BreadcrumbPage>New Product</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
-    </Breadcrumb>
+      </Breadcrumb>
     </>
   );
 }

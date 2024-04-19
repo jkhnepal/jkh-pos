@@ -118,7 +118,7 @@ export default function Page() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>
-                Image <OptionalLabel /> <span className="text-primary/85  text-xs">[image must be less than 1MB]</span>
+                Image <OptionalLabel /> <span className="text-primary/85  text-xs">[image must be less than 1MB and dimension should be 289 x 291]</span>
               </FormLabel>
               <div className=" flex  flex-col  gap-2">
                 <Input
