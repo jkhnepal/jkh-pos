@@ -7,10 +7,6 @@ const payload = {
       required_error: "name is required",
     }),
 
-    // sku: string({
-    //   required_error: "sku is required",
-    // }),
-
     category: string({
       required_error: "category is required",
     }),
@@ -29,10 +25,8 @@ const payload = {
     totalAddedStock: coerce.number().default(0),
     availableStock: coerce.number().default(0),
 
-
     colors: string().optional(),
-    sizes:string().optional(),
-
+    sizes: string().optional(),
   }),
 };
 

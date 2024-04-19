@@ -15,9 +15,9 @@ export async function createProduct(input: ProductInput) {
 //   return results;
 // }
 
-
 export async function findAllProduct(filter: FilterQuery<ProductDocument> = {}) {
   const search = filter.search || "";
+  const category = filter.category || "";
   const sort = filter.sort || "";
   const page: any = filter.page || 1;
   const limit: any = filter.limit || 5;
@@ -26,6 +26,11 @@ export async function findAllProduct(filter: FilterQuery<ProductDocument> = {}) 
   const searchQuery: any = {
     name: { $regex: search, $options: "i" },
   };
+
+  // Adding category filter if provided
+  if (category !== "") {
+    searchQuery.category = category;
+  }
   const count = await ProductModel.countDocuments();
   const results = await ProductModel.find(searchQuery)
     .skip(skip)
