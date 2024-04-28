@@ -65,6 +65,7 @@ export default function Page() {
 
   const handleDelete = async (date: string) => {
     try {
+      // const res = await axios.delete(`http://localhost:5010/api/sales/delete-sales-by-month/${branch_id}/${date}`);
       const res = await axios.delete(`${process.env.NEXT_PUBLIC_URL_API}/sales/delete-sales-by-month/${branch_id}/${date}`);
       console.log(res);
       setrefetch(true)
@@ -102,10 +103,27 @@ export default function Page() {
       enableHiding: false,
     },
 
+    // {
+    //   accessorKey: "month",
+    //   header: "Month",
+    //   cell: ({ row }: any) => <div>{row.getValue("month")}</div>,
+    // },
+
     {
       accessorKey: "month",
       header: "Month",
-      cell: ({ row }: any) => <div>{row.getValue("month")}</div>,
+      cell: ({ row }: any) => {
+        // Parse the month string to get the year and month
+        const [year, month] = row.original.month.split("-");
+    
+        // Create a new Date object with the year and month
+        const date = new Date(parseInt(year), parseInt(month) - 1); // Month is zero-based
+    
+        // Format the date to display the month name
+        const monthName = date.toLocaleString('en-US', { month: 'long' });
+    
+        return <div>{`${year} ${monthName}`}</div>;
+      },
     },
 
     {

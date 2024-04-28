@@ -8,6 +8,8 @@ export interface BranchInventoryInput {
   product: ProductDocument["_id"];
   previousStock?: number;
   totalStock: number;
+  
+
 }
 
 export interface BranchInventoryDocument extends BranchInventoryInput, mongoose.Document {

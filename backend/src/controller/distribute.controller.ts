@@ -20,8 +20,17 @@ export async function createDistributeHandler(req: Request<{}, {}, CreateDistrib
 
     let updatedBranchInventory;
     if (branchInventory) {
-      const newTotalstock = (branchInventory.totalStock += body.stock);
-      updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, { totalStock: newTotalstock }, { new: true });
+      // const newTotalstock = (branchInventory.totalStock += body.stock);
+      // const newTotalPreviousStock = (branchInventory.previousStock += body.stock);
+      // console.log(newTotalPreviousStock,"????????????????????????????????????????")
+
+      // Add body.stock to both totalStock and previousStock
+      const newTotalstock = branchInventory.totalStock + body.stock;
+      const newTotalPreviousStock = branchInventory.previousStock + body.stock;
+
+      // updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, { totalStock: newTotalstock  }, { new: true });
+      // updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, { totalStock: newTotalstock, previousStock: newTotalPreviousStock }, { new: true });
+      updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, { totalStock: newTotalstock, previousStock: newTotalPreviousStock }, { new: true });
     }
 
     if (!branchInventory) {
@@ -38,10 +47,6 @@ export async function createDistributeHandler(req: Request<{}, {}, CreateDistrib
     next(new AppError("Internal server error", 500));
   }
 }
-
-
-
-
 
 export async function getAllDistributeHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
   try {

@@ -139,15 +139,24 @@ export default function Page() {
 
     {
       accessorKey: "previousStock",
-      header: "Previous Stock",
+      header: "Total Stock",
       cell: ({ row }) => <div className="capitalize">{row.getValue("previousStock")}</div>,
+    },
+
+    {
+      accessorKey: "previousStock",
+      header: "Sold Stock",
+      cell: ({ row }) => {
+        const soldStock = row.original.previousStock - row.original.totalStock;
+        return <div className="capitalize">{soldStock}</div>;
+      },
     },
 
 
 
     {
       accessorKey: "totalStock",
-      header: "Current Stock",
+      header: "Available Stock",
       cell: ({ row }) => <div className="capitalize">{row.getValue("totalStock")}</div>,
     },
 
