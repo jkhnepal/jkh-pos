@@ -6,7 +6,7 @@ import { BranchDocument } from "./branch.model";
 export interface BranchInventoryInput {
   branch: BranchDocument["_id"];
   product: ProductDocument["_id"];
-  previousStock: number;
+  previousStock?: number;
   totalStock: number;
 }
 
