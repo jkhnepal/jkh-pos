@@ -264,12 +264,23 @@ export async function deleteSalesByMonthHandler(req: any, res: Response, next: N
     const year = parseInt(date.split("-")[0]);
     const month = parseInt(date.split("-")[1]);
 
+
     const result = await SaleModel.deleteMany({
       branch: branchId,
       $expr: {
         $and: [{ $eq: [{ $year: "$createdAt" }, year] }, { $eq: [{ $month: "$createdAt" }, month] }],
       },
     });
+
+      // Replace previousStock with totalStock for each document in BranchInventoryModel
+      const branchInventories = await BranchInventoryModel.find({
+        branch: branchId,
+      });
+      for (const inventory of branchInventories) {
+        inventory.previousStock = inventory.totalStock;
+        await inventory.save();
+      }
+      console.log(branchInventories);
 
     return res.json({
       status: "success",

@@ -252,7 +252,7 @@ export default function Cart({ refetch }: any) {
                 <Button
                   onClick={createSaleHandler}
                   type="button"
-                  disabled={!selectedProducts || selectedProducts.length === 0}
+                  disabled={!selectedProducts || selectedProducts.length === 0 || (memberPhone?.toString() ?? '').length !== 10}
                   className=" p-2 text-xs">
                   Proceed
                 </Button>
