@@ -18,6 +18,8 @@ import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
 import { useDebounce } from "use-debounce";
 import moment from "moment";
 import Image from "next/image";
+import { useParams } from "next/navigation";
+import axios from "axios";
 
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -36,6 +38,40 @@ export default function Page() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const [sort, setSort] = React.useState("latest");
   const itemsPerPage = 10;
+
+
+  const params=useParams()
+  console.log(params.date)
+
+
+  
+  const [sales, setSales] = React.useState<any>();
+  React.useEffect(() => {
+    const fetch = async () => {
+      try {
+        if (branch_id) {
+          const res = await axios.get(`${process.env.NEXT_PUBLIC_URL_API}/sales/get-sales-by-branch-and-date/${branch_id}/${params?.date}`);
+          setSales(res.data.data);
+
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetch();
+  }, [branch_id, params?.date]);
+
+  console.log(sales)
+  
+  
+  
+  // Add branch_id to the dependency array
+
+
+
+
+
+
 
   const { data: salesOfABranch, isLoading: isFetching } = useGetAllSaleQuery({ branch: branch_id, sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
 
@@ -181,44 +217,44 @@ export default function Page() {
       cell: ({ row }: any) => <div>{moment(row.getValue("createdAt")).format('MMMM Do YYYY, h:mm:ss a')}</div>,
     },
 
-    {
-      id: "actions",
-      header: "Action",
-      enableHiding: false,
-      cell: ({ row }) => {
-        const item = row.original;
+    // {
+    //   id: "actions",
+    //   header: "Action",
+    //   enableHiding: false,
+    //   cell: ({ row }) => {
+    //     const item = row.original;
 
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+    //     return (
+    //       <DropdownMenu>
+    //         <DropdownMenuTrigger asChild>
+    //           <Button
+    //             variant="ghost"
+    //             className="h-8 w-8 p-0">
+    //             <span className="sr-only">Open menu</span>
+    //             <MoreHorizontal className="h-4 w-4" />
+    //           </Button>
+    //         </DropdownMenuTrigger>
+    //         <DropdownMenuContent align="end">
+    //           <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
-              <DropdownMenuSeparator />
+    //           <DropdownMenuSeparator />
 
-              {/* <Link href={`/branch/sales/return/${item.saleId}`}>
-                <DropdownMenuItem>Return</DropdownMenuItem>
-              </Link> */}
+    //           {/* <Link href={`/branch/sales/return/${item.saleId}`}>
+    //             <DropdownMenuItem>Return</DropdownMenuItem>
+    //           </Link> */}
 
-              <Link href={`/branch/sales/view/${item.saleId}`}>
-                <DropdownMenuItem>View detail</DropdownMenuItem>
-              </Link>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        );
-      },
-    },
+    //           {/* <Link href={`/branch/sales/view/${item.saleId}`}>
+    //             <DropdownMenuItem>View detail</DropdownMenuItem>
+    //           </Link> */}
+    //         </DropdownMenuContent>
+    //       </DropdownMenu>
+    //     );
+    //   },
+    // },
   ];
 
   const table = useReactTable({
-    data: salesOfABranch?.data.results || [],
+    data: sales && sales || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

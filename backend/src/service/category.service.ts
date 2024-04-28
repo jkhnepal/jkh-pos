@@ -6,16 +6,6 @@ export async function createCategory(input: CategoryInput) {
   return result;
 }
 
-// export async function findAllCategory(filter: FilterQuery<CategoryDocument> = {}) {
-//   // Converting the name value to a case-insensitive regex pattern
-//   if (filter.name) {
-//     filter.name = { $regex: new RegExp(filter.name, "i") };
-//   }
-
-//   const results = await CategoryModel.find(filter);
-//   return results;
-// }
-
 export async function findAllCategory(filter: FilterQuery<CategoryDocument> = {}) {
   const search = filter.search || "";
   const sort = filter.sort || "";

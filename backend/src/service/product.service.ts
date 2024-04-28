@@ -6,15 +6,6 @@ export async function createProduct(input: ProductInput) {
   return result;
 }
 
-// export async function findAllProduct(filter: FilterQuery<ProductDocument> = {}) {
-//   // Converting the name value to a case-insensitive regex pattern
-//   if (filter.name) {
-//     filter.name = { $regex: new RegExp(filter.name, "i") };
-//   }
-//   const results = await ProductModel.find(filter);
-//   return results;
-// }
-
 export async function findAllProduct(filter: FilterQuery<ProductDocument> = {}) {
   const search = filter.search || "";
   const category = filter.category || "";

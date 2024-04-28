@@ -6,18 +6,6 @@ export async function createBranchInventory(input: BranchInventoryInput): Promis
   return result;
 }
 
-// export async function findAllBranchInventory(filter: FilterQuery<BranchInventoryDocument> = {}): Promise<BranchInventoryDocument[]> {
-//   const results = await BranchInventoryModel.find(filter) .populate({
-//     path: "product",
-//     select: "name image productId sku cp sp"
-//   })
-//   // .populate({
-//   //   path: "branch",
-//   //   select: "name"
-//   // });
-//   return results;
-// }
-
 export async function findAllBranchInventory(filter: FilterQuery<BranchInventoryDocument> = {}) {
   const branch = filter.branch || "";
   const search = filter.search || "";

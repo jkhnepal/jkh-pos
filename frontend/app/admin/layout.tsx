@@ -155,18 +155,18 @@ const navItems = [
     href: "/admin/distribute-histories",
   },
 
-  {
-    name: "Members",
-    icon: <Users size={18} />,
-    href: "/admin/members",
-  },
+  // {
+  //   name: "Members",
+  //   icon: <Users size={18} />,
+  //   href: "/admin/members",
+  // },
 
   
-  {
-    name: "Rewards",
-    icon: <Users size={18} />,
-    href: "/admin/rewards",
-  },
+  // {
+  //   name: "Rewards",
+  //   icon: <Users size={18} />,
+  //   href: "/admin/rewards",
+  // },
 
 ];
 

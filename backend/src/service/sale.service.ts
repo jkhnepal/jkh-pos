@@ -7,7 +7,6 @@ export async function createSale(input: SaleInput) {
 }
 
 export async function findAllSale(filter: FilterQuery<SaleDocument> = {}) {
-  // console.log("🚀 ~ findAllSale ~ filter:", filter);
   const branch = filter.branch || "";
   const search = filter.search || "";
   const sort = filter.sort || "";
@@ -24,25 +23,13 @@ export async function findAllSale(filter: FilterQuery<SaleDocument> = {}) {
     .skip(skip)
     .limit(limit)
     .sort({ createdAt: sort == "latest" ? -1 : 1 })
-    .populate("product")
-    .populate({
-      path: "member",
-      select: "name phone",
-    });
-  // console.log(results);
+    .populate("product");
+
   return { count, results };
 }
 
-export async function findAllSaleOfAMember(filter: FilterQuery<SaleDocument> = {}) {
-  const results = await SaleModel.find({ member: filter.member_id }).populate({
-    path: "product",
-    select: "name image sku",
-  });
-  return results;
-}
-
 export async function findSale(query: FilterQuery<SaleDocument>, options: QueryOptions = { lean: true }) {
-  const result = await SaleModel.findOne(query, {}, options).populate("branch product member");
+  const result = await SaleModel.findOne(query, {}, options).populate("branch product");
   return result;
 }
 

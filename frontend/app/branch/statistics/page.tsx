@@ -2,33 +2,25 @@
 import { CardTitle, CardHeader, CardContent, Card } from "@/components/ui/card";
 import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
 import { useGetBranchProfitQuery, useGetBranchStatQuery } from "@/lib/features/statSlice";
-import { LineChart, Shapes, Shirt, UsersRound } from "lucide-react";
+import { LineChart, Shapes, Shirt } from "lucide-react";
 
 export default function Component() {
   const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
   const branch_id = currentUser?.data.branch._id;
   const { data: stats, isLoading } = useGetBranchStatQuery({ branch: branch_id });
-  console.log("🚀 ~ Component ~ stats:", stats);
 
   const { data: profitData } = useGetBranchProfitQuery({ branch: branch_id });
-  console.log("🚀 ~ Component ~ profitData:", profitData);
 
-  // Assuming branchInventories.data.results is the array containing inventory objects
   const totalStockSum = stats?.data.inventories.reduce((acc: any, inventory: any) => {
     return acc + inventory.totalStock;
   }, 0);
 
-  console.log("Total Stock Sum:", totalStockSum);
+  console.log(profitData);
 
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
       {stats && (
         <>
-          <StatCard
-            title=" Members"
-            value={stats.data.members}
-            icon={<UsersRound />}
-          />
           <StatCard
             title=" Categories"
             value={stats.data.categories}
@@ -49,22 +41,19 @@ export default function Component() {
 
           <StatCard
             title=" Total Quantituy Sold  "
-            value={(stats.data.totalQuantitySoldByBranch - stats.data.totalReturnedQuantity).toLocaleString("en-IN")}
+            value={stats.data.totalQuantitySoldByBranch.toLocaleString("en-IN")}
             icon={<Shirt />}
           />
 
           <StatCard
             title=" Total Sale Amount"
-            value={`Rs ${(profitData.totalSales - stats.data.totalreturnSale).toLocaleString("en-IN")}`}
+            value={`Rs ${profitData.totalSales.toLocaleString("en-IN")}`}
             icon={<Shirt />}
           />
 
           <StatCard
             title=" Total Profit"
-            // value={`Rs ${profitData?.totalSales - profitData?.totalCp}`}
-            //  value={`Rs ${profitData?.totalSales - profitData?.totalCp - stats.data.totalReturnCp}`}
-            //  value={`Rs ${profitData?.totalSales  - stats.data.totalreturnSale -  stats.data?.totalReturnCp}`}
-            value={`Rs ${(stats?.data.totalSales - stats?.data.totalreturnSale - stats?.data.totalCp + stats?.data.totalReturnCp).toLocaleString("en-IN")}`}
+            value={`Rs ${(profitData.totalSales - profitData.totalCp).toLocaleString("en-IN")}`}
             icon={<Shirt />}
           />
         </>

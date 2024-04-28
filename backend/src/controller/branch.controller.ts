@@ -10,8 +10,6 @@ import generateRandomPassword from "../utils/generateRandomPassword";
 import { sendResetPassword } from "../utils/mailService";
 import BranchModel from "../models/branch.model";
 var colors = require("colors");
-import crypto from "crypto";
-import bcrypt from "bcrypt";
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
@@ -108,7 +106,6 @@ export async function getBranchFromTokenHandler(req: any, res: Response, next: N
 
 export async function loginBranchHandler(req: Request<{}, {}, LoginInput["body"]>, res: Response, next: NextFunction) {
   const branch = await validatePassword(req.body);
-  // console.log("🚀 ~ loginBranchHandler ~ branch:", branch)
 
   if (!branch) {
     return res.status(401).json({
