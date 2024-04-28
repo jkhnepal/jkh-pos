@@ -1,5 +1,5 @@
 "use client";
-import { BarChartBig, CornerDownLeft, LayoutDashboard, LayoutList, LogOut, Menu, TrendingUp, Users } from "lucide-react";
+import { BarChartBig, LayoutDashboard, LayoutList, LogOut, Menu, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -144,27 +144,33 @@ const navItems = [
     href: "/branch/products",
   },
 
-  {
-    name: "Members",
-    icon: <Users size={18} />,
-    href: "/branch/members",
-  },
+  // {
+  //   name: "Members",
+  //   icon: <Users size={18} />,
+  //   href: "/branch/members",
+  // },
+
+  // {
+  //   name: "Sales",
+  //   icon: <TrendingUp size={18} />,
+  //   href: "/branch/sales",
+  // },
 
   {
-    name: "Sales",
+    name: "Sales By Month",
     icon: <TrendingUp size={18} />,
-    href: "/branch/sales",
+    href: "/branch/sales-by-month",
   },
 
-  {
-    name: "Returns",
-    icon: <CornerDownLeft size={18} />,
-    href: "/branch/returns",
-  },
+  // {
+  //   name: "Returns",
+  //   icon: <CornerDownLeft size={18} />,
+  //   href: "/branch/returns",
+  // },
 
-  {
-    name: "Rewards",
-    icon: <CornerDownLeft size={18} />,
-    href: "/branch/rewards",
-  },
+  // {
+  //   name: "Rewards",
+  //   icon: <CornerDownLeft size={18} />,
+  //   href: "/branch/rewards",
+  // },
 ];

@@ -4,20 +4,17 @@ import { ColumnDef, ColumnFiltersState, SortingState, VisibilityState, flexRende
 import { ArrowDown01, ArrowDown10, ChevronDown, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Link from "next/link";
 import { useGetAllSaleQuery } from "@/lib/features/saleSlice";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
 import * as Dialog from "@radix-ui/react-dialog";
-// Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
 import { useDebounce } from "use-debounce";
-import moment from "moment";
-import Image from "next/image";
+import axios from "axios";
 
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -25,11 +22,35 @@ export default function Page() {
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const [previewImage, setpreviewImage] = React.useState<string>("");
-  console.log(previewImage);
-
   const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
   const branch_id = currentUser?.data.branch._id;
+
+  const [monthlyDatas, setMonthlyDatas] = React.useState<any>();
+
+  const [currentMonth, setCurrentMonth] = React.useState<any>();
+
+
+
+  const [refetch, setrefetch] = React.useState<boolean>(false);
+  React.useEffect(() => {
+    const fetch = async () => {
+      try {
+        if (branch_id) {
+          //const res = await axios.get(`http://localhost:5010/api/sales/get-sales-by-months/${branch_id}`);
+          const res = await axios.get(`${process.env.NEXT_PUBLIC_URL_API}/sales/get-sales-by-months/${branch_id}`);
+          setMonthlyDatas(res?.data?.data);
+          setrefetch(false)
+
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetch();
+  }, [branch_id, currentMonth,refetch]); // Add branch_id to the dependency array
+
+  const [previewImage, setpreviewImage] = React.useState<string>("");
+  console.log(previewImage);
 
   const [searchName, setSearchName] = React.useState<string>("");
   const [debounceValue] = useDebounce(searchName, 1000);
@@ -42,7 +63,15 @@ export default function Page() {
   let totalItem: number = salesOfABranch?.data.count;
   const startIndex = (currentPage - 1) * itemsPerPage;
 
-  console.log(salesOfABranch?.data.results)
+  const handleDelete = async (date: string) => {
+    try {
+      const res = await axios.delete(`${process.env.NEXT_PUBLIC_URL_API}/sales/delete-sales-by-month/${branch_id}/${date}`);
+      console.log(res);
+      setrefetch(true)
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const goToPreviousPage = () => {
     setCurrentPage((prevPage) => prevPage - 1);
@@ -74,111 +103,48 @@ export default function Page() {
     },
 
     {
-      accessorKey: "sale",
-      header: "S.N",
-      cell: ({ row }: any) => <div>{startIndex + row.index + 1} </div>,
-    },
-
-    {
-      accessorKey: "product",
-      header: "Product Name",
-      cell: ({ row }: any) => <div>{row.getValue("product")?.name}</div>,
-    },
-
-    {
-      accessorKey: "product",
-      header: "CP",
-      cell: ({ row }: any) => <div>{row.getValue("product")?.cp}</div>,
-    },
-
-
-    {
-      accessorKey: "product",
-      header: "SP",
-      cell: ({ row }: any) => <div>{row.getValue("product")?.sp}</div>,
-    },
-
-
-
-    {
-      accessorKey: "memberName",
-      header: "Member Name",
-      cell: ({ row }: any) => <div>{row.getValue("memberName")}</div>,
-    },
-
-    {
-      accessorKey: "memberPhone",
-      header: "Member Phone",
-      cell: ({ row }: any) => <div>{row.getValue("memberPhone")}</div>,
-    },
-
-    
-    {
-      accessorKey: "quantity",
-      header: "Sold Quantity",
-      cell: ({ row }: any) => <div>{row.getValue("quantity")}</div>,
+      accessorKey: "month",
+      header: "Month",
+      cell: ({ row }: any) => <div>{row.getValue("month")}</div>,
     },
 
     {
       accessorKey: "totalAmount",
-      header: "Total Amount",
-      cell: ({ row }: any) => <div>{row.getValue("totalAmount")}</div>,
-    },
-
-
-    // {
-    //   accessorKey: "returnedQuantity",
-    //   header: "Returned Quantity",
-    //   cell: ({ row }: any) => <div>{row.getValue("returnedQuantity")}</div>,
-    // },
-
-    {
-      accessorKey: "product",
-      header: "Image",
-      cell: ({ row }:any) => {
-        const image:any = row.getValue("product")?.image;
-
-        return (
-          <div>
-            {image && (
-              <Dialog.Root>
-                <Dialog.Trigger
-                  onClick={() => setpreviewImage(image)}
-                  className=" text-sm text-start  hover:bg-primary-foreground w-full">
-                  <Image
-                    src={image}
-                    alt="Branch Image"
-                    width={40}
-                    height={40}
-                    className=" border rounded-md"
-                  />
-                </Dialog.Trigger>
-                <Dialog.Portal>
-                  <Dialog.Overlay className="fixed inset-0 w-full h-full bg-black opacity-40" />
-                  <Dialog.Content className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] px-4 w-full max-w-lg">
-                    {previewImage && (
-                      <Image
-                        src={previewImage}
-                        alt="Branch Image"
-                        width={400}
-                        height={400}
-                        className="  rounded-md"
-                      />
-                    )}
-                  </Dialog.Content>
-                </Dialog.Portal>
-              </Dialog.Root>
-            )}
-          </div>
-        );
+      header: "Total Revenue (Rs)",
+      cell: ({ row }: any) => {
+        const monthData = monthlyDatas.find((item: any) => item.month === row.getValue("month"));
+        const totalAmount = monthData ? monthData.sales.reduce((acc: number, sale: any) => acc + sale.totalAmount, 0) : 0;
+        return <div>{totalAmount.toLocaleString("en-IN")}</div>;
       },
     },
 
+    // {
+    //     accessorKey: "cp",
+    //     header: "Total CP",
+    //     cell: ({ row }: any) => {
+    //       const monthData = monthlyDatas.find((item: any) => item.month === row.getValue("month"));
+    //       const totalCP = monthData ? monthData.sales.reduce((acc: number, sale: any) => acc + sale.cp * sale.quantity, 0) : 0;
+    //       return <div>{totalCP}</div>;
+    //     },
+    //   },
+    //   {
+    //     accessorKey: "sp",
+    //     header: "Total SP",
+    //     cell: ({ row }: any) => {
+    //       const monthData = monthlyDatas.find((item: any) => item.month === row.getValue("month"));
+    //       const totalSP = monthData ? monthData.sales.reduce((acc: number, sale: any) => acc + sale.sp * sale.quantity, 0) : 0;
+    //       return <div>{totalSP}</div>;
+    //     },
+    //   },
 
     {
-      accessorKey: "createdAt",
-      header: "Sold Date",
-      cell: ({ row }: any) => <div>{moment(row.getValue("createdAt")).format('MMMM Do YYYY, h:mm:ss a')}</div>,
+      accessorKey: "profit",
+      header: "Total Profit (Rs)",
+      cell: ({ row }: any) => {
+        const monthData = monthlyDatas.find((item: any) => item.month === row.getValue("month"));
+        const totalProfit = monthData ? monthData.sales.reduce((acc: number, sale: any) => acc + (sale.sp - sale.cp) * sale.quantity, 0) : 0;
+        return <div>{totalProfit.toLocaleString("en-IN")}</div>;
+      },
     },
 
     {
@@ -187,6 +153,7 @@ export default function Page() {
       enableHiding: false,
       cell: ({ row }) => {
         const item = row.original;
+        console.log(item);
 
         return (
           <DropdownMenu>
@@ -207,7 +174,51 @@ export default function Page() {
                 <DropdownMenuItem>Return</DropdownMenuItem>
               </Link> */}
 
-              <Link href={`/branch/sales/view/${item.saleId}`}>
+              <Dialog.Root>
+                <Dialog.Trigger className=" text-sm text-start py-1 px-2.5 hover:bg-primary-foreground w-full">Delete</Dialog.Trigger>
+                <Dialog.Portal>
+                  <Dialog.Overlay className="fixed inset-0 w-full h-full bg-black opacity-40" />
+                  <Dialog.Content className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] px-4 w-full max-w-lg">
+                    <div className="bg-white rounded-md shadow-lg px-4 py-6 sm:flex">
+                      <div className="flex items-center justify-center flex-none w-12 h-12 mx-auto bg-red-100 rounded-full">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="w-5 h-5 text-red-600"
+                          viewBox="0 0 20 20"
+                          fill="currentColor">
+                          <path
+                            fillRule="evenodd"
+                            d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                      <div className="mt-2 text-center sm:ml-4 sm:text-left">
+                        <Dialog.Title className="text-lg font-medium text-gray-800">Are you sure ?</Dialog.Title>
+                        <Dialog.Description className="mt-2 text-sm leading-relaxed text-gray-500">The data that has been deleted once cannot be recovered , so please carefully delete the data .</Dialog.Description>
+                        <div className="items-center gap-2 mt-3 text-sm sm:flex">
+                          <Dialog.Close asChild>
+                            <button
+                              onClick={() => handleDelete(item.month)}
+                              className="w-full mt-2 p-2.5 flex-1 text-white bg-red-600 rounded-md ring-offset-2 ring-red-600 focus:ring-2">
+                              Delete
+                            </button>
+                          </Dialog.Close>
+                          <Dialog.Close asChild>
+                            <button
+                              aria-label="Close"
+                              className="w-full mt-2 p-2.5 flex-1 text-gray-800 rounded-md border ring-offset-2 ring-indigo-600 focus:ring-2">
+                              Cancel
+                            </button>
+                          </Dialog.Close>
+                        </div>
+                      </div>
+                    </div>
+                  </Dialog.Content>
+                </Dialog.Portal>
+              </Dialog.Root>
+
+              <Link href={`/branch/sales-by-month/${item.month}`}>
                 <DropdownMenuItem>View detail</DropdownMenuItem>
               </Link>
             </DropdownMenuContent>
@@ -218,7 +229,7 @@ export default function Page() {
   ];
 
   const table = useReactTable({
-    data: salesOfABranch?.data.results || [],
+    data: monthlyDatas || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -249,12 +260,32 @@ export default function Page() {
     <div className="w-full">
       <Breadcumb />
       <div className="flex justify-between items-center py-4">
-        <Input
+        {/* <Input
           placeholder="Filter by name ..."
           value={searchName}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
           className="max-w-sm"
-        />
+        /> */}
+
+        {/* <Select onValueChange={(value: any) => setCurrentMonth(value)}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select a Months" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Months</SelectLabel>
+              {monthlyDatas?.map((item: any, index: number) => (
+
+                <SelectItem
+                // defaultValue={}
+                  key={index}
+                  value={item.month}>
+                  {item.month}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select> */}
 
         <div className=" flex space-x-2">
           <DropdownMenu>
@@ -362,25 +393,23 @@ export default function Page() {
   );
 }
 
-
-
 function Breadcumb() {
   return (
-  <>
+    <>
       <Breadcrumb className=" mb-8">
-      <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator>
-          <SlashIcon />
-        </BreadcrumbSeparator>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <SlashIcon />
+          </BreadcrumbSeparator>
 
-        <BreadcrumbItem>
-          <BreadcrumbPage>Sales</BreadcrumbPage>
-        </BreadcrumbItem>
-      </BreadcrumbList>
-  </Breadcrumb>
+          <BreadcrumbItem>
+            <BreadcrumbPage>Sales</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
     </>
   );
 }

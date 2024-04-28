@@ -1,26 +1,37 @@
-import { NextFunction, Request, Response } from "express";
-import AppError from "../utils/appError";
-import BranchInventoryModel from "../models/branchInventory.model";
-import { CreateReturnInput, UpdateReturnInput } from "../schema/return.schema";
-import { findAndUpdateBranchInventory } from "../service/branchInventory.service";
-import { createReturn, findAllReturn, findReturn, findAndUpdateReturn, deleteReturn } from "../service/return.service";
-import { findAndUpdateSale, findSale } from "../service/sale.service";
-import { findAndUpdateMember, findMember } from "../service/member.service";
-var colors = require("colors");
+// import { NextFunction, Request, Response } from "express";
+// import AppError from "../utils/appError";
+// import BranchInventoryModel from "../models/branchInventory.model";
+// import { CreateReturnInput, UpdateReturnInput } from "../schema/return.schema";
+// import { findAndUpdateBranchInventory } from "../service/branchInventory.service";
+// import { createReturn, findAllReturn, findReturn, findAndUpdateReturn, deleteReturn } from "../service/return.service";
+// import { findAndUpdateSale, findSale } from "../service/sale.service";
+// import { findAndUpdateMember, findMember } from "../service/member.service";
+// var colors = require("colors");
 
 // export async function createReturnHandler(req: Request<{}, {}, CreateReturnInput["body"]>, res: Response, next: NextFunction) {
 //   try {
 //     const body = req.body;
 //     console.log("🚀 ~ createReturnHandler ~ body:", body);
+//     const sale: any = await findSale({ _id: body.sale });
+//     console.log("🚀 ~ createReturnHandler ~ sale:", sale);
+
+//     if (body.quantity > sale.quantity) {
+//       return res.status(400).json({
+//         status: "failure",
+//         msg: "Quantity is greater than the quantity sold",
+//       });
+//     }
 
 //     const returnHistory = await createReturn(body);
 //     const updatedSale: any = await findAndUpdateSale(
 //       { _id: body.sale },
-//       { isReturned: true },
+//       { $inc: { returnedQuantity: +body.quantity } },
 //       {
 //         new: true,
 //       }
 //     );
+
+//     console.log(updatedSale);
 
 //     // // add that item in branch inventory
 //     const branchInventory: any = await BranchInventoryModel.findOne({ branch: body.branch, product: updatedSale.product });
@@ -42,83 +53,15 @@ var colors = require("colors");
 //   }
 // }
 
-export async function createReturnHandler(req: Request<{}, {}, CreateReturnInput["body"]>, res: Response, next: NextFunction) {
-  try {
-    const body = req.body;
-    console.log("🚀 ~ createReturnHandler ~ body:", body);
-    const sale: any = await findSale({ _id: body.sale });
-    console.log("🚀 ~ createReturnHandler ~ sale:", sale);
-
-    if (body.quantity > sale.quantity) {
-      return res.status(400).json({
-        status: "failure",
-        msg: "Quantity is greater than the quantity sold",
-      });
-    }
-
-    const returnHistory = await createReturn(body);
-    const updatedSale: any = await findAndUpdateSale(
-      { _id: body.sale },
-      { $inc: { returnedQuantity: +body.quantity } },
-      {
-        new: true,
-      }
-    );
-
-    console.log(updatedSale)
-
-    // // add that item in branch inventory
-    const branchInventory: any = await BranchInventoryModel.findOne({ branch: body.branch, product: updatedSale.product });
-    const updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, { $inc: { totalStock: +body.quantity } }, { new: true });
-
-    const pointsToSubtract = updatedSale.sp * 0.1;
-
-    const member: any = await findMember({ _id: body.member });
-    const updatedMember = await findAndUpdateMember({ _id: member._id }, { $inc: { point: -pointsToSubtract } }, { new: true });
-
-    return res.status(200).json({
-      status: "success",
-      msg: "Return success",
-      data: { returnHistory, updatedSale, updatedBranchInventory, updatedMember },
-    });
-  } catch (error: any) {
-    console.error(colors.red("msg:", error.message));
-    next(new AppError("Internal server error", 500));
-  }
-}
-
-// export async function createReturnHandler(req: Request<{}, {}, CreateReturnInput["body"]>, res: Response, next: NextFunction) {
+// export async function getAllReturnHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
 //   try {
-//     const body = req.body;
-//     console.log("🚀 ~ createReturnHandler ~ body:", body);
+//     const queryParameters = req.query;
 
-//     // const returnHistory = await createReturn(body);
-//     const sale = await findSale({ _id: body.sale });
-//     console.log("🚀 ~ createReturnHandler ~ sale:", sale);
-
-//     // Reduce the quantity of the product in the sale
-//     const updatedSale: any = await findAndUpdateSale(
-//       { _id: body.sale },
-//       { $inc: { quantity: -body.quantity } },
-//       {
-//         new: true,
-//       }
-//     );
-//     console.log("🚀 ~ createReturnHandler ~ updatedSale:", updatedSale);
-
-//     // // // add that item in branch inventory
-//     // const branchInventory: any = await BranchInventoryModel.findOne({ branch: body.branch, product: updatedSale.product });
-//     // const updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, { $inc: { totalStock: +body.quantity } }, { new: true });
-
-//     // const pointsToSubtract = updatedSale.sp * 0.1;
-
-//     // const member: any = await findMember({ _id: body.member });
-//     // const updatedMember = await findAndUpdateMember({ _id: member._id }, { $inc: { point: -pointsToSubtract } }, { new: true });
-
-//     return res.status(200).json({
+//     const results = await findAllReturn(queryParameters);
+//     return res.json({
 //       status: "success",
-//       msg: "Return success",
-//       // data: { returnHistory, updatedSale, updatedBranchInventory, updatedMember },
+//       msg: "Get all returnHistory success",
+//       data: results,
 //     });
 //   } catch (error: any) {
 //     console.error(colors.red("msg:", error.message));
@@ -126,85 +69,69 @@ export async function createReturnHandler(req: Request<{}, {}, CreateReturnInput
 //   }
 // }
 
-export async function getAllReturnHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
-  try {
-    const queryParameters = req.query;
+// export async function getReturnHandler(req: Request<UpdateReturnInput["params"]>, res: Response, next: NextFunction) {
+//   try {
+//     const returnId = req.params.returnId;
+//     const returnHistory = await findReturn({ returnId });
 
-    const results = await findAllReturn(queryParameters);
-    return res.json({
-      status: "success",
-      msg: "Get all returnHistory success",
-      data: results,
-    });
-  } catch (error: any) {
-    console.error(colors.red("msg:", error.message));
-    next(new AppError("Internal server error", 500));
-  }
-}
+//     if (!returnHistory) {
+//       next(new AppError("returnHistory does not exist", 404));
+//     }
 
-export async function getReturnHandler(req: Request<UpdateReturnInput["params"]>, res: Response, next: NextFunction) {
-  try {
-    const returnId = req.params.returnId;
-    const returnHistory = await findReturn({ returnId });
+//     return res.json({
+//       status: "success",
+//       msg: "Get success",
+//       data: returnHistory,
+//     });
+//   } catch (error: any) {
+//     console.error(colors.red("msg:", error.message));
+//     next(new AppError("Internal server error", 500));
+//   }
+// }
 
-    if (!returnHistory) {
-      next(new AppError("returnHistory does not exist", 404));
-    }
+// export async function updateReturnHandler(req: Request<UpdateReturnInput["params"]>, res: Response, next: NextFunction) {
+//   try {
+//     const returnId = req.params.returnId;
+//     const returnHistory: any = await findReturn({ returnId });
 
-    return res.json({
-      status: "success",
-      msg: "Get success",
-      data: returnHistory,
-    });
-  } catch (error: any) {
-    console.error(colors.red("msg:", error.message));
-    next(new AppError("Internal server error", 500));
-  }
-}
+//     if (!returnHistory) {
+//       next(new AppError("Return does not exist", 404));
+//       return;
+//     }
 
-export async function updateReturnHandler(req: Request<UpdateReturnInput["params"]>, res: Response, next: NextFunction) {
-  try {
-    const returnId = req.params.returnId;
-    const returnHistory: any = await findReturn({ returnId });
+//     const updatedReturn = await findAndUpdateReturn({ returnId }, req.body, {
+//       new: true,
+//     });
 
-    if (!returnHistory) {
-      next(new AppError("Return does not exist", 404));
-      return;
-    }
+//     return res.status(200).json({
+//       status: "success",
+//       msg: "Update success",
+//       data: updatedReturn,
+//     });
+//   } catch (error: any) {
+//     console.error("Error:", error.message);
+//     next(new AppError("Internal server error", 500));
+//   }
+// }
 
-    const updatedReturn = await findAndUpdateReturn({ returnId }, req.body, {
-      new: true,
-    });
+// export async function deleteReturnHandler(req: Request<UpdateReturnInput["params"]>, res: Response, next: NextFunction) {
+//   try {
+//     const returnId = req.params.returnId;
+//     const returnHistory = await findReturn({ returnId });
 
-    return res.status(200).json({
-      status: "success",
-      msg: "Update success",
-      data: updatedReturn,
-    });
-  } catch (error: any) {
-    console.error("Error:", error.message);
-    next(new AppError("Internal server error", 500));
-  }
-}
+//     if (!returnHistory) {
+//       next(new AppError("returnHistory does not exist", 404));
+//       return;
+//     }
 
-export async function deleteReturnHandler(req: Request<UpdateReturnInput["params"]>, res: Response, next: NextFunction) {
-  try {
-    const returnId = req.params.returnId;
-    const returnHistory = await findReturn({ returnId });
-
-    if (!returnHistory) {
-      next(new AppError("returnHistory does not exist", 404));
-      return;
-    }
-
-    await deleteReturn({ returnId });
-    return res.json({
-      status: "success",
-      msg: "Delete success",
-      data: {},
-    });
-  } catch (error: any) {
-    console.error(colors.red("msg:", error.message));
-    next(new AppError("Internal server error", 500));
-  }
-}
+//     await deleteReturn({ returnId });
+//     return res.json({
+//       status: "success",
+//       msg: "Delete success",
+//       data: {},
+//     });
+//   } catch (error: any) {
+//     console.error(colors.red("msg:", error.message));
+//     next(new AppError("Internal server error", 500));
+//   }
+// }

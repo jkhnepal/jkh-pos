@@ -16,7 +16,7 @@ import OptionalLabel from "@/app/custom-components/OptionalLabel";
 import LoaderPre from "@/app/custom-components/LoaderPre";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useGetBranchStatQuery } from "@/lib/features/statSlice";
+import { useGetBranchProfitQuery, useGetBranchStatQuery } from "@/lib/features/statSlice";
 import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
@@ -29,8 +29,6 @@ import Link from "next/link";
 import { BarChart4, LineChart } from "lucide-react";
 import { useGetAllBranchInventoryQuery } from "@/lib/features/branchInventorySlice";
 import moment from "moment";
-
-
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -56,10 +54,10 @@ export default function Page() {
 
   const { data, isFetching } = useGetBranchQuery(branchId);
   const branch = data?.data;
-  console.log(branch);
+
+  const { data: profitData } = useGetBranchProfitQuery({ branch: branchId });
 
   const { data: stats } = useGetBranchStatQuery({ branch: branch?._id });
-  console.log("🚀 ~ Component ~ stats:", stats);
 
   const totalSalesByMonth = stats?.data.totalSalesByMonth;
   const totalCpByMonth = stats?.data.totalCpByMonth;
@@ -71,23 +69,18 @@ export default function Page() {
     totalCpOfAMonth: totalCpByMonth?.find((cpItem: any) => cpItem._id === salesItem._id)?.cp || 0, // Find corresponding cp value for the month
   }));
 
-  console.log(combinedData);
-
   const { uploading, handleFileUpload } = useCloudinaryFileUpload();
   const [imageUrl, setImageUrl] = useState<string>("");
 
   const [updateBranch, { error: updateError, isLoading: isUpdating }] = useUpdateBranchMutation();
 
   const { data: branchInventories } = useGetAllBranchInventoryQuery({ branch: branch?._id });
-  console.log("🚀 ~ Page ~ branchInventories:", branchInventories);
   let totalItem = branchInventories?.data.count;
 
   // Assuming branchInventories.data.results is the array containing inventory objects
   const totalStockSum = branchInventories?.data.results.reduce((acc: any, inventory: any) => {
     return acc + inventory.totalStock;
   }, 0);
-
-  console.log("Total Stock Sum:", totalStockSum);
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -166,7 +159,7 @@ export default function Page() {
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="branch-detail">Branch Detail</TabsTrigger>
           <TabsTrigger value="inventory">Inventory</TabsTrigger>
-          <TabsTrigger value="sales-report">Sales Report</TabsTrigger>
+          {/* <TabsTrigger value="sales-report">Sales Report</TabsTrigger> */}
           <TabsTrigger value="statistics">Statistics</TabsTrigger>
           <TabsTrigger value="reset-password">Reset Paassword</TabsTrigger>
           {/* <TabsTrigger value="password">Password</TabsTrigger> */}
@@ -313,7 +306,7 @@ export default function Page() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="sales-report">
+        {/* <TabsContent value="sales-report">
           <Card>
             <CardHeader>
               <CardTitle>Sales Reports</CardTitle>
@@ -327,7 +320,6 @@ export default function Page() {
                     <TableHead>Month</TableHead>
                     <TableHead>Total Revenue (Rs)</TableHead>
                     <TableHead className="text-center">Profits (Rs)</TableHead>
-                    {/* <TableHead className="text-right">Actions </TableHead> */}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -336,27 +328,13 @@ export default function Page() {
                       <TableCell className="font-medium">{monthNames[month._id - 1]}</TableCell>
                       <TableCell className="font-medium">{month.totalSalesOfAMonth}</TableCell>
                       <TableCell className="text-center">{month.totalSalesOfAMonth - month.totalCpOfAMonth}</TableCell>
-                      {/* <TableCell className="text-right">
-                        <Link href={`/admin/branches/report-of-a-branch-by-month?branch=${branch._id}&month=${monthNames[month._id - 1]}`}>
-                          <Badge variant="outline">View</Badge>
-                        </Link>
-                      </TableCell> */}
                     </TableRow>
                   ))}
                 </TableBody>
-                {/* <TableFooter>
-                  <TableRow>
-                    <TableCell>Total</TableCell>
-
-                    <TableCell>Rs. {stats?.data.totalSales | 0}</TableCell>
-                    <TableCell className="text-center">Rs.                   {stats?.data?.totalSales  - stats?.data.totalCp }</TableCell>
-                    <TableCell></TableCell>
-                  </TableRow>
-                </TableFooter> */}
               </Table>
             </CardContent>
           </Card>
-        </TabsContent>
+        </TabsContent> */}
 
         <TabsContent value="inventory">
           <Card>
@@ -430,17 +408,14 @@ export default function Page() {
                   <StatCard
                     title="Total Sales"
                     description="Total sales of a branches till now"
-                    value={`Rs. ${(stats?.data.totalSales - stats?.data.totalreturnSale || 0).toLocaleString("en-IN")}`}
-                    // value={`Rs. ${stats?.data.totalSales | 0}`}
+                    value={`Rs. ${(stats?.data.totalSales | 0 ).toLocaleString("en-IN")}`}
                     icon={<BarChart4 />}
                   />
                   <StatCard
                     title="Total Profits"
                     description="Total prodits of a branches till now"
-                    // value={`Rs. ${(stats?.data.totalSales - stats?.data.totalCp - stats?.data.totalReturnCp || 0).toLocaleString("en-IN")}`}
-                    // value={`Rs. ${stats?.data.totalSales - stats?.data.totalCp | 0}  `}
-                    // value={`Rs ${(stats?.data.totalSales  - stats?.data.totalreturnSale -  stats?.data.totalReturnCp).toLocaleString("en-IN")}`}
-                    value={`Rs ${(stats?.data.totalSales - stats?.data.totalreturnSale - stats?.data.totalCp + stats?.data.totalReturnCp).toLocaleString("en-IN")}`}
+                    value={`Rs ${(profitData?.totalSales - profitData?.totalCp || 0).toLocaleString("en-IN")}`}
+                    // value={`Rs ${(stats?.data.totalSales | 0 - stats?.data.totalCp).toLocaleString("en-IN")}`}
                     icon={<LineChart />}
                   />
 
@@ -489,31 +464,30 @@ export default function Page() {
   );
 }
 
-
 function Breadcumb() {
   return (
-  <>
+    <>
       <Breadcrumb className=" mb-8">
-      <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator>
-          <SlashIcon />
-        </BreadcrumbSeparator>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <SlashIcon />
+          </BreadcrumbSeparator>
 
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/admin/branches">Branches</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator>
-          <SlashIcon />
-        </BreadcrumbSeparator>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/admin/branches">Branches</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <SlashIcon />
+          </BreadcrumbSeparator>
 
-        <BreadcrumbItem>
-          <BreadcrumbPage>Edit Branch</BreadcrumbPage>
-        </BreadcrumbItem>
-      </BreadcrumbList>
-  </Breadcrumb>
+          <BreadcrumbItem>
+            <BreadcrumbPage>Edit Branch</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
     </>
   );
 }

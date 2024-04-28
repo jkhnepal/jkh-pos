@@ -13,7 +13,15 @@ export const returnToHeadquarterApi = createApi({
         body: newReturnToHeadquarter,
       }),
     }),
+
+    resetDB: builder.mutation({
+      query: (branchId) => ({
+        url: `/return-to-headquarter/reset-database-after-3-months/${branchId}`,
+        method: "POST",
+        // body: emptyObject,
+      }),
+    }),
   }),
 });
 
-export const { useCreateReturnToHeadquarterMutation } = returnToHeadquarterApi;
+export const { useCreateReturnToHeadquarterMutation , useResetDBMutation} = returnToHeadquarterApi;
