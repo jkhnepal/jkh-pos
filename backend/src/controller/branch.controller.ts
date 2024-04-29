@@ -17,8 +17,8 @@ const transporter = nodemailer.createTransport({
   port: 465,
   secure: true,
   auth: {
-    user: "lokendrachaulagain803@gmail.com",
-    pass: "sgep kquk bfrw spdl",
+    user: "loginsoftnepal@gmail.com",
+    pass: "ynpg eeju shvh bbyy",
   },
 });
 
@@ -58,7 +58,7 @@ export async function createBranchHandler(req: Request<{}, {}, CreateBranchInput
      <p class="heading">Password of the branch (${body.name}) is: <span style="font-weight: bold; color: blue;">${body.password}</span></p>  
      </div>
      <div class="footer">
-      <p>Thanks and Regards, JKH .</p>
+      <p>Thank You</p>
  </div>
  </div>
    </div>`,
@@ -262,7 +262,7 @@ export async function resetBranchPasswordHandler(req: Request, res: Response, ne
      <p class="heading">Branch (${branch.name}) password has been changed . New Password: <span style="font-weight: bold; color: blue;">${newPassword}</span></p>  
      </div>
      <div class="footer">
-      <p>Thanks and Regards, JKH .</p>
+      <p>Thank You.</p>
  </div>
  </div>
    </div>`,
