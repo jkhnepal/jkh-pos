@@ -20,10 +20,6 @@ export async function createDistributeHandler(req: Request<{}, {}, CreateDistrib
 
     let updatedBranchInventory;
     if (branchInventory) {
-      // const newTotalstock = (branchInventory.totalStock += body.stock);
-      // const newTotalPreviousStock = (branchInventory.previousStock += body.stock);
-      // console.log(newTotalPreviousStock,"????????????????????????????????????????")
-
       // Add body.stock to both totalStock and previousStock
       const newTotalstock = branchInventory.totalStock + body.stock;
       const newTotalPreviousStock = branchInventory.previousStock + body.stock;
@@ -34,7 +30,7 @@ export async function createDistributeHandler(req: Request<{}, {}, CreateDistrib
     }
 
     if (!branchInventory) {
-      const res = await createBranchInventory({ ...body, totalStock: body.stock });
+      const res = await createBranchInventory({ ...body, totalStock: body.stock, previousStock: body.stock });
     }
 
     return res.status(201).json({
