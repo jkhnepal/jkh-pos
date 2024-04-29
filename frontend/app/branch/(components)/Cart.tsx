@@ -105,7 +105,7 @@ export default function Cart({ refetch }: any) {
   const [createSale, { isSuccess }] = useCreateSaleMutation();
   const createSaleHandler = async () => {
     const res: any = await createSale(dataToSend);
-    setSaleHappenedTime(res?.data.updatedBranchInventory.createdAt)
+    setSaleHappenedTime(res?.data.updatedBranchInventory.createdAt);
     toast.success(res?.data.msg);
     setSelectedProducts([]);
     refetch();
@@ -143,29 +143,15 @@ export default function Cart({ refetch }: any) {
             onClick={() => setSetShowCartDrawer(false)}
           />
 
-<div className=" flex items-center gap-4 mb-8  ">
-            <Input
-            
-              placeholder="Customer Name"
-              disabled={readModeOnly}
-             value={memberName}
-              onChange={(e) => setMemberName(e.target.value)}
-            />
-          </div>
-
-
           <div className=" flex items-center gap-4 mb-8  ">
             <Input
-            
               placeholder="Customer Phone Number"
               disabled={readModeOnly}
               type="number"
-             value={memberPhone}
+              value={memberPhone}
               onChange={(e) => setMemberPhone(e.target.valueAsNumber)}
             />
           </div>
-
-
 
           <div className=" flex items-center gap-4 mb-8  ">
             <Input
@@ -179,11 +165,7 @@ export default function Cart({ refetch }: any) {
 
           <ScrollArea className="  h-[90vh] w-[500px] rounded-md border   ">
             <Table>
-              <TableCaption>
-                {/* {selectedMember && <div className=" flex flex-col  shadow p-2">{useRewardPoint && <span className=" text-[14px] ">Total Reward Amount Rs.{claimPoint}</span>}</div>} */}
-
-                {/* <div>{selectedMember && <div className=" flex flex-col  shadow p-2">{useRewardPoint && <span className=" text-[14px] ">Remaining Reward Amount Rs.{(selectedMemberData?.data.point - claimPoint).toFixed(2)}</span>}</div>}</div> */}
-              </TableCaption>
+              <TableCaption></TableCaption>
 
               <TableHeader>
                 <TableRow>
@@ -207,7 +189,6 @@ export default function Cart({ refetch }: any) {
                         type="number"
                         value={item.count}
                         disabled={readModeOnly}
-                        
                         onChange={(e) => handleCountChange(index, parseInt(e.target.value))}
                       />
                     </TableCell>
@@ -221,38 +202,14 @@ export default function Cart({ refetch }: any) {
                   <TableCell colSpan={4}>Total Amount</TableCell>
                   <TableCell className="text-right">Rs.{totalAmountBeforeReward}</TableCell>
                 </TableRow>
-
-                {/* {useRewardPoint && (
-                  <TableRow>
-                    <TableCell colSpan={4}>Reward Amount</TableCell>
-                    <TableCell className="text-right">- Rs.{claimPoint}</TableCell>
-                  </TableRow>
-                )} */}
-                {/* 
-                {useRewardPoint && (
-                  <TableRow>
-                    <TableCell colSpan={4}>Total Amount After Reward</TableCell>
-                    <TableCell className="text-right">Rs.{`${useRewardPoint ? totalAmountBeforeReward - claimPoint : totalAmountBeforeReward}`}</TableCell>
-                  </TableRow>
-                )} */}
               </TableFooter>
             </Table>
 
             {!isSuccess && (
               <div className=" mt-4 flex justify-end gap-4 px-4">
-                {/* {selectedMemberData?.data.point >= 1000 && selectedProducts.length >= 1 && selectedMemberData?.data.numberOfTimeBuyCount >= 10 && (
-                  <Button
-                    onClick={() => setuseRewardPoint(!useRewardPoint)}
-                    type="button"
-                    className=" p-2 text-xs">
-                    {!useRewardPoint ? " Claim Reward" : "Unclaim Reward"}
-                  </Button>
-                )} */}
-
                 <Button
                   onClick={createSaleHandler}
-                  type="button"
-                  disabled={!selectedProducts || selectedProducts.length === 0 || (memberPhone?.toString() ?? '').length !== 10}
+                  disabled={!selectedProducts || selectedProducts.length === 0 || (memberPhone?.toString() ?? "").length !== 10}
                   className=" p-2 text-xs">
                   Proceed
                 </Button>
@@ -277,8 +234,6 @@ export default function Cart({ refetch }: any) {
                           <Input
                             id="width"
                             readOnly
-                            // defaultValue={`${useRewardPoint ? totalAmountBeforeReward - claimPointForReceiptPrint : totalAmountBeforeReward}`}
-                            // defaultValue={`${useRewardPoint ? totalAmountBeforeReward - claimPointForReceiptPrint : totalAmountBeforeReward}`}
                             className="col-span-2 h-8"
                           />
                         </div>
@@ -298,9 +253,6 @@ export default function Cart({ refetch }: any) {
                           <Input
                             id="height"
                             value={(amountGivenByCustomber - totalAmountBeforeReward) | 0}
-                            //   value={`${amountGivenByCustomber - (useRewardPoint ? totalAmountBeforeReward - claimPointForReceiptPrint : totalAmountBeforeReward)}`}
-
-                            // value={` ${amountGivenByCustomber} - ${useRewardPoint ? totalAmountBeforeReward - claimPointForReceiptPrint : totalAmountBeforeReward} | 0`}
                             className="col-span-2 h-8"
                           />
                         </div>
@@ -344,7 +296,6 @@ export default function Cart({ refetch }: any) {
 
                           <Separator className="mt-8 mb-2 border border-zinc-300" />
 
-                          <p className=" font-medium "> Customers Name : {memberName}</p>
                           <p className=" font-medium mb-2"> Customers Phone : {memberPhone}</p>
                           <Separator className="mb-4 border border-zinc-300" />
 
@@ -377,20 +328,6 @@ export default function Cart({ refetch }: any) {
                             <p>Total Amount</p>
                             <p className="text-right"> Rs.{totalAmountBeforeReward}</p>
                           </div>
-
-                          {/* {useRewardPoint && (
-                            <div className=" flex items-center justify-between">
-                              <p>Reward Amount</p>
-                              <p className="text-right">- Rs.{claimPointForReceiptPrint}</p>
-                            </div>
-                          )}
-
-                          {useRewardPoint && (
-                            <div className=" flex items-center justify-between">
-                              <p>Total Amount After Reward</p>
-                              <p className="text-right">Rs.{`${useRewardPoint ? totalAmountBeforeReward - claimPointForReceiptPrint : totalAmountBeforeReward}`}</p>
-                            </div>
-                          )} */}
 
                           <Separator className="mt-8 mb-2 border border-zinc-300" />
                           <div className=" flex   justify-between"></div>
