@@ -1,4 +1,4 @@
-import { coerce, object, string, TypeOf } from "zod";
+import { coerce, number, object, string, TypeOf } from "zod";
 
 // Define common schemas
 const payload = {
@@ -7,8 +7,8 @@ const payload = {
       required_error: "branch is required",
     }),
 
-    member: string({
-      required_error: "member is required",
+    memberPhone: number({
+      required_error: "member phone  is required",
     }),
 
     sale: string({

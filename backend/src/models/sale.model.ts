@@ -13,6 +13,8 @@ export interface SaleInput {
   sp: number;
   quantity: number;
   totalAmount: number;
+  returnedQuantity?: number;
+  invoiceNo: string;
 }
 
 export interface SaleDocument extends SaleInput, mongoose.Document {
@@ -29,7 +31,6 @@ const saleSchema = new mongoose.Schema(
       default: () => `sale_${nanoid()}`,
     },
     branch: { type: mongoose.Schema.Types.ObjectId, ref: "Branch", required: true },
-
     product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
 
     quantity: { type: Number, required: true },
@@ -37,8 +38,10 @@ const saleSchema = new mongoose.Schema(
     sp: { type: Number, required: true },
     totalAmount: { type: Number, required: true },
 
-    memberName: { type: String, },
-    memberPhone: { type: Number, },
+    memberName: { type: String },
+    memberPhone: { type: Number },
+    returnedQuantity: { type: Number, required: true, default: 0 },
+    invoiceNo: { type: String, required: true },
   },
   {
     timestamps: true,

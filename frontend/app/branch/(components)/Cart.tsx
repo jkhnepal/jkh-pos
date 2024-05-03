@@ -72,6 +72,7 @@ export default function Cart({ refetch }: any) {
   const [selectedProducts, setSelectedProducts] = useState<any[]>([]);
 
   useEffect(() => {
+    const invoiceNo = generateInvoiceNumber();
     const newData = products.map((item: any) => {
       const { _id, name, sku, count, category, cp, sp, image, note, totalAddedStock, availableStock, colors, sizes, productId, createdAt, updatedAt, __v, ...rest } = item;
 
@@ -85,6 +86,7 @@ export default function Cart({ refetch }: any) {
         sp: sp,
         quantity: count,
         totalAmount: sp * count,
+        invoiceNo: invoiceNo,
       };
     });
 
@@ -99,6 +101,9 @@ export default function Cart({ refetch }: any) {
   };
 
   const [readModeOnly, setReadModeOnly] = useState(false);
+
+  console.log(dataToSend);
+  console.log(products);
 
   // Create Sale
   const [saleHappenedTime, setSaleHappenedTime] = useState<any>();
@@ -126,6 +131,16 @@ export default function Cart({ refetch }: any) {
       return updatedProducts;
     });
   };
+
+  const removeProduct = (indexToRemove: number) => {
+    setProducts((prevProducts) => {
+      const updatedProducts = [...prevProducts];
+      updatedProducts.splice(indexToRemove, 1);
+      return updatedProducts;
+    });
+  };
+
+  const [isPrinted, setisPrinted] = useState(false);
 
   return (
     <>
@@ -184,13 +199,20 @@ export default function Cart({ refetch }: any) {
                     <TableCell>{item.sp}</TableCell>
                     <TableCell>
                       {/* Input field to increase/decrease count */}
-                      <Input
-                        className=" w-16 py-0 px-1 h-7 "
-                        type="number"
-                        value={item.count}
-                        disabled={readModeOnly}
-                        onChange={(e) => handleCountChange(index, parseInt(e.target.value))}
-                      />
+                      <div className=" flex items-center gap-1">
+                        <Input
+                          className=" w-16 py-0 px-1 h-7 "
+                          type="number"
+                          value={item.count}
+                          disabled={readModeOnly}
+                          onChange={(e) => handleCountChange(index, parseInt(e.target.value))}
+                        />
+                        <X
+                          className=" cursor-pointer"
+                          size={16}
+                          onClick={() => removeProduct(index)}
+                        />
+                      </div>
                     </TableCell>
                     <TableCell className="text-right">{item.sp * item.count}</TableCell>
                   </TableRow>
@@ -275,7 +297,10 @@ export default function Cart({ refetch }: any) {
                     <DialogTrigger
                       asChild
                       className=" mx-4">
-                      <Button variant="outline">
+                      <Button
+                        disabled={isPrinted}
+                        variant="outline"
+                        onClick={() => setisPrinted(true)}>
                         <Printer size={18} />
                       </Button>
                     </DialogTrigger>
@@ -360,6 +385,29 @@ export default function Cart({ refetch }: any) {
     </>
   );
 }
+
+function generateInvoiceNumber() {
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const numbers = "0123456789";
+
+  let invoiceNumber = "";
+
+  // Add fixed letters to the invoice number
+  for (let i = 0; i < 3; i++) {
+    invoiceNumber += letters.charAt(Math.floor(Math.random() * letters.length));
+  }
+
+  // Add random numbers to the invoice number
+  for (let i = 0; i < 4; i++) {
+    invoiceNumber += numbers.charAt(Math.floor(Math.random() * numbers.length));
+  }
+
+  return invoiceNumber;
+}
+
+// Example usage
+const invoiceNumber = generateInvoiceNumber();
+console.log(invoiceNumber); // Output: 'ABC1234'
 
 // "use client";
 // import * as React from "react";

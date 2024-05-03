@@ -4,10 +4,11 @@ import { findAndUpdateBranchInventory } from "../service/branchInventory.service
 import BranchInventoryModel from "../models/branchInventory.model";
 import { findAndUpdateProduct } from "../service/product.service";
 import { CreateReturnToHeadquarterInput } from "../schema/returnToHeadquarter.schema";
-import { createReturnToHeadquarter } from "../service/returnToHeadquarter.service";
+import { createReturnToHeadquarter, findAllReturnHistory } from "../service/returnToHeadquarter.service";
 import { deleteDistribute } from "../service/distribute.service";
 import DistributeModel from "../models/distribute.model";
 import SaleModel from "../models/sale.model";
+import ReturnModel from "../models/return.model";
 
 var colors = require("colors");
 
@@ -65,6 +66,9 @@ export async function resetDatabaseAfter3MonthHandler(req: any, res: Response, n
       branch: branchId,
     });
 
+
+
+
     // Replace previousStock with totalStock for each document in BranchInventoryModel
     const branchInventories = await BranchInventoryModel.find({
       branch: branchId,
@@ -79,6 +83,21 @@ export async function resetDatabaseAfter3MonthHandler(req: any, res: Response, n
       status: "success",
       msg: "Database reset success",
       data: {},
+    });
+  } catch (error: any) {
+    console.error(colors.red("msg:", error.message));
+    next(new AppError("Internal server error", 500));
+  }
+}
+
+export async function getAllReturnHistory(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
+  try {
+    const queryParameters = req.query;
+    const results = await findAllReturnHistory(queryParameters);
+    return res.json({
+      status: "success",
+      msg: "Get all return history success",
+      data: results,
     });
   } catch (error: any) {
     console.error(colors.red("msg:", error.message));

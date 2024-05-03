@@ -131,7 +131,7 @@ export default function Page() {
       header: "Total Revenue (Rs)",
       cell: ({ row }: any) => {
         const monthData = monthlyDatas.find((item: any) => item.month === row.getValue("month"));
-        const totalAmount = monthData ? monthData.sales.reduce((acc: number, sale: any) => acc + sale.totalAmount, 0) : 0;
+        const totalAmount = monthData ? monthData.sales.reduce((acc: number, sale: any) => acc + sale.totalAmountAfterReturn, 0) : 0;
         return <div>{totalAmount.toLocaleString("en-IN")}</div>;
       },
     },
@@ -160,7 +160,7 @@ export default function Page() {
       header: "Total Profit (Rs)",
       cell: ({ row }: any) => {
         const monthData = monthlyDatas.find((item: any) => item.month === row.getValue("month"));
-        const totalProfit = monthData ? monthData.sales.reduce((acc: number, sale: any) => acc + (sale.sp - sale.cp) * sale.quantity, 0) : 0;
+        const totalProfit = monthData ? monthData.sales.reduce((acc: number, sale: any) => acc + (sale.sp - sale.cp) * sale.quantityAfterReturn, 0) : 0;
         return <div>{totalProfit.toLocaleString("en-IN")}</div>;
       },
     },

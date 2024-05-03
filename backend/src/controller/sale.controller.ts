@@ -5,6 +5,7 @@ import { findSale, createSale, findAllSale, findAndUpdateSale, deleteSale } from
 import BranchInventoryModel from "../models/branchInventory.model";
 import { findAndUpdateBranchInventory } from "../service/branchInventory.service";
 import SaleModel from "../models/sale.model";
+import ReturnModel from "../models/return.model";
 var colors = require("colors");
 
 export async function createSaleHandler(req: Request<{}, {}, CreateSaleInput["body"]>, res: Response, next: NextFunction) {
@@ -130,10 +131,56 @@ export async function getAllSaleByMonthHandler(req: any, res: Response, next: Ne
 
     // Filter sales by branchId
     const branchSales = await SaleModel.find({ branch: branchId });
+    // console.log(branchSales);
+
+    // // Adjust sales considering returnedQuantity
+    // const adjustedSales = branchSales.map((sale:any) => {
+    //   const totalQuantity = sale.quantity - sale.returnedQuantity;
+    //   return { ...sale, quantity: totalQuantity };
+    // });
+
+    // // console.log(adjustedSales,"adjustedSales")
+    // const adjustedSales=branchSales.map((sale:any)=>{
+    //   // const totalQuantity=sale.quantity-sale.returnedQuantity;
+    //   // return {...sale,quantity:totalQuantity}
+    //   const quantityAfterReturn = sale.quantity - sale.returnedQuantity;
+    //   console.log(quantityAfterReturn,"quantityAfterReturn")
+    //   return { ...sale, quantityAfterReturn: quantityAfterReturn };
+    // })
+
+    // console.log(adjustedSales,"adjustedSales")
+
+    const adjustedSales = branchSales.map((sale: any) => {
+      const quantityAfterReturn = sale.quantity - sale.returnedQuantity;
+      return {
+        _id: sale._id,
+        branch: sale.branch,
+        product: sale.product,
+        quantity: sale.quantity,
+        quantityAfterReturn: sale.quantity - sale.returnedQuantity,
+        cp: sale.cp,
+        sp: sale.sp,
+        totalAmount: sale.totalAmount,
+        // returnedAmount: sale.sp * quantityAfterReturn,
+        totalAmountAfterReturn: sale.totalAmount - (sale.sp * sale.returnedQuantity),
+        memberName: sale.memberName,
+        memberPhone: sale.memberPhone,
+        saleId: sale.saleId,
+        createdAt: sale.createdAt,
+        updatedAt: sale.updatedAt,
+        __v: sale.__v,
+      };
+    });
+
+    console.log(adjustedSales, "adjustedSales");
 
     // Group sales by month
-    const salesByMonth = groupSalesByMonth(branchSales);
+    // const salesByMonth = groupSalesByMonth(branchSales);
+    const salesByMonth = groupSalesByMonth(adjustedSales);
     console.log(salesByMonth);
+
+    // const salesByMonthAfterReturnCalculation = groupSalesByMonth(branchSales);
+    // console.log(salesByMonth);
 
     // Convert object to array
     const salesByMonthArray = Object.entries(salesByMonth).map(([key, value]) => ({ month: key, sales: value }));
@@ -264,7 +311,6 @@ export async function deleteSalesByMonthHandler(req: any, res: Response, next: N
     const year = parseInt(date.split("-")[0]);
     const month = parseInt(date.split("-")[1]);
 
-
     const result = await SaleModel.deleteMany({
       branch: branchId,
       $expr: {
@@ -272,15 +318,23 @@ export async function deleteSalesByMonthHandler(req: any, res: Response, next: N
       },
     });
 
-      // Replace previousStock with totalStock for each document in BranchInventoryModel
-      const branchInventories = await BranchInventoryModel.find({
-        branch: branchId,
-      });
-      for (const inventory of branchInventories) {
-        inventory.previousStock = inventory.totalStock;
-        await inventory.save();
-      }
-      console.log(branchInventories);
+
+    const result1 = await ReturnModel.deleteMany({
+      branch: branchId,
+      $expr: {
+        $and: [{ $eq: [{ $year: "$createdAt" }, year] }, { $eq: [{ $month: "$createdAt" }, month] }],
+      },
+    });
+
+    // Replace previousStock with totalStock for each document in BranchInventoryModel
+    const branchInventories = await BranchInventoryModel.find({
+      branch: branchId,
+    });
+    for (const inventory of branchInventories) {
+      inventory.previousStock = inventory.totalStock;
+      await inventory.save();
+    }
+    console.log(branchInventories);
 
     return res.json({
       status: "success",
@@ -305,15 +359,46 @@ export async function getSalesByBranchAndDateHandler(req: any, res: Response, ne
     const sales = await SaleModel.find({
       branch: branchId,
       createdAt: { $gte: startDate, $lte: endDate },
-    }).populate({
-      path: "product",
-      select: "name image cp sp ",
-    });
+    })
+      .populate({
+        path: "product",
+        select: "name image cp sp ",
+      })
+      .sort({ createdAt: -1 });
+
+
+      const adjustedSales = sales.map((sale: any) => {
+        const quantityAfterReturn = sale.quantity - sale.returnedQuantity;
+        return {
+          _id: sale._id,
+          branch: sale.branch,
+          product: sale.product,
+          quantity: sale.quantity,
+          quantityAfterReturn: sale.quantity - sale.returnedQuantity,
+          cp: sale.cp,
+          sp: sale.sp,
+          totalAmount: sale.totalAmount,
+          returnedQuantity: sale.returnedQuantity,
+          // returnedAmount: sale.sp * quantityAfterReturn,
+          totalAmountAfterReturn: sale.totalAmount - (sale.sp * sale.returnedQuantity),
+          memberName: sale.memberName,
+          memberPhone: sale.memberPhone,
+          saleId: sale.saleId,
+          createdAt: sale.createdAt,
+          updatedAt: sale.updatedAt,
+          __v: sale.__v,
+        };
+      });
+  
+      console.log(adjustedSales, "adjustedSales");
+
+
+
 
     return res.json({
       status: "success",
       msg: "Sales fetched successfully",
-      data: sales,
+      data: adjustedSales,
     });
   } catch (error: any) {
     console.error("msg:", error.message);

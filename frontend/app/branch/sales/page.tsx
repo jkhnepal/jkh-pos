@@ -126,11 +126,11 @@ export default function Page() {
     },
 
 
-    // {
-    //   accessorKey: "returnedQuantity",
-    //   header: "Returned Quantity",
-    //   cell: ({ row }: any) => <div>{row.getValue("returnedQuantity")}</div>,
-    // },
+    {
+      accessorKey: "returnedQuantity",
+      header: "Returned Quantity",
+      cell: ({ row }: any) => <div>{row.getValue("returnedQuantity")}</div>,
+    },
 
     {
       accessorKey: "product",
@@ -203,9 +203,9 @@ export default function Page() {
 
               <DropdownMenuSeparator />
 
-              {/* <Link href={`/branch/sales/return/${item.saleId}`}>
+              <Link href={`/branch/sales/return/${item.saleId}`}>
                 <DropdownMenuItem>Return</DropdownMenuItem>
-              </Link> */}
+              </Link>
 
               <Link href={`/branch/sales/view/${item.saleId}`}>
                 <DropdownMenuItem>View detail</DropdownMenuItem>

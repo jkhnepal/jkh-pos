@@ -62,7 +62,7 @@ export default function Page({}: Props) {
             <Label>Member name</Label>
             <Input
               readOnly
-              value={returnItem.member.name}
+              value={returnItem.memberName}
             />
           </div>
 
@@ -70,7 +70,7 @@ export default function Page({}: Props) {
             <Label>Member Phone number</Label>
             <Input
               readOnly
-              value={returnItem.member.phone}
+              value={returnItem.memberPhone}
             />
           </div>
 
