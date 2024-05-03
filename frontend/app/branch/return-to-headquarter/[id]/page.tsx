@@ -6,15 +6,11 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { useGetAllDistributeQuery, useGetDistributeQuery } from "@/lib/features/distributeSlice";
-// Breadcumb
+import { useGetAllDistributeQuery } from "@/lib/features/distributeSlice";
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { useCreateReturnMutation } from "@/lib/features/returnSlice";
 import { useParams, useRouter } from "next/navigation";
-import { useGetSaleQuery } from "@/lib/features/saleSlice";
-import { useGetBranchInventoryByProductQuery, useGetBranchInventoryQuery } from "@/lib/features/branchInventorySlice";
-import { useGetProductQuery } from "@/lib/features/product.sclice";
+import { useGetBranchInventoryQuery } from "@/lib/features/branchInventorySlice";
 import { useCreateReturnToHeadquarterMutation } from "@/lib/features/returnToHeadquarterSlice";
 
 const formSchema = z.object({
@@ -61,7 +57,7 @@ export default function Page() {
     const res: any = await createReturnToHeadquarter(dataToBeSend);
     toast.success(res.data.msg);
     refetchBranchInventory();
-    // router.push("/branch/sales");
+    router.push("/branch");
   };
 
   return (

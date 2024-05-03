@@ -320,20 +320,7 @@ export default function Page() {
 
   return (
     <div className="w-full">
-      <Breadcrumb className=" mb-8">
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator>
-            <SlashIcon />
-          </BreadcrumbSeparator>
-
-          <BreadcrumbItem>
-            <BreadcrumbPage>Products</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>{" "}
+      
       <Breadcrumb className=" mb-8">
         <BreadcrumbList>
           <BreadcrumbItem>

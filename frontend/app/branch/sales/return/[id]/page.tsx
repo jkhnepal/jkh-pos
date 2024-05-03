@@ -41,6 +41,7 @@ export default function Page() {
 
   const { data: saleData, refetch: refetchSale } = useGetSaleQuery(params.id);
   const sale = saleData?.data;
+  console.log(sale)
 
   // To be return quantity
   const [quantity, setQuantity] = React.useState<number>(1);
@@ -48,7 +49,7 @@ export default function Page() {
   const [createReturn] = useCreateReturnMutation();
   const dataToBeSend = {
     branch: sale?.branch._id,
-    member: sale?.member._id,
+    memberPhone: sale?.memberPhone,
     sale: sale?._id,
     quantity: quantity,
   };

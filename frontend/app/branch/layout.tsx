@@ -1,5 +1,5 @@
 "use client";
-import { BarChartBig, LayoutDashboard, LayoutList, LogOut, Menu, TrendingUp } from "lucide-react";
+import { BarChartBig, CornerDownLeft, LayoutDashboard, LayoutList, LogOut, Menu, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -150,11 +150,11 @@ const navItems = [
   //   href: "/branch/members",
   // },
 
-  // {
-  //   name: "Sales",
-  //   icon: <TrendingUp size={18} />,
-  //   href: "/branch/sales",
-  // },
+  {
+    name: "Sales",
+    icon: <TrendingUp size={18} />,
+    href: "/branch/sales",
+  },
 
   {
     name: "Sales By Month",
@@ -162,11 +162,11 @@ const navItems = [
     href: "/branch/sales-by-month",
   },
 
-  // {
-  //   name: "Returns",
-  //   icon: <CornerDownLeft size={18} />,
-  //   href: "/branch/returns",
-  // },
+  {
+    name: "Returns",
+    icon: <CornerDownLeft size={18} />,
+    href: "/branch/returns",
+  },
 
   // {
   //   name: "Rewards",

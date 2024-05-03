@@ -1,25 +1,23 @@
 "use client";
 import * as React from "react";
 import { ColumnDef, ColumnFiltersState, SortingState, VisibilityState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
-import { ArrowDown01, ArrowDown10, ChevronDown, MoreHorizontal } from "lucide-react";
+import { ArrowDown01, ArrowDown10, ArrowUpDown, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Link from "next/link";
-import { useGetAllSaleQuery } from "@/lib/features/saleSlice";
+import { toast } from "sonner";
+import { useDeleteMemberMutation } from "@/lib/features/memberSlice";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
-import * as Dialog from "@radix-ui/react-dialog";
-// Breadcumb
+import { useDebounce } from "use-debounce";
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
-import { useDebounce } from "use-debounce";
+import { useGetAllHistoryQuery } from "@/lib/features/returnToHeadquarterSlice";
+import * as Dialog from "@radix-ui/react-dialog";
 import moment from "moment";
 import Image from "next/image";
-import { useParams } from "next/navigation";
-import axios from "axios";
 
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -27,58 +25,37 @@ export default function Page() {
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const [previewImage, setpreviewImage] = React.useState<string>("");
-  console.log(previewImage);
-
-  const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
-  const branch_id = currentUser?.data.branch._id;
-
   const [searchName, setSearchName] = React.useState<string>("");
   const [debounceValue] = useDebounce(searchName, 1000);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [sort, setSort] = React.useState("latest");
   const itemsPerPage = 10;
 
-
-  const params=useParams()
-  console.log(params.date)
-
-
-  
-  const [sales, setSales] = React.useState<any>();
-  React.useEffect(() => {
-    const fetch = async () => {
-      try {
-        if (branch_id) {
-          const res = await axios.get(`${process.env.NEXT_PUBLIC_URL_API}/sales/get-sales-by-branch-and-date/${branch_id}/${params?.date}`);
-          setSales(res.data.data);
-
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetch();
-  }, [branch_id, params?.date]);
-
-  console.log(sales)
-  
-  
-  
-  // Add branch_id to the dependency array
-
-
-
-
-
-
-
-  const { data: salesOfABranch, isLoading: isFetching } = useGetAllSaleQuery({ branch: branch_id, sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
-
-  let totalItem: number = salesOfABranch?.data.count;
+  const { data: members, isLoading: isFetching, refetch } = useGetAllHistoryQuery({});
+  console.log(members);
+  let totalItem: number = members?.data.count;
+  const pageCount = Math.ceil(totalItem / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
 
-  console.log(salesOfABranch?.data.results)
+  const [deleteMember, { error: deleteError, isLoading: isDeleting }] = useDeleteMemberMutation();
+  const handleDelete = async (id: string) => {
+    const res: any = await deleteMember(id);
+    if (res.data) {
+      toast.success(res.data.msg);
+      refetch();
+    }
+  };
+
+  if (deleteError) {
+    if ("status" in deleteError) {
+      const errMsg = "error" in deleteError ? deleteError.error : JSON.stringify(deleteError.data);
+      const errorMsg = JSON.parse(errMsg).msg;
+      toast.error(errorMsg);
+    } else {
+      const errorMsg = deleteError.message;
+      toast.error(errorMsg);
+    }
+  }
 
   const goToPreviousPage = () => {
     setCurrentPage((prevPage) => prevPage - 1);
@@ -87,6 +64,10 @@ export default function Page() {
   const goToNextPage = () => {
     setCurrentPage((prevPage) => prevPage + 1);
   };
+
+  const [previewImage, setpreviewImage] = React.useState<string>("");
+  console.log(previewImage);
+
 
   const columns: ColumnDef<any>[] = [
     {
@@ -116,153 +97,97 @@ export default function Page() {
     },
 
     {
-      accessorKey: "product",
-      header: "Product Name",
-      cell: ({ row }: any) => <div>{row.getValue("product")?.name}</div>,
+      accessorKey: "branch",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+            Branch Name
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }: any) => <div>{row.getValue("branch")?.name}</div>,
     },
 
-    {
-      accessorKey: "product",
-      header: "CP",
-      cell: ({ row }: any) => <div>{row.getValue("product")?.cp}</div>,
-    },
-
-
-    {
-      accessorKey: "product",
-      header: "SP",
-      cell: ({ row }: any) => <div>{row.getValue("product")?.sp}</div>,
-    },
-
-
-
-    {
-      accessorKey: "memberName",
-      header: "Member Name",
-      cell: ({ row }: any) => <div>{row.getValue("memberName")}</div>,
-    },
-
-    {
-      accessorKey: "memberPhone",
-      header: "Member Phone",
-      cell: ({ row }: any) => <div>{row.getValue("memberPhone")}</div>,
-    },
-
-    {
-      accessorKey: "quantity",
-      header: "Sold  Quantity",
-      cell: ({ row }: any) => <div>{row.getValue("quantity")}</div>,
-    },
-
-    
     {
       accessorKey: "returnedQuantity",
       header: "Returned Quantity",
       cell: ({ row }: any) => <div>{row.getValue("returnedQuantity")}</div>,
     },
 
-   
-
     {
-      accessorKey: "totalAmountAfterReturn",
-      header: "Total Amount",
-      cell: ({ row }: any) => <div>{row.getValue("totalAmountAfterReturn")}</div>,
+      accessorKey: "product",
+      header: "Product Name",
+      cell: ({ row }: any) => <div>{row.getValue("product").name}</div>,
     },
 
 
-    // {
-    //   accessorKey: "returnedQuantity",
-    //   header: "Returned Quantity",
-    //   cell: ({ row }: any) => <div>{row.getValue("returnedQuantity")}</div>,
-    // },
 
     {
       accessorKey: "product",
-      header: "Image",
-      cell: ({ row }:any) => {
-        const image:any = row.getValue("product")?.image;
-
-        return (
-          <div>
-            {image && (
-              <Dialog.Root>
-                <Dialog.Trigger
-                  onClick={() => setpreviewImage(image)}
-                  className=" text-sm text-start  hover:bg-primary-foreground w-full">
-                  <Image
-                    src={image}
-                    alt="Branch Image"
-                    width={40}
-                    height={40}
-                    className=" border rounded-md"
-                  />
-                </Dialog.Trigger>
-                <Dialog.Portal>
-                  <Dialog.Overlay className="fixed inset-0 w-full h-full bg-black opacity-40" />
-                  <Dialog.Content className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] px-4 w-full max-w-lg">
-                    {previewImage && (
-                      <Image
-                        src={previewImage}
-                        alt="Branch Image"
-                        width={400}
-                        height={400}
-                        className="  rounded-md"
-                      />
-                    )}
-                  </Dialog.Content>
-                </Dialog.Portal>
-              </Dialog.Root>
-            )}
-          </div>
-        );
-      },
+      header: "Product CP",
+      cell: ({ row }: any) => <div>{row.getValue("product").cp}</div>,
     },
+
+    {
+      accessorKey: "product",
+      header: "Product SP",
+      cell: ({ row }: any) => <div>{row.getValue("product").sp}</div>,
+    },
+
+    {
+        accessorKey: "product",
+        header: "Image",
+        cell: ({ row }:any) => {
+          const image: string = row.getValue("product").image as string;
+          return (
+            <div>
+              {image && (
+                <Dialog.Root>
+                  <Dialog.Trigger
+                    onClick={() => setpreviewImage(image)}
+                    className=" text-sm text-start  hover:bg-primary-foreground w-full">
+                    <Image
+                      src={image}
+                      alt="Branch Image"
+                      width={35}
+                      height={35}
+                      className=" border rounded-md "
+                    />
+                  </Dialog.Trigger>
+                  <Dialog.Portal>
+                    <Dialog.Overlay className="fixed inset-0 w-full h-full bg-black opacity-40" />
+                    <Dialog.Content className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] px-4 w-full max-w-lg">
+                      {previewImage && (
+                        <Image
+                          src={previewImage}
+                          alt="Branch Image"
+                          width={400}
+                          height={400}
+                          className="  rounded-md"
+                        />
+                      )}
+                    </Dialog.Content>
+                  </Dialog.Portal>
+                </Dialog.Root>
+              )}
+            </div>
+          );
+        },
+      },
 
 
     {
       accessorKey: "createdAt",
-      header: "Sold Date",
-      cell: ({ row }: any) => <div>{moment(row.getValue("createdAt")).format('MMMM Do YYYY, h:mm:ss a')}</div>,
+      header: "Returned Date",
+      cell: ({ row }: any) => <div> {moment(row.getValue("createdAt")).format("MMMM Do YYYY, h:mm:ss a")} </div>,
     },
-
-    // {
-    //   id: "actions",
-    //   header: "Action",
-    //   enableHiding: false,
-    //   cell: ({ row }) => {
-    //     const item = row.original;
-
-    //     return (
-    //       <DropdownMenu>
-    //         <DropdownMenuTrigger asChild>
-    //           <Button
-    //             variant="ghost"
-    //             className="h-8 w-8 p-0">
-    //             <span className="sr-only">Open menu</span>
-    //             <MoreHorizontal className="h-4 w-4" />
-    //           </Button>
-    //         </DropdownMenuTrigger>
-    //         <DropdownMenuContent align="end">
-    //           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-
-    //           <DropdownMenuSeparator />
-
-    //           {/* <Link href={`/branch/sales/return/${item.saleId}`}>
-    //             <DropdownMenuItem>Return</DropdownMenuItem>
-    //           </Link> */}
-
-    //           {/* <Link href={`/branch/sales/view/${item.saleId}`}>
-    //             <DropdownMenuItem>View detail</DropdownMenuItem>
-    //           </Link> */}
-    //         </DropdownMenuContent>
-    //       </DropdownMenu>
-    //     );
-    //   },
-    // },
   ];
 
   const table = useReactTable({
-    data: sales && sales || [],
+    data: members?.data.results || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -292,15 +217,16 @@ export default function Page() {
   return (
     <div className="w-full">
       <Breadcumb />
-      <div className="flex justify-between items-center py-4">
-        <Input
+      <div className="flex justify-end items-center py-4 -mt-8">
+        {/* <Input
           placeholder="Filter by name ..."
           value={searchName}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
           className="max-w-sm"
-        />
+        /> */}
 
-        <div className=" flex space-x-2">
+        <div className="flex space-x-2">
+         
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -382,7 +308,7 @@ export default function Page() {
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
+          {startIndex} of {totalItem} row(s) selected.
         </div>
 
         <div className="space-x-2">
@@ -408,25 +334,23 @@ export default function Page() {
   );
 }
 
-
-
 function Breadcumb() {
   return (
-  <>
+    <>
       <Breadcrumb className=" mb-8">
-      <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator>
-          <SlashIcon />
-        </BreadcrumbSeparator>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <SlashIcon />
+          </BreadcrumbSeparator>
 
-        <BreadcrumbItem>
-          <BreadcrumbPage>Sales</BreadcrumbPage>
-        </BreadcrumbItem>
-      </BreadcrumbList>
-  </Breadcrumb>
+          <BreadcrumbItem>
+            <BreadcrumbPage>Return by branch histories</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
     </>
   );
 }

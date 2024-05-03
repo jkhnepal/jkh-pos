@@ -31,6 +31,12 @@ const payload = {
       required_error: "sp is required",
     }),
 
+    invoiceNo: string({
+      required_error: "invoice number is required",
+    }),
+
+
+
   }),
 };
 

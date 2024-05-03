@@ -7,7 +7,6 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Link from "next/link";
-import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useDebounce } from "use-debounce";
 import * as Dialog from "@radix-ui/react-dialog";
@@ -135,10 +134,17 @@ export default function Page() {
 
 
     {
-      accessorKey: "member",
-      header: "Member",
-      cell: ({ row }: any) => <div> {row.getValue("member")?.phone}</div>,
+      accessorKey: "memberPhone",
+      header: "Member Phone",
+      cell: ({ row }: any) => <div> {row.getValue("memberPhone")}</div>,
     },
+
+    {
+      accessorKey: "memberName",
+      header: "Member Phone",
+      cell: ({ row }: any) => <div> {row.getValue("memberName")}</div>,
+    },
+
 
     {
       accessorKey: "sale",
@@ -147,10 +153,19 @@ export default function Page() {
     },
 
     {
+      accessorKey: "sale",
+      header: "Sold Quantity",
+      cell: ({ row }: any) => <div>{row.getValue("sale")?.quantity} </div>,
+    },
+
+    
+    {
       accessorKey: "quantity",
       header: "Returned Quantity",
       cell: ({ row }: any) => <div>{row.getValue("quantity")} </div>,
     },
+
+    
 
     {
       accessorKey: "createdAt",
@@ -170,35 +185,7 @@ export default function Page() {
       ),
     },
 
-    {
-      id: "actions",
-      header: "Action",
-      enableHiding: false,
-      cell: ({ row }) => {
-        const item = row.original;
-
-        return (
-          <DropdownMenu>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => {
-                  navigator.clipboard.writeText(item.memberId);
-                  toast.success("Copy success");
-                }}>
-                Copy id
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-
-              <Link href={`/branch/members/edit/${item.memberId}`}>
-                <DropdownMenuItem>View/Edit</DropdownMenuItem>
-              </Link>
-              <DropdownMenuItem className=" text-destructive">Delete</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        );
-      },
-    },
+   
   ];
 
   const table = useReactTable({
@@ -223,13 +210,13 @@ export default function Page() {
   return (
     <div className="w-full">
       <Breadcumb />
-      <div className="flex justify-between items-center py-4">
-        <Input
+      <div className="flex justify-end items-center py-4 -mt-8">
+        {/* <Input
           placeholder="Filter by name ..."
           value={searchName}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
           className="max-w-sm   "
-        />
+        /> */}
 
         <div className="flex space-x-2">
           <DropdownMenu>
@@ -321,15 +308,17 @@ export default function Page() {
           <Button
             variant="outline"
             size="sm"
-            disabled={startIndex === 0}
-            onClick={goToPreviousPage}>
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
             Previous
           </Button>
           <Button
             variant="outline"
             size="sm"
-            disabled={startIndex + itemsPerPage >= totalItem}
-            onClick={goToNextPage}>
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
             Next
           </Button>
         </div>

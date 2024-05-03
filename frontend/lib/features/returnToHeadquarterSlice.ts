@@ -14,6 +14,21 @@ export const returnToHeadquarterApi = createApi({
       }),
     }),
 
+    getAllHistory: builder.query({
+      query: () => {
+        const params = {
+          // page,
+          // limit,
+          // search,
+          // sort,
+        };
+        return {
+          url: "/return-to-headquarter",
+          params: params,
+        };
+      },
+    }),
+
     resetDB: builder.mutation({
       query: (branchId) => ({
         url: `/return-to-headquarter/reset-database-after-3-months/${branchId}`,
@@ -24,4 +39,4 @@ export const returnToHeadquarterApi = createApi({
   }),
 });
 
-export const { useCreateReturnToHeadquarterMutation , useResetDBMutation} = returnToHeadquarterApi;
+export const { useCreateReturnToHeadquarterMutation, useResetDBMutation ,useGetAllHistoryQuery } = returnToHeadquarterApi;

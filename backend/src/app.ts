@@ -16,7 +16,7 @@ import authRoute from "../src/routes/auth.route";
 import headquarterInventoryRoute from "../src/routes/headquarterInventory.route";
 import branchInventoryRoute from "../src/routes/branchInventory.route";
 import statRoute from "../src/routes/stat.route";
-// import returnRoute from "../src/routes/return.route";
+import returnRoute from "../src/routes/return.route";
 // import pointClaimRoute from "../src/routes/pointClaim.route";
 
 import returnToHeadquarterRoute from "../src/routes/returnToHeadquarter.route";
@@ -54,7 +54,7 @@ app.use("/api/auth", authRoute);
 
 app.use("/api/headquarter-inventories", headquarterInventoryRoute);
 app.use("/api/branch-inventories", branchInventoryRoute);
-// app.use("/api/returns", returnRoute);
+app.use("/api/returns", returnRoute);
 app.use("/api/stats", statRoute);
 // app.use("/api/point-claims", pointClaimRoute);
 app.use("/api/return-to-headquarter", returnToHeadquarterRoute);
