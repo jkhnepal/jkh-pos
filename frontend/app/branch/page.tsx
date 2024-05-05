@@ -129,8 +129,8 @@ export default function Page({}: Props) {
                       </p>
                     </div>
 
-                   <Link href={`/branch/return-to-headquarter/${item.branchInventoryId}`}>
-                   <p>Return to Headquarter</p>
+                   <Link className=" flex justify-end" href={`/branch/return-to-headquarter/${item.branchInventoryId}`}>
+                   <Button variant={"ghost"} className=" mt-4 text-xs bg-zinc-100 h-8 hover:bg-zinc-300  text-zinc-800 ">Return</Button>
                    
                    </Link>
                     
