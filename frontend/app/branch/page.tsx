@@ -38,6 +38,8 @@ export default function Page({}: Props) {
     setCurrentPage((prevPage) => prevPage + 1);
   };
 
+  console.log(branchInventories)
+
   return (
     <>
       <Input

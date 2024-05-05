@@ -8,8 +8,7 @@ export interface BranchInventoryInput {
   product: ProductDocument["_id"];
   previousStock?: number;
   totalStock: number;
-  
-
+  totalReturnedStockToHeadquarter?: number;
 }
 
 export interface BranchInventoryDocument extends BranchInventoryInput, mongoose.Document {
@@ -29,6 +28,9 @@ const branchInventorySchema = new mongoose.Schema(
     product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
     previousStock: { type: Number, default: 0 },
     totalStock: { type: Number, default: 0 },
+    totalReturnedStockToHeadquarter: { type: Number, default: 0 },
+    
+
   },
   {
     timestamps: true,

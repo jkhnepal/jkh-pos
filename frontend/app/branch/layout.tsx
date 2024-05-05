@@ -163,7 +163,7 @@ const navItems = [
   },
 
   {
-    name: "Returns",
+    name: "Returns from customers",
     icon: <CornerDownLeft size={18} />,
     href: "/branch/returns",
   },

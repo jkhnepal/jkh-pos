@@ -14,11 +14,10 @@ import useCloudinaryFileUpload from "@/app/hooks/useCloudinaryFileUpload";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import OptionalLabel from "@/app/custom-components/OptionalLabel";
 import LoaderPre from "@/app/custom-components/LoaderPre";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useGetBranchProfitQuery, useGetBranchStatQuery } from "@/lib/features/statSlice";
-import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+import { useGetBranchStatQuery } from "@/lib/features/statSlice";
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 // Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
@@ -55,19 +54,7 @@ export default function Page() {
   const { data, isFetching } = useGetBranchQuery(branchId);
   const branch = data?.data;
 
-  const { data: profitData } = useGetBranchProfitQuery({ branch: branchId });
-
   const { data: stats } = useGetBranchStatQuery({ branch: branch?._id });
-
-  const totalSalesByMonth = stats?.data.totalSalesByMonth;
-  const totalCpByMonth = stats?.data.totalCpByMonth;
-
-  // Combine totalSalesByMonth and totalCpByMonth arrays into a single array
-  const combinedData = totalSalesByMonth?.map((salesItem: any) => ({
-    _id: salesItem._id,
-    totalSalesOfAMonth: salesItem.totalAmount,
-    totalCpOfAMonth: totalCpByMonth?.find((cpItem: any) => cpItem._id === salesItem._id)?.cp || 0, // Find corresponding cp value for the month
-  }));
 
   const { uploading, handleFileUpload } = useCloudinaryFileUpload();
   const [imageUrl, setImageUrl] = useState<string>("");
@@ -306,36 +293,6 @@ export default function Page() {
           </Card>
         </TabsContent>
 
-        {/* <TabsContent value="sales-report">
-          <Card>
-            <CardHeader>
-              <CardTitle>Sales Reports</CardTitle>
-              <CardDescription>A list of revenue and profit reports of a branch.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Table>
-                <TableCaption>A list of revenue and profit reports of a branch.</TableCaption>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Month</TableHead>
-                    <TableHead>Total Revenue (Rs)</TableHead>
-                    <TableHead className="text-center">Profits (Rs)</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {combinedData?.map((month: any) => (
-                    <TableRow key={month._id}>
-                      <TableCell className="font-medium">{monthNames[month._id - 1]}</TableCell>
-                      <TableCell className="font-medium">{month.totalSalesOfAMonth}</TableCell>
-                      <TableCell className="text-center">{month.totalSalesOfAMonth - month.totalCpOfAMonth}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent> */}
-
         <TabsContent value="inventory">
           <Card>
             <CardHeader>
@@ -408,14 +365,13 @@ export default function Page() {
                   <StatCard
                     title="Total Sales"
                     description="Total sales of a branches till now"
-                    value={`Rs. ${(stats?.data.totalSales | 0 ).toLocaleString("en-IN")}`}
+                    value={`Rs. ${(stats?.data.totalSales | 0).toLocaleString("en-IN")}`}
                     icon={<BarChart4 />}
                   />
+
                   <StatCard
-                    title="Total Profits"
-                    description="Total prodits of a branches till now"
-                    value={`Rs ${(profitData?.totalSales - profitData?.totalCp || 0).toLocaleString("en-IN")}`}
-                    // value={`Rs ${(stats?.data.totalSales | 0 - stats?.data.totalCp).toLocaleString("en-IN")}`}
+                    title=" Total Profit"
+                    value={`Rs ${(stats?.data.totalSales - stats?.data.totalreturnSale - stats?.data.totalCp + stats?.data.totalReturnCp).toLocaleString("en-IN")}`}
                     icon={<LineChart />}
                   />
 
