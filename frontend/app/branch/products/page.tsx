@@ -78,7 +78,6 @@ export default function Page() {
       cell: ({ row }: any) => <div className="capitalize">{row.getValue("product")?.sku}</div>,
     },
 
-
     {
       accessorKey: "product",
       header: "Image",
@@ -122,8 +121,6 @@ export default function Page() {
       },
     },
 
-
-
     {
       accessorKey: "product",
       header: "CP",
@@ -136,7 +133,6 @@ export default function Page() {
       cell: ({ row }: any) => <div className="capitalize">{row.getValue("product")?.sp}</div>,
     },
 
-
     {
       accessorKey: "previousStock",
       header: "Total Stock",
@@ -147,12 +143,16 @@ export default function Page() {
       accessorKey: "previousStock",
       header: "Sold Stock",
       cell: ({ row }) => {
-        const soldStock = row.original.previousStock - row.original.totalStock;
+        const soldStock = row.original.previousStock - row.original.totalStock - row.original.totalReturnedStockToHeadquarter;
         return <div className="capitalize">{soldStock}</div>;
       },
     },
 
-
+    {
+      accessorKey: "totalReturnedStockToHeadquarter",
+      header: "Return to Headquarter",
+      cell: ({ row }) => <div className="capitalize">{row.getValue("totalReturnedStockToHeadquarter")}</div>,
+    },
 
     {
       accessorKey: "totalStock",
@@ -160,14 +160,6 @@ export default function Page() {
       cell: ({ row }) => <div className="capitalize">{row.getValue("totalStock")}</div>,
     },
 
-
- 
-  
-
-
-
- 
-   
     // {
     //   id: "actions",
     //   enableHiding: false,
@@ -195,8 +187,6 @@ export default function Page() {
     //     );
     //   },
     // },
-
-
   ];
 
   const table = useReactTable({

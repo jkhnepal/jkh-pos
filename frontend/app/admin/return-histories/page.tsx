@@ -4,11 +4,7 @@ import { ColumnDef, ColumnFiltersState, SortingState, VisibilityState, flexRende
 import { ArrowDown01, ArrowDown10, ArrowUpDown, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import Link from "next/link";
-import { toast } from "sonner";
-import { useDeleteMemberMutation } from "@/lib/features/memberSlice";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useDebounce } from "use-debounce";
@@ -19,54 +15,40 @@ import * as Dialog from "@radix-ui/react-dialog";
 import moment from "moment";
 import Image from "next/image";
 
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useGetAllBranchQuery } from "@/lib/features/branchSlice";
+
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const [searchName, setSearchName] = React.useState<string>("");
-  const [debounceValue] = useDebounce(searchName, 1000);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [sort, setSort] = React.useState("latest");
   const itemsPerPage = 10;
 
   const { data: members, isLoading: isFetching, refetch } = useGetAllHistoryQuery({});
-  console.log(members);
   let totalItem: number = members?.data.count;
-  const pageCount = Math.ceil(totalItem / itemsPerPage);
+
+  const { data: bran } = useGetAllBranchQuery({ sort: "latest", page: 1, limit: 100, search: "" });
+  const branches = bran?.data.results;
+
   const startIndex = (currentPage - 1) * itemsPerPage;
-
-  const [deleteMember, { error: deleteError, isLoading: isDeleting }] = useDeleteMemberMutation();
-  const handleDelete = async (id: string) => {
-    const res: any = await deleteMember(id);
-    if (res.data) {
-      toast.success(res.data.msg);
-      refetch();
-    }
-  };
-
-  if (deleteError) {
-    if ("status" in deleteError) {
-      const errMsg = "error" in deleteError ? deleteError.error : JSON.stringify(deleteError.data);
-      const errorMsg = JSON.parse(errMsg).msg;
-      toast.error(errorMsg);
-    } else {
-      const errorMsg = deleteError.message;
-      toast.error(errorMsg);
-    }
-  }
-
-  const goToPreviousPage = () => {
-    setCurrentPage((prevPage) => prevPage - 1);
-  };
-
-  const goToNextPage = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
-  };
-
   const [previewImage, setpreviewImage] = React.useState<string>("");
-  console.log(previewImage);
+
+  const returnHistories = members?.data.results;
+
+  const [filteredData, setFilteredData] = React.useState([]);
+  const [selectedBranch, setSelectedBranch] = React.useState<any>("");
+
+  // Effect to update filteredData when returnHistories changes
+  React.useEffect(() => {
+    if (returnHistories) {
+      const filtered = returnHistories.filter((data: any) => data.branch._id === selectedBranch);
+      setFilteredData(filtered);
+    }
+  }, [returnHistories,selectedBranch]);
 
 
   const columns: ColumnDef<any>[] = [
@@ -123,8 +105,6 @@ export default function Page() {
       cell: ({ row }: any) => <div>{row.getValue("product").name}</div>,
     },
 
-
-
     {
       accessorKey: "product",
       header: "Product CP",
@@ -138,46 +118,45 @@ export default function Page() {
     },
 
     {
-        accessorKey: "product",
-        header: "Image",
-        cell: ({ row }:any) => {
-          const image: string = row.getValue("product").image as string;
-          return (
-            <div>
-              {image && (
-                <Dialog.Root>
-                  <Dialog.Trigger
-                    onClick={() => setpreviewImage(image)}
-                    className=" text-sm text-start  hover:bg-primary-foreground w-full">
-                    <Image
-                      src={image}
-                      alt="Branch Image"
-                      width={35}
-                      height={35}
-                      className=" border rounded-md "
-                    />
-                  </Dialog.Trigger>
-                  <Dialog.Portal>
-                    <Dialog.Overlay className="fixed inset-0 w-full h-full bg-black opacity-40" />
-                    <Dialog.Content className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] px-4 w-full max-w-lg">
-                      {previewImage && (
-                        <Image
-                          src={previewImage}
-                          alt="Branch Image"
-                          width={400}
-                          height={400}
-                          className="  rounded-md"
-                        />
-                      )}
-                    </Dialog.Content>
-                  </Dialog.Portal>
-                </Dialog.Root>
-              )}
-            </div>
-          );
-        },
+      accessorKey: "product",
+      header: "Image",
+      cell: ({ row }: any) => {
+        const image: string = row.getValue("product").image as string;
+        return (
+          <div>
+            {image && (
+              <Dialog.Root>
+                <Dialog.Trigger
+                  onClick={() => setpreviewImage(image)}
+                  className=" text-sm text-start  hover:bg-primary-foreground w-full">
+                  <Image
+                    src={image}
+                    alt="Branch Image"
+                    width={35}
+                    height={35}
+                    className=" border rounded-md "
+                  />
+                </Dialog.Trigger>
+                <Dialog.Portal>
+                  <Dialog.Overlay className="fixed inset-0 w-full h-full bg-black opacity-40" />
+                  <Dialog.Content className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] px-4 w-full max-w-lg">
+                    {previewImage && (
+                      <Image
+                        src={previewImage}
+                        alt="Branch Image"
+                        width={400}
+                        height={400}
+                        className="  rounded-md"
+                      />
+                    )}
+                  </Dialog.Content>
+                </Dialog.Portal>
+              </Dialog.Root>
+            )}
+          </div>
+        );
       },
-
+    },
 
     {
       accessorKey: "createdAt",
@@ -187,7 +166,7 @@ export default function Page() {
   ];
 
   const table = useReactTable({
-    data: members?.data.results || [],
+    data: filteredData && filteredData || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -217,7 +196,7 @@ export default function Page() {
   return (
     <div className="w-full">
       <Breadcumb />
-      <div className="flex justify-end items-center py-4 -mt-8">
+      <div className="flex justify-between items-center py-4 ">
         {/* <Input
           placeholder="Filter by name ..."
           value={searchName}
@@ -225,8 +204,28 @@ export default function Page() {
           className="max-w-sm"
         /> */}
 
+        <Select
+          onValueChange={(value) => {
+            setSelectedBranch(value);
+          }}>
+          <SelectTrigger className="w-[280px]">
+            <SelectValue placeholder="Select a branch" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Branches</SelectLabel>
+              {branches?.map((item: any, index: number) => (
+                <SelectItem
+                  key={index}
+                  value={item._id}>
+                  {item.name}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+
         <div className="flex space-x-2">
-         
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -299,7 +298,7 @@ export default function Page() {
                 <TableCell
                   colSpan={columns.length}
                   className="h-24 text-center">
-                  No results.
+                Please select the branch to view the return histories.
                 </TableCell>
               </TableRow>
             )}
@@ -316,16 +315,14 @@ export default function Page() {
             variant="outline"
             size="sm"
             onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
+            disabled={!table.getCanPreviousPage()}>
             Previous
           </Button>
           <Button
             variant="outline"
             size="sm"
             onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
+            disabled={!table.getCanNextPage()}>
             Next
           </Button>
         </div>

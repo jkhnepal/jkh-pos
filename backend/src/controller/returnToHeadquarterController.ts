@@ -25,7 +25,7 @@ export async function createReturnToHeadquarterHandler(req: Request<{}, {}, Crea
 
     let updatedBranchInventory;
     if (branchInventory) {
-      updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, { $inc: { totalStock: -body.returnedQuantity } }, { new: true });
+      updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, { $inc: { totalStock: -body.returnedQuantity, totalReturnedStockToHeadquarter: + body.returnedQuantity } }, { new: true });
     }
 
     return res.status(201).json({
@@ -66,9 +66,6 @@ export async function resetDatabaseAfter3MonthHandler(req: any, res: Response, n
       branch: branchId,
     });
 
-
-
-
     // Replace previousStock with totalStock for each document in BranchInventoryModel
     const branchInventories = await BranchInventoryModel.find({
       branch: branchId,
@@ -92,6 +89,7 @@ export async function resetDatabaseAfter3MonthHandler(req: any, res: Response, n
 
 export async function getAllReturnHistory(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
   try {
+    console.log(req)
     const queryParameters = req.query;
     const results = await findAllReturnHistory(queryParameters);
     return res.json({
