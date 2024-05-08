@@ -45,7 +45,7 @@ export default function Page() {
   // Effect to update filteredData when returnHistories changes
   React.useEffect(() => {
     if (returnHistories) {
-      const filtered = returnHistories.filter((data: any) => data.branch._id === selectedBranch);
+      const filtered = returnHistories.filter((data: any) => data?.branch?._id === selectedBranch);
       setFilteredData(filtered);
     }
   }, [returnHistories,selectedBranch]);
