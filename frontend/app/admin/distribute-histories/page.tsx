@@ -11,11 +11,13 @@ import { useGetAllDistributeQuery } from "@/lib/features/distributeSlice";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
 import moment from "moment";
-import * as Dialog from "@radix-ui/react-dialog";// Breadcumb
+import * as Dialog from "@radix-ui/react-dialog"; // Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useDebounce } from "use-debounce";
 import Image from "next/image";
+import { useGetAllBranchQuery } from "@/lib/features/branchSlice";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -36,7 +38,24 @@ export default function Page() {
   let totalItem = distributes?.data.count;
   const startIndex = (currentPage - 1) * itemsPerPage;
 
+  const { data: bran } = useGetAllBranchQuery({ sort: "latest", page: 1, limit: 100, search: "" });
+  const branches = bran?.data.results;
+
+  const [filteredData, setFilteredData] = React.useState([]);
+  const [selectedBranch, setSelectedBranch] = React.useState<any>("");
+
   console.log(distributes?.data.results);
+  console.log(selectedBranch);
+
+  // Effect to update filteredData when returnHistories changes
+  React.useEffect(() => {
+    if (distributes) {
+      const filtered = distributes?.data?.results?.filter((data: any) => data?.branch?._id === selectedBranch);
+      setFilteredData(filtered);
+    }
+  }, [distributes, selectedBranch]);
+
+  console.log(filteredData)
 
   const goToPreviousPage = () => {
     setCurrentPage((prevPage) => prevPage - 1);
@@ -99,7 +118,6 @@ export default function Page() {
       header: "CP",
       cell: ({ row }: any) => <div>{row.getValue("product")?.cp}</div>,
     },
-
 
     {
       accessorKey: "sp",
@@ -170,12 +188,13 @@ export default function Page() {
     {
       accessorKey: "createdAt",
       header: "Sent Date",
-      cell: ({ row }: any) => <div>{moment(row.getValue("createdAt")).format('MMMM Do YYYY, h:mm:ss a')}</div>,
+      cell: ({ row }: any) => <div>{moment(row.getValue("createdAt")).format("MMMM Do YYYY, h:mm:ss a")}</div>,
     },
   ];
 
   const table = useReactTable({
-    data: distributes?.data.results || [],
+    // data: distributes?.data.results || [],
+    data: (filteredData && filteredData) || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -206,12 +225,33 @@ export default function Page() {
       <Breadcumb />
       <div className="flex justify-between items-center py-4">
         {/* Opacity-0 */}
-        <Input
+        {/* <Input
           placeholder="Filter by name..."
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}
           className="max-w-sm opacity-0"
-        />
+        /> */}
+
+        <Select
+          onValueChange={(value) => {
+            setSelectedBranch(value);
+          }}>
+          <SelectTrigger className="w-[280px]">
+            <SelectValue placeholder="Select a branch" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Branches</SelectLabel>
+              {branches?.map((item: any, index: number) => (
+                <SelectItem
+                  key={index}
+                  value={item._id}>
+                  {item.name}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
 
         <div className="flex  space-x-2">
           <Link href={"/admin/distribute-histories/create"}>
@@ -322,25 +362,23 @@ export default function Page() {
   );
 }
 
-
-
 function Breadcumb() {
   return (
-  <>
+    <>
       <Breadcrumb className=" mb-8">
-      <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator>
-          <SlashIcon />
-        </BreadcrumbSeparator>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <SlashIcon />
+          </BreadcrumbSeparator>
 
-        <BreadcrumbItem>
-          <BreadcrumbPage>Distributes</BreadcrumbPage>
-        </BreadcrumbItem>
-      </BreadcrumbList>
-  </Breadcrumb>
+          <BreadcrumbItem>
+            <BreadcrumbPage>Distributes</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
     </>
   );
 }

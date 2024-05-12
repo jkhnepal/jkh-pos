@@ -26,7 +26,7 @@ export default function Page() {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const [previewImage, setpreviewImage] = React.useState<string>("");
-  console.log(previewImage);
+  // console.log(previewImage);
 
   const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
   const branch_id = currentUser?.data.branch._id;
@@ -37,12 +37,16 @@ export default function Page() {
   const [sort, setSort] = React.useState("latest");
   const itemsPerPage = 10;
 
-  const { data: salesOfABranch, isLoading: isFetching } = useGetAllSaleQuery({ branch: branch_id, sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
+  const { data: salesOfABranch, isLoading: isFetching, refetch } = useGetAllSaleQuery({ branch: branch_id, sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
+
+  React.useEffect(() => {
+    refetch();
+  }, [refetch]);
 
   let totalItem: number = salesOfABranch?.data.count;
   const startIndex = (currentPage - 1) * itemsPerPage;
 
-  console.log(salesOfABranch?.data.results)
+  console.log(salesOfABranch?.data.results);
 
   const goToPreviousPage = () => {
     setCurrentPage((prevPage) => prevPage - 1);
@@ -91,14 +95,11 @@ export default function Page() {
       cell: ({ row }: any) => <div>{row.getValue("product")?.cp}</div>,
     },
 
-
     {
       accessorKey: "product",
       header: "SP",
       cell: ({ row }: any) => <div>{row.getValue("product")?.sp}</div>,
     },
-
-
 
     {
       accessorKey: "memberName",
@@ -112,7 +113,6 @@ export default function Page() {
       cell: ({ row }: any) => <div>{row.getValue("memberPhone")}</div>,
     },
 
-    
     {
       accessorKey: "quantity",
       header: "Sold Quantity",
@@ -125,7 +125,6 @@ export default function Page() {
       cell: ({ row }: any) => <div>{row.getValue("totalAmount")}</div>,
     },
 
-
     {
       accessorKey: "returnedQuantity",
       header: "Returned Quantity",
@@ -135,8 +134,8 @@ export default function Page() {
     {
       accessorKey: "product",
       header: "Image",
-      cell: ({ row }:any) => {
-        const image:any = row.getValue("product")?.image;
+      cell: ({ row }: any) => {
+        const image: any = row.getValue("product")?.image;
 
         return (
           <div>
@@ -174,16 +173,16 @@ export default function Page() {
       },
     },
 
-
     {
       accessorKey: "createdAt",
       header: "Sold Date",
-      cell: ({ row }: any) => <div>{moment(row.getValue("createdAt")).format('MMMM Do YYYY, h:mm:ss a')}</div>,
+      cell: ({ row }: any) => <div>{moment(row.getValue("createdAt")).format("MMMM Do YYYY, h:mm:ss a")}</div>,
     },
 
     {
       id: "actions",
       header: "Action",
+
       enableHiding: false,
       cell: ({ row }) => {
         const item = row.original;
@@ -192,6 +191,7 @@ export default function Page() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
+                disabled={item.quantity === item.returnedQuantity}
                 variant="ghost"
                 className="h-8 w-8 p-0">
                 <span className="sr-only">Open menu</span>
@@ -362,25 +362,23 @@ export default function Page() {
   );
 }
 
-
-
 function Breadcumb() {
   return (
-  <>
+    <>
       <Breadcrumb className=" mb-8">
-      <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator>
-          <SlashIcon />
-        </BreadcrumbSeparator>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <SlashIcon />
+          </BreadcrumbSeparator>
 
-        <BreadcrumbItem>
-          <BreadcrumbPage>Sales</BreadcrumbPage>
-        </BreadcrumbItem>
-      </BreadcrumbList>
-  </Breadcrumb>
+          <BreadcrumbItem>
+            <BreadcrumbPage>Sales</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
     </>
   );
 }

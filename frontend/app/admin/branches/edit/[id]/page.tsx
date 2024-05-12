@@ -44,6 +44,9 @@ const formSchema = z.object({
   }),
 
   image: z.string().optional(),
+  panNo: z.string().optional(),
+  vatNo: z.string().optional(),
+  
 });
 
 export default function Page() {
@@ -78,6 +81,8 @@ export default function Page() {
       phone: 0,
       address: "",
       image: "",
+      panNo: "",
+      vatNo: "",
     },
   });
 
@@ -89,6 +94,9 @@ export default function Page() {
         phone: branch.phone || 0,
         address: branch.address || "",
         image: branch.image || "",
+        panNo: branch.panNo || "",
+        vatNo: branch.vatNo || "",
+
       });
       setImageUrl(branch.image || "");
     }
@@ -230,6 +238,41 @@ export default function Page() {
                       </FormItem>
                     )}
                   />
+
+<FormField
+          control={form.control}
+          name="panNo"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>PAN Number</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder=""
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+
+<FormField
+          control={form.control}
+          name="vatNo"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>VAT No</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder=""
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
                   <div>
                     <FormLabel>Branch Created Date </FormLabel>

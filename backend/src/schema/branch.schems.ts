@@ -26,6 +26,9 @@ const payload = {
     image: string().optional(),
 
     type: string().default("branch"),
+
+    panNo: string().optional(),
+    vatNo: string().optional(),
   }),
 };
 
@@ -50,6 +53,10 @@ const updatePayload = {
     image: string().optional(),
 
     type: string().default("branch"),
+
+    panNo: string().optional(),
+    vatNo: string().optional(),
+    
   }),
 };
 

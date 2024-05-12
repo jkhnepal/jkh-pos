@@ -9,6 +9,8 @@ export interface BranchInput {
   address: string;
   type?: string;
   image?: string;
+  panNo?: string;
+  vatNo?: string;
 }
 
 export interface BranchDocument extends BranchInput, mongoose.Document {
@@ -31,6 +33,8 @@ const branchSchema = new mongoose.Schema(
     address: { type: String, required: true },
     type: { type: String, enum: ["headquarter", "branch"], default: "branch" },
     image: { type: String },
+    panNo: { type: String },
+    vatNo: { type: String },
   },
   {
     timestamps: true,
