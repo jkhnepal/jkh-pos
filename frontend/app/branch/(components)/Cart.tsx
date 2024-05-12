@@ -335,7 +335,7 @@ export default function Cart({ refetch }: any) {
                       asChild
                       className=" mx-4">
                       <Button
-                        // disabled={isPrinted}
+                        disabled={isPrinted}
                         variant="outline"
                         onClick={() => setisPrinted(true)}>
                         <Printer size={18} />
