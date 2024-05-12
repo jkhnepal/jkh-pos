@@ -64,24 +64,30 @@ export default function Page() {
   let totalItem: number = salesOfABranch?.data.count;
   const startIndex = (currentPage - 1) * itemsPerPage;
 
-  
   const handleDelete = async (date: string) => {
-
     try {
-      // const res = await axios.delete(`http://localhost:5010/api/sales/delete-sales-by-month/${branch_id}/${date}`);
       const res = await axios.delete(`${process.env.NEXT_PUBLIC_URL_API}/sales/delete-sales-by-month/${branch_id}/${date}`);
 
-      // const singleBranchInventory = branchInventories?.data?.results.find((item: any) =>
-      //   res1 = await axios.patch(`${process.env.NEXT_PUBLIC_URL_API}/branch-inventories/${item.totalReturnedStockToHeadquarter}`, {
-      //   totalReturnedStockToHeadquarter: 0,
+      // const singleBranchInventory = branchInventories?.data?.results.find(async (item: any) => {
+      //   const res1 = await axios.patch(`${process.env.NEXT_PUBLIC_URL_API}/branch-inventories/${item.branchInventoryId}`, {
+      //     totalReturnedStockToHeadquarter: 0,
+      //   });
       // });
-      // );
 
-      const singleBranchInventory = branchInventories?.data?.results.find(async (item: any) => {
-        const res1 = await axios.patch(`${process.env.NEXT_PUBLIC_URL_API}/branch-inventories/${item.branchInventoryId}`, {
-          totalReturnedStockToHeadquarter: 0,
+      const updateStock = async () => {
+        const patchRequests = branchInventories?.data?.results.map(async (item: any) => {
+          const res1 = await axios.patch(`${process.env.NEXT_PUBLIC_URL_API}/branch-inventories/${item.branchInventoryId}`, {
+            totalReturnedStockToHeadquarter: 0,
+          });
+          return res1; // Return the response if needed
         });
-      });
+
+        // Execute all patch requests concurrently
+        const responses = await Promise.all(patchRequests);
+
+        // Log the responses or handle them as needed
+        console.log(responses);
+      };
 
       console.log(res);
       setrefetch(true);
