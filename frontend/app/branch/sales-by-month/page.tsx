@@ -88,6 +88,7 @@ export default function Page() {
         // Log the responses or handle them as needed
         console.log(responses);
       };
+      updateStock()
 
       console.log(res);
       setrefetch(true);
