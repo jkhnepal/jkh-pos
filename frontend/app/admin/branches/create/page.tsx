@@ -42,6 +42,9 @@ const formSchema = z.object({
   }),
 
   image: z.string().optional(),
+  panNo: z.string().optional(),
+  vatNo: z.string().optional(),
+
 });
 
 export default function Page() {
@@ -60,6 +63,8 @@ export default function Page() {
       address: "",
       password: "",
       image: "",
+      panNo: "",
+      vatNo: "",
     },
   });
 
@@ -214,6 +219,43 @@ export default function Page() {
             </FormItem>
           )}
         />
+
+<FormField
+          control={form.control}
+          name="panNo"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>PAN Number</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder=""
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+
+<FormField
+          control={form.control}
+          name="vatNo"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>VAT No</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder=""
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+
 
         <div className=" flex">
           <Button type="submit"> {isCreating && <LoaderPre />} Submit</Button>

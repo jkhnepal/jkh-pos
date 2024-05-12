@@ -86,28 +86,28 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   });
 });
 
-// Function to create admin if not present
-async function createAdminIfNotPresent() {
-  try {
-    const headquarterExist = await BranchModel.exists({ role: "headquarter" });
-    if (!headquarterExist) {
-      await BranchModel.create({
-        name: "Admin",
-        email: "jackethouse002@gmail.com",
-        phone: "98637474744",
-        password: "$2b$10$M7g9ZydiAb2WRJUq7wHb1.f5ixn4R8s2V5QpXo11u9tn7fh890Vb.",
-        type: "headquarter",
-        address: "kathmandu Nepal",
-      });
-      logger.info("Admin user created successfully.");
-    }
-  } catch (error: any) {
-    logger.error(`Error creating admin user: ${error.message}`);
-  }
-}
+// // Function to create admin if not present
+// async function createAdminIfNotPresent() {
+//   try {
+//     const headquarterExist = await BranchModel.exists({ role: "headquarter" });
+//     if (!headquarterExist) {
+//       await BranchModel.create({
+//         name: "Admin",
+//         email: "jackethouse002@gmail.com",
+//         phone: "98637474744",
+//         password: "$2b$10$M7g9ZydiAb2WRJUq7wHb1.f5ixn4R8s2V5QpXo11u9tn7fh890Vb.",
+//         type: "headquarter",
+//         address: "kathmandu Nepal",
+//       });
+//       logger.info("Admin user created successfully.");
+//     }
+//   } catch (error: any) {
+//     logger.error(`Error creating admin user: ${error.message}`);
+//   }
+// }
 
 app.listen(port, async () => {
   logger.info(`App is running at http://localhost:${port}`);
   await connectDB();
-  await createAdminIfNotPresent(); // Check and create admin user
+  // await createAdminIfNotPresent(); // Check and create admin user
 });

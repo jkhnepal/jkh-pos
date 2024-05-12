@@ -18,7 +18,7 @@ import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useGetBranchQuery, useUpdateBranchMutation } from "@/lib/features/branchSlice";
 import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
-
+import { Button } from "@/components/ui/button";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -84,6 +84,18 @@ export default function Page() {
       toast.error(errorMsg);
     }
   }
+
+  const [currentCashierName, setCurrentCashierName] = useState<any>("");
+  console.log(currentCashierName);
+
+  const saveCashierName = () => {
+    localStorage.setItem("currentCashierName", currentCashierName);
+    toast.success("Cashier name updated successfully");
+  };
+
+  useEffect(() => {
+    localStorage.getItem("currentCashierName") && setCurrentCashierName(localStorage.getItem("currentCashierName"));
+  }, []);
 
   if (isFetching) {
     return (
@@ -210,34 +222,47 @@ export default function Page() {
           </Form>
         </CardContent>
       </Card>
+
+      <Card className=" mt-4 p-4 w-[350px] ">
+        <CardTitle>Cashier Name</CardTitle>
+        <div className=" flex items-center gap-2 mt-2">
+          <Input
+            defaultValue={currentCashierName}
+            onChange={(e: any) => setCurrentCashierName(e.target.value)}
+            type="string"
+            placeholder="Current Cashier name"
+          />
+          <Button onClick={saveCashierName}>Save</Button>
+        </div>
+      </Card>
     </div>
   );
 }
 
 function Breadcumb() {
   return (
-  <>
+    <>
       <Breadcrumb className=" mb-8">
-      <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/branch">Dashboard</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator>
-          <SlashIcon />
-        </BreadcrumbSeparator>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/branch">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <SlashIcon />
+          </BreadcrumbSeparator>
 
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/branch">Branches</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator>
-          <SlashIcon />
-        </BreadcrumbSeparator>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/branch">Branches</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <SlashIcon />
+          </BreadcrumbSeparator>
 
-        <BreadcrumbItem>
-          <BreadcrumbPage>Edit Branch</BreadcrumbPage>
-        </BreadcrumbItem>
-      </BreadcrumbList>
-  </Breadcrumb>
+          <BreadcrumbItem>
+            <BreadcrumbPage>Edit Branch</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
     </>
   );
 }

@@ -67,7 +67,7 @@ export default function Page() {
       <Breadcumb />
       <div className="flex gap-4 items-center w-3/12">
         <Input
-          disabled={sale?.isReturned}
+          disabled={sale?.quantity<=sale?.returnedQuantity}
           type="number"
           placeholder="Quantity"
           onChange={(e) => setQuantity(parseInt(e.target.value))}
