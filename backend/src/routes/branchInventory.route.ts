@@ -9,7 +9,7 @@ const router = express.Router();
 router.post("/", [requireAdmin, validate(createBranchInventorySchema)], createBranchInventoryHandler);
 router.get("/", [validate(getAllBranchInventorySchema)], getAllBranchInventoryHandler);
 router.get("/:branchInventoryId", [validate(getBranchInventorySchema)], getBranchInventoryHandler);
-router.patch("/:branchInventoryId", [requireAdmin, validate(updateBranchInventorySchema)], updateBranchInventoryHandler);
+router.patch("/:branchInventoryId", [ validate(updateBranchInventorySchema)], updateBranchInventoryHandler);
 router.delete("/:branchInventoryId", [requireAdmin, validate(deleteBranchInventorySchema)], deleteBranchInventoryHandler);
 
 export default router;
