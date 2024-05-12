@@ -15,6 +15,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
 import { useDebounce } from "use-debounce";
 import axios from "axios";
+import { useGetAllBranchInventoryQuery } from "@/lib/features/branchInventorySlice";
 
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -28,6 +29,9 @@ export default function Page() {
   const [monthlyDatas, setMonthlyDatas] = React.useState<any>();
 
   const [currentMonth, setCurrentMonth] = React.useState<any>();
+
+  const { data: branchInventories } = useGetAllBranchInventoryQuery({ branch: branch_id });
+  console.log(branchInventories?.data?.results);
 
   const [refetch, setrefetch] = React.useState<boolean>(false);
   React.useEffect(() => {
@@ -60,15 +64,24 @@ export default function Page() {
   let totalItem: number = salesOfABranch?.data.count;
   const startIndex = (currentPage - 1) * itemsPerPage;
 
+  
   const handleDelete = async (date: string) => {
+
     try {
       // const res = await axios.delete(`http://localhost:5010/api/sales/delete-sales-by-month/${branch_id}/${date}`);
       const res = await axios.delete(`${process.env.NEXT_PUBLIC_URL_API}/sales/delete-sales-by-month/${branch_id}/${date}`);
-      
-      const res1 = await axios.patch(`${process.env.NEXT_PUBLIC_URL_API}/branch-inventories/${branch_id}`, {
-        totalReturnedStockToHeadquarter: 0
-    });
-    
+
+      // const singleBranchInventory = branchInventories?.data?.results.find((item: any) =>
+      //   res1 = await axios.patch(`${process.env.NEXT_PUBLIC_URL_API}/branch-inventories/${item.totalReturnedStockToHeadquarter}`, {
+      //   totalReturnedStockToHeadquarter: 0,
+      // });
+      // );
+
+      const singleBranchInventory = branchInventories?.data?.results.find(async (item: any) => {
+        const res1 = await axios.patch(`${process.env.NEXT_PUBLIC_URL_API}/branch-inventories/${item.branchInventoryId}`, {
+          totalReturnedStockToHeadquarter: 0,
+        });
+      });
 
       console.log(res);
       setrefetch(true);
