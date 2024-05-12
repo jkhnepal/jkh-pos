@@ -67,6 +67,10 @@ export default function Page() {
     try {
       // const res = await axios.delete(`http://localhost:5010/api/sales/delete-sales-by-month/${branch_id}/${date}`);
       const res = await axios.delete(`${process.env.NEXT_PUBLIC_URL_API}/sales/delete-sales-by-month/${branch_id}/${date}`);
+      const res1=await axios.patch(`${process.env.NEXT_PUBLIC_URL_API}/branch-inventories/${branch_id},{
+        totalReturnedStockToHeadquarter:0,
+      })
+      }`);
       console.log(res);
       setrefetch(true)
     } catch (error) {
