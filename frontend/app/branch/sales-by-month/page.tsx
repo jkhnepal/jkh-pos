@@ -29,8 +29,6 @@ export default function Page() {
 
   const [currentMonth, setCurrentMonth] = React.useState<any>();
 
-
-
   const [refetch, setrefetch] = React.useState<boolean>(false);
   React.useEffect(() => {
     const fetch = async () => {
@@ -39,15 +37,14 @@ export default function Page() {
           //const res = await axios.get(`http://localhost:5010/api/sales/get-sales-by-months/${branch_id}`);
           const res = await axios.get(`${process.env.NEXT_PUBLIC_URL_API}/sales/get-sales-by-months/${branch_id}`);
           setMonthlyDatas(res?.data?.data);
-          setrefetch(false)
-
+          setrefetch(false);
         }
       } catch (error) {
         console.log(error);
       }
     };
     fetch();
-  }, [branch_id, currentMonth,refetch]); // Add branch_id to the dependency array
+  }, [branch_id, currentMonth, refetch]); // Add branch_id to the dependency array
 
   const [previewImage, setpreviewImage] = React.useState<string>("");
   console.log(previewImage);
@@ -67,12 +64,14 @@ export default function Page() {
     try {
       // const res = await axios.delete(`http://localhost:5010/api/sales/delete-sales-by-month/${branch_id}/${date}`);
       const res = await axios.delete(`${process.env.NEXT_PUBLIC_URL_API}/sales/delete-sales-by-month/${branch_id}/${date}`);
-      const res1=await axios.patch(`${process.env.NEXT_PUBLIC_URL_API}/branch-inventories/${branch_id},{
-        totalReturnedStockToHeadquarter:0,
-      })
-      }`);
+      
+      const res1 = await axios.patch(`${process.env.NEXT_PUBLIC_URL_API}/branch-inventories/${branch_id}`, {
+        totalReturnedStockToHeadquarter: 0
+    });
+    
+
       console.log(res);
-      setrefetch(true)
+      setrefetch(true);
     } catch (error) {
       console.log(error);
     }
@@ -119,13 +118,13 @@ export default function Page() {
       cell: ({ row }: any) => {
         // Parse the month string to get the year and month
         const [year, month] = row.original.month.split("-");
-    
+
         // Create a new Date object with the year and month
         const date = new Date(parseInt(year), parseInt(month) - 1); // Month is zero-based
-    
+
         // Format the date to display the month name
-        const monthName = date.toLocaleString('en-US', { month: 'long' });
-    
+        const monthName = date.toLocaleString("en-US", { month: "long" });
+
         return <div>{`${year} ${monthName}`}</div>;
       },
     },
