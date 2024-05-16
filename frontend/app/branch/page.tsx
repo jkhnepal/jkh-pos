@@ -110,10 +110,10 @@ export default function Page({}: Props) {
 
                         <div className="flex items-center justify-between">
                           <p>
-                            <span className="text-2xl font-bold text-zinc-700/90">Rs : {item.product.sp}</span>
+                            <span className="text-2xl font-bold text-zinc-700/90">Rs : {item.product.sp.toLocaleString("en-IN")}</span>
                           </p>
                         </div>
-                        <p>Available Discount : Rs.{item.product.discountAmount}</p>
+                        <p>Available Discount : Rs.{item.product.discountAmount.toLocaleString("en-IN")}</p>
 
                         <Link
                           className=" flex justify-end"

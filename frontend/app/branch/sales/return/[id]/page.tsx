@@ -35,7 +35,7 @@ export default function Page() {
 
   const { data: saleData, refetch: refetchSale } = useGetSaleQuery(params.id);
   const sale = saleData?.data;
-  console.log(sale);
+  // console.log(sale);
 
   // To be return quantity
   const [quantity, setQuantity] = React.useState<number>(1);
@@ -62,9 +62,11 @@ export default function Page() {
   const handleReturn = async (e: any) => {
     e.preventDefault();
     const res: any = await createReturn(dataToBeSend);
-    toast.success(res?.data?.msg);
-    refetchSale();
-    router.push("/branch/sales");
+    if (res.data) {
+      refetchSale();
+      toast.success(res?.data?.msg);
+      router.push("/branch/sales");
+    }
   };
 
   return (
@@ -78,12 +80,12 @@ export default function Page() {
           onChange={(e) => setQuantity(parseInt(e.target.value))}
         />
         <Button
-          disabled={sale?.isReturned || sale?.quantity < quantity}
+          // disabled={sale?.isReturned || sale?.quantity < quantity}
           onClick={handleReturn}>
           Return{" "}
         </Button>
       </div>
-      {sale?.quantity < quantity && <span className="text-xs text-red-500 font-medium">Cannot return more quantity than bought </span>}
+      {/* {sale?.quantity < quantity && <span className="text-xs text-red-500 font-medium">Cannot return more quantity than bought </span>} */}
     </div>
   );
 }

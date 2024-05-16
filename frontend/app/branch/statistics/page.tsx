@@ -2,7 +2,7 @@
 import { CardTitle, CardHeader, CardContent, Card } from "@/components/ui/card";
 import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
 import { useGetBranchProfitQuery, useGetBranchStatQuery } from "@/lib/features/statSlice";
-import { LineChart, Shapes, Shirt } from "lucide-react";
+import { AreaChart, BarChart3, LineChart, PackageSearch, ScanBarcode, Shapes, Shirt } from "lucide-react";
 import { useEffect } from "react";
 
 export default function Component() {
@@ -43,26 +43,26 @@ export default function Component() {
             title="Total Stock"
             description="Total availabe stocks"
             value={totalStockSum | 0}
-            icon={<LineChart />}
+            icon={<PackageSearch />}
           />
 
           <StatCard
             title=" Total Quantituy Sold  "
             value={(stats.data.totalQuantitySoldByBranch - stats.data.totalReturnedQuantity).toLocaleString("en-IN")}
-            icon={<Shirt />}
+            icon={<ScanBarcode />}
           />
 
           <StatCard
             title=" Total Sale Amount"
-            // value={`Rs ${(profitData.totalSalesAfterDiscount + profitData.totalReturnedDiscountAmount - stats.data.totalreturnSale).toLocaleString("en-IN")}`}
-            value={`Rs ${(profitData.totalSales - profitData.totalDiscountAmount - stats.data.totalreturnSale)}`}
-            icon={<Shirt />}
+            value={`Rs ${(profitData.totalSales - profitData.totalDiscountAmount - stats.data.totalreturnSale).toLocaleString("en-IN")}`}
+
+            icon={<BarChart3 />}
           />
 
           <StatCard
             title=" Total Profit"
             value={`Rs ${(stats?.data.totalSales - stats?.data.totalreturnSale - stats?.data.totalCp + stats?.data.totalReturnCp).toLocaleString("en-IN")}`}
-            icon={<Shirt />}
+            icon={<AreaChart />}
           />
         </>
       )}

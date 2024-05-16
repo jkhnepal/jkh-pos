@@ -8,7 +8,6 @@ export async function createReturnToHeadquarter(input: ReturnToHeadquarterInput)
 
 export async function findAllReturnHistory(filter: FilterQuery<ReturnToHeadquarterDocument> = {}) {
   const count = await ReturnToHeadquarterModel.countDocuments();
-  // const results = await ReturnToHeadquarterModel.find().populate("branch").populate("product").sort({ createdAt: -1 }) .exec();
   const results = await ReturnToHeadquarterModel.find()
     .populate({
       path: "branch",

@@ -10,18 +10,13 @@ import branchRoute from "../src/routes/branch.route";
 import productRoute from "../src/routes/product.route";
 import inventoryRoute from "../src/routes/inventory.route";
 import distributeRoute from "../src/routes/distribute.route";
-// import memberRoute from "../src/routes/member.route";
 import saleRoute from "../src/routes/sale.route";
 import authRoute from "../src/routes/auth.route";
 import headquarterInventoryRoute from "../src/routes/headquarterInventory.route";
 import branchInventoryRoute from "../src/routes/branchInventory.route";
 import statRoute from "../src/routes/stat.route";
 import returnRoute from "../src/routes/return.route";
-// import pointClaimRoute from "../src/routes/pointClaim.route";
-
 import returnToHeadquarterRoute from "../src/routes/returnToHeadquarter.route";
-// import rewardCollectedHistoryRoute from "../src/routes/rewardCollectedHistory.route";
-
 import BranchModel from "./models/branch.model";
 
 const app = express();
@@ -34,12 +29,10 @@ app.use(express.json({ limit: "10kb" }));
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:3001", "https://jkh.webxnep.com", "https://pos-h8ki.vercel.app","https://jackethouse.vercel.app"],
+    origin: ["http://localhost:3000", "http://localhost:3001", "https://jkh.webxnep.com", "https://pos-h8ki.vercel.app", "https://jackethouse.vercel.app"],
     credentials: true,
   })
 );
-
-// https://test.epeakexpedition.com/
 
 // Route
 app.use("/api/users", userRouter);
@@ -48,17 +41,13 @@ app.use("/api/branches", branchRoute);
 app.use("/api/products", productRoute);
 app.use("/api/inventories", inventoryRoute);
 app.use("/api/distributes", distributeRoute);
-// app.use("/api/members", memberRoute);
 app.use("/api/sales", saleRoute);
 app.use("/api/auth", authRoute);
-
 app.use("/api/headquarter-inventories", headquarterInventoryRoute);
 app.use("/api/branch-inventories", branchInventoryRoute);
 app.use("/api/returns", returnRoute);
 app.use("/api/stats", statRoute);
-// app.use("/api/point-claims", pointClaimRoute);
 app.use("/api/return-to-headquarter", returnToHeadquarterRoute);
-// app.use("/api/reward-collected-histories", rewardCollectedHistoryRoute);
 
 // Testing
 app.get("/healthChecker", (req: Request, res: Response, next: NextFunction) => {
@@ -109,5 +98,5 @@ async function createAdminIfNotPresent() {
 app.listen(port, async () => {
   logger.info(`App is running at http://localhost:${port}`);
   await connectDB();
-  await createAdminIfNotPresent(); // Check and create admin user
+  await createAdminIfNotPresent();
 });

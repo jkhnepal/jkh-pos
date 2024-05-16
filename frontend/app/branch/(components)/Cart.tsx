@@ -14,8 +14,6 @@ import { useReactToPrint } from "react-to-print";
 import { Separator } from "@/components/ui/separator";
 import axios from "axios";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import moment from "moment";
 // import { Inter,Andika } from "next/font/google";
 // const inter = Andika({ variants:["regular","700"]});
@@ -57,7 +55,6 @@ export default function Cart({ refetch }: any) {
             setProducts(updatedProducts);
           } else {
             newProduct.count = 1;
-            // newProduct.member = selectedMember_Id;
             setProducts((prevProducts) => [...prevProducts, newProduct]);
           }
           setsku("");
@@ -90,55 +87,28 @@ export default function Cart({ refetch }: any) {
         invoiceNo: invoiceNo,
         discountAmount: discountAmount,
         totalDiscountAmount: discountAmount * count,
-        // totalAmountAfterDiscount: (sp - discountAmount) * count,
       };
     });
 
     setSelectedProducts(newData);
   }, [products, branch_id, totalAmountBeforeReward, memberName, memberPhone]);
 
-  // console.log(selectedProducts);
-
-  // Data to send
   const dataToSend = {
     selectedProducts: selectedProducts,
   };
 
   const [readModeOnly, setReadModeOnly] = useState(false);
 
-  console.log(dataToSend);
-  console.log(products);
-
-  const [grossTotal, setGrossTotal] = useState(0);
-  const [totalDiscount, setTotalDiscount] = useState(0);
-
   const calculateGrossTotal = () => {
     return products?.reduce((total, product) => total + product.sp * product.count, 0);
   };
-  console.log(calculateGrossTotal());
-
   const calculateTotalDiscount = () => {
     return products?.reduce((total, product) => total + product.discountAmount * product.count, 0);
   };
-
-  console.log(calculateTotalDiscount());
-
   const calculateTotalCount = () => {
     return products.reduce((total, product) => total + product.count, 0);
   };
-
-  // const calculateTotals = () => {
-  //   const newGrossTotal = products?.reduce((acc: any, item: any) => acc + item.sp * item.count, 0);
-  //   const newTotalDiscount = products?.reduce((acc: any, item: any) => acc + item.discountAmount * item.count, 0);
-
-  //   setGrossTotal(newGrossTotal);
-  //   setTotalDiscount(newTotalDiscount);
-  // };
-  // console.log(grossTotal, totalDiscount);
-
-  // useEffect(() => {
-  //   calculateTotals();
-  // }, [])
+  const netAmount = calculateGrossTotal() - calculateTotalDiscount();
 
   // Create Sale
   const [saleHappenedTime, setSaleHappenedTime] = useState<any>();
@@ -153,12 +123,10 @@ export default function Cart({ refetch }: any) {
   };
 
   const skuInputRef = useRef<any>(null);
-
   useEffect(() => {
     skuInputRef.current.focus();
   }, []);
 
-  const [amountGivenByCustomber, setamountGivenByCustomber] = useState<any>();
   const handleCountChange = (index: number, newCount: number) => {
     setProducts((prevProducts) => {
       const updatedProducts = [...prevProducts];
@@ -176,7 +144,6 @@ export default function Cart({ refetch }: any) {
   };
 
   const [isPrinted, setisPrinted] = useState(false);
-
   const [currentCashierName, setCurrentCashierName] = useState<any>("");
   useEffect(() => {
     localStorage.getItem("currentCashierName") && setCurrentCashierName(localStorage.getItem("currentCashierName"));
@@ -248,17 +215,18 @@ export default function Cart({ refetch }: any) {
             </Select>
           </div>
 
-          <ScrollArea className="  h-[90vh] w-[500px] rounded-md border   ">
+          <ScrollArea className="  h-[90vh] w-[560px] rounded-md border   ">
             <Table>
               <TableCaption></TableCaption>
 
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[100px]">S.N</TableHead>
+                  <TableHead className="w-[10px]">S.N</TableHead>
                   <TableHead>Name</TableHead>
-                  <TableHead>Price</TableHead>
+                  <TableHead>Price(Rs)</TableHead>
                   <TableHead>Qty</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
+                  <TableHead>Discount(Rs)</TableHead>
+                  <TableHead className="text-right">Amount(Rs)</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -266,9 +234,8 @@ export default function Cart({ refetch }: any) {
                   <TableRow key={index}>
                     <TableCell className="font-medium">{index + 1}.</TableCell>
                     <TableCell>{item.name}</TableCell>
-                    <TableCell>{item.sp}</TableCell>
+                    <TableCell>{item.sp.toLocaleString("en-IN")}</TableCell>
                     <TableCell>
-                      {/* Input field to increase/decrease count */}
                       <div className=" flex items-center gap-1">
                         <Input
                           className=" w-16 py-0 px-1 h-7 "
@@ -284,17 +251,32 @@ export default function Cart({ refetch }: any) {
                         />
                       </div>
                     </TableCell>
-                    <TableCell className="text-right">{item.sp * item.count}</TableCell>
+                    <TableCell className="text-center">
+                      {" "}
+                      {item?.discountAmount}*{item?.count}
+                    </TableCell>
+                    <TableCell className="text-right"> {(item.sp * item.count).toLocaleString("en-IN")}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
 
+             
+
               <TableFooter>
                 <TableRow>
-                  <TableCell colSpan={4}>Total Amount</TableCell>
-                  <TableCell className="text-right">Rs.{totalAmountBeforeReward}</TableCell>
+                  <TableCell colSpan={5}>Net Amount</TableCell>
+                  <TableCell className="text-right">Rs.{netAmount.toLocaleString("en-IN")}</TableCell>
                 </TableRow>
               </TableFooter>
+
+              <TableFooter>
+                <TableRow>
+                  <TableCell colSpan={4}>Calculation</TableCell>
+                  <TableCell className="text-center">Rs.{calculateTotalDiscount().toLocaleString("en-IN")}</TableCell>
+                  <TableCell className="text-right">Rs.{totalAmountBeforeReward.toLocaleString("en-IN")}</TableCell>
+                </TableRow>
+              </TableFooter>
+
             </Table>
 
             {!isSuccess && (
@@ -309,232 +291,183 @@ export default function Cart({ refetch }: any) {
             )}
 
             <div className="mt-4 flex items-center justify-end gap-4 px-4">
-              {/* {isSuccess && (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline">Return Calculator</Button>
-                  </PopoverTrigger>
-                  <PopoverContent className=" w-96">
-                    <div className="grid gap-4">
-                      <div className="space-y-2">
-                        <h4 className="font-medium leading-none">Calculate Return</h4>
-                        <p className="text-sm text-muted-foreground">Calculate your transaction here.</p>
-                      </div>
-                      <div className="grid gap-2">
-                        <div className="grid grid-cols-3 items-center gap-4">
-                          <Label htmlFor="width">Total Amount</Label>
-                          <Input
-                            id="width"
-                            readOnly
-                            className="col-span-2 h-8"
-                          />
-                        </div>
-                        <div className="grid grid-cols-3 items-center gap-4">
-                          <Label htmlFor="maxWidth">Amount Given by customber</Label>
-                          <Input
-                            id="maxWidth"
-                            type=""
-                            className="col-span-2 h-8"
-                            value={amountGivenByCustomber}
-                            autoFocus
-                            onChange={(e) => setamountGivenByCustomber(e.target.value)}
-                          />
-                        </div>
-                        <div className="grid grid-cols-3 items-center gap-4">
-                          <Label htmlFor="height">Return Amount</Label>
-                          <Input
-                            id="height"
-                            value={(amountGivenByCustomber - totalAmountBeforeReward) | 0}
-                            className="col-span-2 h-8"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              )} */}
-
               {isSuccess && (
-              <div className=" flex items-center justify-end gap-4 px-4">
-                <Button
-                  onClick={() => window.location.reload()}
-                  type="button"
-                  className=" p-2 text-xs flex gap-1">
-                  <RefreshCcw size={14} /> New session
-                </Button>
+                <div className=" flex items-center justify-end gap-4 px-4">
+                  <Button
+                    onClick={() => window.location.reload()}
+                    type="button"
+                    className=" p-2 text-xs flex gap-1">
+                    <RefreshCcw size={14} /> New session
+                  </Button>
 
-                <Input
-                  placeholder="Tender Amount"
-                  disabled={isPrinted}
-                  type="number"
-                  value={tender}
-                  
-                  onChange={(e) => setTender(e.target.valueAsNumber)}
-                />
+                  <Input
+                    placeholder="Tender Amount"
+                    disabled={isPrinted}
+                    type="number"
+                    value={tender}
+                    onChange={(e) => setTender(e.target.valueAsNumber)}
+                  />
 
-                <Dialog>
-                  <DialogTrigger
-                    asChild
-                    className=" mx-4">
-                    <Button
-                      disabled={isPrinted}
-                      variant="outline"
-                      onClick={() => setisPrinted(true)}>
-                      <Printer size={18} />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent
-                    ref={componentRef}
-                    className=" p-0 text-gray-600/90 py-8"
-                    // className={inter.className}
-                  >
-                    <div>
-                      <div className=" p-2 text-xs">
-                        <div className=" flex flex-col gap-0.5 items-center uppercase">
-                          <p>JACKET HOUSE ({brabranchInfo.address.split(",")[0]})</p>
-                          <p>{brabranchInfo.address}</p>
-                          {brabranchInfo.panNo && <p>PAN No: {brabranchInfo.panNo}</p>}
-                          {brabranchInfo.vatNo && <p>VAT No: {brabranchInfo.vatNo}</p>}
-                          <p>ABBREVIATED INVOICE</p>
-                        </div>
+                  <Dialog>
+                    <DialogTrigger
+                      asChild
+                      className=" mx-4">
+                      <Button
+                        disabled={isPrinted}
+                        variant="outline"
+                        onClick={() => setisPrinted(true)}>
+                        <Printer size={18} />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent
+                      ref={componentRef}
+                      className=" p-0 text-gray-600/90 py-8"
+                      // className={inter.className}
+                    >
+                      <div>
+                        <div className=" p-2 text-xs">
+                          <div className=" flex flex-col gap-0.5 items-center uppercase">
+                            <p>JACKET HOUSE ({brabranchInfo.address.split(",")[0]})</p>
+                            <p>{brabranchInfo.address}</p>
+                            {brabranchInfo.panNo && <p>PAN No: {brabranchInfo.panNo}</p>}
+                            {brabranchInfo.vatNo && <p>VAT No: {brabranchInfo.vatNo}</p>}
+                            <p>ABBREVIATED INVOICE</p>
+                          </div>
 
-                        <div className=" flex flex-col gap-0.5 mt-6">
-                          <p>
-                            Bill No: <span className=" ml-2">{invoiceNumber}</span>
-                          </p>
-                          <p>Transaction Date: {moment(saleHappenedTime).format("MMMM Do YYYY, h:mm:ss a")}</p>
-                          <p>
-                            Bill To: <span className=" ml-4">{memberName}</span>
-                          </p>
-                          <p>
-                            Phone : <span className=" ml-2">{memberPhone}</span>
-                          </p>
-                          <p>
-                            Payment Mode : <span className=" ml-2">{selectedPaymentMethod}</span>
-                          </p>
-                        </div>
+                          <div className=" flex flex-col gap-0.5 mt-6">
+                            <p>
+                              Bill No: <span className=" ml-2">{invoiceNumber}</span>
+                            </p>
+                            <p>Transaction Date: {moment(saleHappenedTime).format("MMMM Do YYYY, h:mm:ss a")}</p>
+                            <p>
+                              Bill To: <span className=" ml-4">{memberName}</span>
+                            </p>
+                            <p>
+                              Phone : <span className=" ml-2">{memberPhone}</span>
+                            </p>
+                            <p>
+                              Payment Mode : <span className=" ml-2">{selectedPaymentMethod}</span>
+                            </p>
+                          </div>
 
-                        <Separator className="mt-6 border border-dotted" />
+                          <Separator className="mt-6 border border-dotted" />
 
-                        <div className=" flex items-center  text-xs my-2 ">
-                          <p className="w-5/12 ">
-                            {" "}
-                            S.N <span className=" ml-4">Item</span>
-                          </p>
-                          <p className="w-1/12">Qty</p>
-                          <p className="w-2/12">Rate</p>
-                          <p className="w-1/12">Discount(Rs)</p>
-                          <p className="w-3/12 text-end">Amount</p>
-                        </div>
-                        <Separator className="border border-dotted" />
+                          <div className=" flex items-center  text-xs my-2 ">
+                            <p className="w-5/12 ">
+                              {" "}
+                              S.N <span className=" ml-4">Item</span>
+                            </p>
+                            <p className="w-1/12">Qty</p>
+                            <p className="w-2/12">Rate(Rs)</p>
+                            <p className="w-1/12">Discount(Rs)</p>
+                            <p className="w-3/12 text-end">Amount(Rs)</p>
+                          </div>
+                          <Separator className="border border-dotted" />
 
-                        <div className=" flex flex-col gap-2 my-2  ">
-                          {products.length > 0 &&
-                            products.map((item: any, index: number) => (
-                              <p
-                                key={index}
-                                className="flex items-center     ">
-                                <span className="w-5/12   ">
-                                  {" "}
-                                  {index + 1}. <span className=" ml-4">{item?.name} </span>
-                                </span>
-                                <span className=" w-1/12 ">{item?.count}</span>
-                                <span className=" w-2/12  ">{item?.sp}</span>
-                                <span className=" w-1/12  ">{item?.discountAmount}</span>
-                                <span className=" w-3/12 text-end "> {item.sp * item.count - item.discountAmount * item.count}</span>
+                          <div className=" flex flex-col gap-2 my-2  ">
+                            {products.length > 0 &&
+                              products.map((item: any, index: number) => (
+                                <p
+                                  key={index}
+                                  className="flex items-center     ">
+                                  <span className="w-5/12   ">
+                                    {" "}
+                                    {index + 1}. <span className=" ml-4">{item?.name} </span>
+                                  </span>
+                                  <span className=" w-1/12 ">{item?.count}</span>
+                                  <span className=" w-2/12  ">{item?.sp}</span>
+                                  <span className=" w-1/12  ">
+                                    {item?.discountAmount}*{item?.count}{" "}
+                                  </span>
+                                  <span className=" w-3/12 text-end "> {(item.sp * item.count).toLocaleString("en-IN")}</span>
+                                </p>
+                              ))}
+                          </div>
+
+                          <div className=" flex justify-end">
+                            <p className=" w-11/12 md:w-9/12 text-end">
+                              <Separator className="border border-dotted mt-8" />
+                              <p className="flex items-center  my-2">
+                                <span className=" w-4/12">Gross Amount </span> <span className=" w-4/12">:</span> <span className=" w-4/12">{calculateGrossTotal().toLocaleString("en-IN")}</span>{" "}
                               </p>
-                            ))}
-                        </div>
 
-                        <div className=" flex justify-end">
-                          <p className=" w-11/12 md:w-9/12 text-end">
-                            <Separator className="border border-dotted mt-8" />
-                            <p className="flex items-center  my-2">
-                              <span className=" w-4/12">Gross Amount </span> <span className=" w-4/12">:</span> <span className=" w-4/12">{calculateGrossTotal()}</span>{" "}
+                              <p className="flex items-center  my-2">
+                                <span className=" w-4/12">Total Discount </span> <span className=" w-4/12">:</span> <span className=" w-4/12">{calculateTotalDiscount().toLocaleString("en-IN")}</span>{" "}
+                              </p>
+                              <Separator className="border border-dotted " />
+
+                              <p className="flex items-center  my-2">
+                                <span className=" w-4/12">Net Amount </span> <span className=" w-4/12">:</span> <span className=" w-4/12">{netAmount.toLocaleString("en-IN")}</span>{" "}
+                              </p>
+
+                              <Separator className="border border-dotted " />
+
+                              <p className="flex items-center  my-2">
+                                <span className=" w-4/12">Tender</span> <span className=" w-4/12">:</span> <span className=" w-4/12">{tender?.toLocaleString("en-IN")}</span>{" "}
+                              </p>
+
+                              <p className="flex items-center  my-2">
+                                <span className=" w-4/12">Change</span> <span className=" w-4/12">:</span> <span className=" w-4/12">{(tender - (calculateGrossTotal() - calculateTotalDiscount())).toLocaleString("en-IN")}</span>{" "}
+                              </p>
+
+                              <Separator className="border border-dotted " />
+                              <p className="flex items-center  my-2">
+                                <span className=" w-4/12">Total Qty</span> <span className=" w-4/12">:</span> <span className=" w-4/12">{calculateTotalCount()}</span>{" "}
+                              </p>
                             </p>
+                          </div>
 
-                            <p className="flex items-center  my-2">
-                              <span className=" w-4/12">Total Discount </span> <span className=" w-4/12">:</span> <span className=" w-4/12">{calculateTotalDiscount()}</span>{" "}
-                            </p>
-                            <Separator className="border border-dotted " />
+                          <Separator className="border border-dotted " />
 
-                            <p className="flex items-center  my-2">
-                              <span className=" w-4/12">Net Amount </span> <span className=" w-4/12">:</span> <span className=" w-4/12">{calculateGrossTotal() - calculateTotalDiscount()}</span>{" "}
-                            </p>
+                          <div className="flex flex-col gap-0.5 mt-3">
+                            <p>WELCOME TO JACKET HOUSE</p>
+                            <p>EXCHANGE IN 7 DAYS WITH INVOICE</p>
+                            <p>BETWEEN 10AM-7PM (Ph: {brabranchInfo.phone})</p>
+                          </div>
 
-                            <Separator className="border border-dotted " />
+                          <Separator className="border border-dotted mt-4 " />
+                          <div className="flex flex-col gap-0.5 my-2 ">
+                            <p> THANK YOU FOR BEING OUR VALUABLE MEMBER </p>
+                            <p> HAPPY SHOPPING </p>
+                          </div>
 
-                            <p className="flex items-center  my-2">
-                              <span className=" w-4/12">Tender</span> <span className=" w-4/12">:</span> <span className=" w-4/12">{tender}</span>{" "}
-                            </p>
+                          <Separator className="border border-dotted  " />
 
-                            <p className="flex items-center  my-2">
-                              <span className=" w-4/12">Change</span> <span className=" w-4/12">:</span> <span className=" w-4/12">{tender - (calculateGrossTotal() - calculateTotalDiscount())}</span>{" "}
-                            </p>
+                          <p className=" mt-3">Cashier : {currentCashierName}</p>
 
-                            <Separator className="border border-dotted " />
-                            <p className="flex items-center  my-2">
-                              <span className=" w-4/12">Total Qty</span> <span className=" w-4/12">:</span> <span className=" w-4/12">{calculateTotalCount()}</span>{" "}
-                            </p>
-                          </p>
-                        </div>
+                          <div className=" flex   justify-between"></div>
 
-                        <Separator className="border border-dotted " />
-
-                        <div className="flex flex-col gap-0.5 mt-3">
-                          <p>WELCOME TO JACKET HOUSE</p>
-                          <p>EXCHANGE IN 7 DAYS WITH INVOICE</p>
-                          <p>BETWEEN 10AM-7PM (Ph: {brabranchInfo.phone})</p>
-                        </div>
-
-                        <Separator className="border border-dotted mt-4 " />
-                        <div className="flex flex-col gap-0.5 my-2 ">
-                          <p> THANK YOU FOR BEING OUR VALUABLE MEMBER </p>
-                          <p> HAPPY SHOPPING </p>
-                        </div>
-
-                        <Separator className="border border-dotted  " />
-
-                        <p className=" mt-3">Cashier : {currentCashierName}</p>
-
-                        <div className=" flex   justify-between"></div>
-
-                        <div className="flex flex-col items-center mt-12">
-                          <p className=" mt-4 uppercase">ThanK You for visiting us.</p>
-                          <p className=" uppercase">Please Visit Again!!</p>
+                          <div className="flex flex-col items-center mt-12">
+                            <p className=" mt-4 uppercase">ThanK You for visiting us.</p>
+                            <p className=" uppercase">Please Visit Again!!</p>
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    <DialogFooter>
-                      <Button
-                        className="printBtn px-2"
-                        onClick={handlePrint}
-                        type="submit">
-                        Print Receipt
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              </div>
+                      <DialogFooter>
+                        <Button
+                          className="printBtn px-2"
+                          onClick={handlePrint}
+                          type="submit">
+                          Print Receipt
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </div>
               )}
-
-             
             </div>
 
-           {
-           tender - (calculateGrossTotal() - calculateTotalDiscount())  <0 &&
-           
-           <div
-              role="alert"
-              className=" mt-8 p-4">
-              <div className="bg-red-500 text-white font-bold rounded-t px-4 py-2">Loss !!</div>
-              <div className="border border-t-0 border-red-400 rounded-b bg-red-100 px-4 py-3 text-red-700">
-                <p>Opps you are in loss. Please check the price and quantity and tender amount.</p>
+            {tender - (calculateGrossTotal() - calculateTotalDiscount()) < 0 && (
+              <div
+                role="alert"
+                className=" mt-8 p-4">
+                <div className="bg-red-500 text-white font-bold rounded-t px-4 py-2">Loss !!</div>
+                <div className="border border-t-0 border-red-400 rounded-b bg-red-100 px-4 py-3 text-red-700">
+                  <p>Opps you are in loss. Please check the price and quantity and tender amount.</p>
+                </div>
               </div>
-            </div>}
-
-
+            )}
           </ScrollArea>
         </div>
       </div>

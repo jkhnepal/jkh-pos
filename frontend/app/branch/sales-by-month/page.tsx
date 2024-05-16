@@ -25,13 +25,10 @@ export default function Page() {
 
   const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
   const branch_id = currentUser?.data.branch._id;
-
   const [monthlyDatas, setMonthlyDatas] = React.useState<any>();
   const [currentMonth, setCurrentMonth] = React.useState<any>();
 
   const { data: branchInventories } = useGetAllBranchInventoryQuery({ branch: branch_id });
-  // console.log(branchInventories?.data?.results);
-
   const [refetch, setrefetch] = React.useState<boolean>(false);
   React.useEffect(() => {
     const fetch = async () => {
@@ -106,12 +103,6 @@ export default function Page() {
       enableHiding: false,
     },
 
-    // {
-    //   accessorKey: "month",
-    //   header: "Month",
-    //   cell: ({ row }: any) => <div>{row.getValue("month")}</div>,
-    // },
-
     {
       accessorKey: "month",
       header: "Month",
@@ -134,25 +125,6 @@ export default function Page() {
       },
     },
 
-    // {
-    //     accessorKey: "cp",
-    //     header: "Total CP",
-    //     cell: ({ row }: any) => {
-    //       const monthData = monthlyDatas.find((item: any) => item.month === row.getValue("month"));
-    //       const totalCP = monthData ? monthData.sales.reduce((acc: number, sale: any) => acc + sale.cp * sale.quantity, 0) : 0;
-    //       return <div>{totalCP}</div>;
-    //     },
-    //   },
-    //   {
-    //     accessorKey: "sp",
-    //     header: "Total SP",
-    //     cell: ({ row }: any) => {
-    //       const monthData = monthlyDatas.find((item: any) => item.month === row.getValue("month"));
-    //       const totalSP = monthData ? monthData.sales.reduce((acc: number, sale: any) => acc + sale.sp * sale.quantity, 0) : 0;
-    //       return <div>{totalSP}</div>;
-    //     },
-    //   },
-
     {
       accessorKey: "profit",
       header: "Total Profit (Rs)",
@@ -169,8 +141,7 @@ export default function Page() {
       enableHiding: false,
       cell: ({ row }) => {
         const item = row.original;
-        console.log(item);
-
+        // console.log(item);
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -185,10 +156,6 @@ export default function Page() {
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
               <DropdownMenuSeparator />
-
-              {/* <Link href={`/branch/sales/return/${item.saleId}`}>
-                <DropdownMenuItem>Return</DropdownMenuItem>
-              </Link> */}
 
               <Dialog.Root>
                 <Dialog.Trigger className=" text-sm text-start py-1 px-2.5 hover:bg-primary-foreground w-full">Delete</Dialog.Trigger>
@@ -211,10 +178,25 @@ export default function Page() {
                       </div>
                       <div className="mt-2 text-center sm:ml-4 sm:text-left">
                         <Dialog.Title className="text-lg font-medium text-gray-800">Are you sure ?</Dialog.Title>
+
+                        <div
+                role="alert"
+                className=" my-8 ">
+                <div className="bg-red-500 text-white font-bold rounded-t px-4 py-2">Too Risky !!</div>
+                <div className="border border-t-0 border-red-400 rounded-b bg-red-100 px-4 py-3 text-red-700">
+                  <p>You will loose the whole data of the particular month including sales , report and everything . It even deletes the report from headquarter. Please only delete this data in case of emergency only. </p>
+                </div>
+              </div>
                         <Dialog.Description className="mt-2 text-sm leading-relaxed text-gray-500">The data that has been deleted once cannot be recovered , so please carefully delete the data .</Dialog.Description>
+                       
+                       
+                       
+                        <Dialog.Description className="mt-2 text-sm leading-relaxed text-gray-500">Consult with headquarter before deleting it.</Dialog.Description>
+                       
                         <div className="items-center gap-2 mt-3 text-sm sm:flex">
                           <Dialog.Close asChild>
                             <button
+                              type="button"
                               onClick={() => handleDelete(item.month)}
                               className="w-full mt-2 p-2.5 flex-1 text-white bg-red-600 rounded-md ring-offset-2 ring-red-600 focus:ring-2">
                               Delete
@@ -222,6 +204,7 @@ export default function Page() {
                           </Dialog.Close>
                           <Dialog.Close asChild>
                             <button
+                              type="button"
                               aria-label="Close"
                               className="w-full mt-2 p-2.5 flex-1 text-gray-800 rounded-md border ring-offset-2 ring-indigo-600 focus:ring-2">
                               Cancel
@@ -276,33 +259,6 @@ export default function Page() {
     <div className="w-full">
       <Breadcumb />
       <div className="flex justify-between items-center py-4">
-        {/* <Input
-          placeholder="Filter by name ..."
-          value={searchName}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
-          className="max-w-sm"
-        /> */}
-
-        {/* <Select onValueChange={(value: any) => setCurrentMonth(value)}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select a Months" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Months</SelectLabel>
-              {monthlyDatas?.map((item: any, index: number) => (
-
-                <SelectItem
-                // defaultValue={}
-                  key={index}
-                  value={item.month}>
-                  {item.month}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select> */}
-
         <div className=" flex space-x-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
