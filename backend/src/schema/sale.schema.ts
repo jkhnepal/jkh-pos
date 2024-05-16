@@ -23,6 +23,19 @@ const payload = {
       required_error: "totalAmount is required",
     }),
 
+    discountAmount: coerce.number({
+      required_error: "discountAmount is required",
+    }),
+
+    
+    totalDiscountAmount: coerce.number({
+      required_error: "totalDiscountAmount is required",
+    }),
+
+    // totalAmountAfterDiscount: coerce.number({
+    //   required_error: "totalAmountAfterDiscount is required",
+    // }),
+
     cp: coerce.number({
       required_error: "cp is required",
     }),
@@ -34,9 +47,6 @@ const payload = {
     invoiceNo: string({
       required_error: "invoice number is required",
     }),
-
-
-
   }),
 };
 
@@ -63,6 +73,19 @@ const createPayload = {
       cp: coerce.number({
         required_error: "cp is required",
       }),
+
+      discountAmount: coerce.number({
+        required_error: "discountAmount is required",
+      }),
+
+      totalDiscountAmount: coerce.number({
+        required_error: "totalDiscountAmount is required",
+      }),
+  
+
+      // totalAmountAfterDiscount: coerce.number({
+      //   required_error: "totalAmountAfterDiscount is required",
+      // }),
 
       sp: coerce.number({
         required_error: "sp is required",

@@ -25,6 +25,8 @@ const payload = {
     totalAddedStock: coerce.number().default(0),
     availableStock: coerce.number().default(0),
 
+    discountAmount: coerce.number().default(0),
+
     colors: string().optional(),
     sizes: string().optional(),
   }),

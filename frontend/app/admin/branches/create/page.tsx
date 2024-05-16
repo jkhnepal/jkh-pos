@@ -14,11 +14,8 @@ import useCloudinaryFileUpload from "@/app/hooks/useCloudinaryFileUpload";
 import LoaderPre from "@/app/custom-components/LoaderPre";
 import OptionalLabel from "@/app/custom-components/OptionalLabel";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
-
-// Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-
 
 const formSchema = z.object({
   name: z.string().min(5, {
@@ -44,7 +41,6 @@ const formSchema = z.object({
   image: z.string().optional(),
   panNo: z.string().optional(),
   vatNo: z.string().optional(),
-
 });
 
 export default function Page() {
@@ -188,47 +184,13 @@ export default function Page() {
 
         <FormField
           control={form.control}
-          name="image"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                Image <OptionalLabel /> <span className="text-primary/85  text-xs">[image must be less than 1MB]</span>
-              </FormLabel>
-              <div className=" flex items-center  gap-2">
-                <Input
-                  type="file"
-                  onChange={(event) => handleFileUpload(event.target.files?.[0], setImageUrl)}
-                />
-
-                <>
-                  {uploading ? (
-                    <div className=" flex flex-col gap-2 rounded-md items-center justify-center h-9 w-9 border">
-                      <LoaderSpin />
-                    </div>
-                  ) : (
-                    <Image
-                      width={100}
-                      height={100}
-                      src={imageUrl || defaultImage}
-                      alt="img"
-                      className="p-0.5 rounded-md overflow-hidden h-9 w-9 border"
-                    />
-                  )}
-                </>
-              </div>
-            </FormItem>
-          )}
-        />
-
-<FormField
-          control={form.control}
           name="panNo"
           render={({ field }) => (
             <FormItem>
               <FormLabel>PAN Number</FormLabel>
               <FormControl>
                 <Input
-                  placeholder=""
+                  placeholder="PAN Number"
                   {...field}
                 />
               </FormControl>
@@ -237,8 +199,38 @@ export default function Page() {
           )}
         />
 
+        <FormField
+          control={form.control}
+          name="image"
+          render={({ field }) => (
+            <FormItem className=" flex flex-col mt-2">
+              <FormLabel>
+                Image <OptionalLabel /> <span className="text-primary/85  text-xs">[image must be less than 1MB]</span>
+              </FormLabel>
 
-<FormField
+              <Input
+                type="file"
+                onChange={(event) => handleFileUpload(event.target.files?.[0], setImageUrl)}
+              />
+
+              {uploading ? (
+                <div className=" flex flex-col gap-2 rounded-md items-center justify-center h-52 w-52 object-cover border">
+                  <LoaderSpin />
+                </div>
+              ) : (
+                <Image
+                  width={100}
+                  height={100}
+                  src={imageUrl || defaultImage}
+                  alt="img"
+                  className="p-0.5 rounded-md overflow-hidden h-52 object-cover w-52 border"
+                />
+              )}
+            </FormItem>
+          )}
+        />
+
+        <FormField
           control={form.control}
           name="vatNo"
           render={({ field }) => (
@@ -246,7 +238,7 @@ export default function Page() {
               <FormLabel>VAT No</FormLabel>
               <FormControl>
                 <Input
-                  placeholder=""
+                  placeholder=" VAT Number"
                   {...field}
                 />
               </FormControl>
@@ -254,8 +246,6 @@ export default function Page() {
             </FormItem>
           )}
         />
-
-
 
         <div className=" flex">
           <Button type="submit"> {isCreating && <LoaderPre />} Submit</Button>
@@ -267,28 +257,28 @@ export default function Page() {
 
 function Breadcumb() {
   return (
-  <>
+    <>
       <Breadcrumb className=" mb-8">
-      <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator>
-          <SlashIcon />
-        </BreadcrumbSeparator>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <SlashIcon />
+          </BreadcrumbSeparator>
 
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/admin/branches">Branches</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator>
-          <SlashIcon />
-        </BreadcrumbSeparator>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/admin/branches">Branches</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <SlashIcon />
+          </BreadcrumbSeparator>
 
-        <BreadcrumbItem>
-          <BreadcrumbPage>New Branch</BreadcrumbPage>
-        </BreadcrumbItem>
-      </BreadcrumbList>
-  </Breadcrumb>
+          <BreadcrumbItem>
+            <BreadcrumbPage>New Branch</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
     </>
   );
 }

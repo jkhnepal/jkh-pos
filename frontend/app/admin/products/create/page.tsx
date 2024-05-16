@@ -16,10 +16,8 @@ import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { useCreateProductMutation, useGetAllProductQuery } from "@/lib/features/product.sclice";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useGetAllCategoryQuery } from "@/lib/features/categorySlice";
-// Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import InventoryAdd from "../components/InventoryAdd";
 import Link from "next/link";
 
 const formSchema = z.object({
@@ -27,9 +25,6 @@ const formSchema = z.object({
     message: "Name must be at least 4 characters.",
   }),
 
-  // sku: z.string().min(5, {
-  //   message: "SKU must be at least 5 characters.",
-  // }),
   category: z.string().min(5, {
     message: "Category is required",
   }),
@@ -47,6 +42,8 @@ const formSchema = z.object({
 
   colors: z.string().optional(),
   sizes: z.string().optional(),
+
+  discountAmount: z.coerce.number().optional(),
 });
 
 export default function Page() {
@@ -61,7 +58,7 @@ export default function Page() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setrecentlyCreatedProductId("");
-    }, 15000); //
+    }, 15000);
 
     // Clear the timeout if the component unmounts before 3 seconds
     return () => clearTimeout(timer);
@@ -72,7 +69,6 @@ export default function Page() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      // sku: "",
       category: "",
       cp: 0,
       sp: 0,
@@ -80,11 +76,9 @@ export default function Page() {
       note: "",
       colors: "",
       sizes: "",
+      discountAmount: 0,
     },
   });
-
-  // console the form values
-  console.log(form.getValues());
 
   useEffect(() => {
     form.setValue("image", imageUrl);
@@ -170,23 +164,6 @@ export default function Page() {
             )}
           />
 
-          {/* <FormField
-          control={form.control}
-          name="sku"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Product SKU *</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Product SKU"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        /> */}
-
           <FormField
             control={form.control}
             name="cp"
@@ -245,7 +222,9 @@ export default function Page() {
             name="colors"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Colors <span className="text-primary/85  text-xs">(Please dont give spaces)</span> </FormLabel>
+                <FormLabel>
+                  Colors <span className="text-primary/85  text-xs">(Please dont give spaces)</span>{" "}
+                </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Red,Green,Blue"
@@ -262,10 +241,30 @@ export default function Page() {
             name="sizes"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Sizes   <span className="text-primary/85  text-xs">(Please dont give spaces)</span></FormLabel>
+                <FormLabel>
+                  Sizes <span className="text-primary/85  text-xs">(Please dont give spaces)</span>
+                </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="XS,S,M"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="discountAmount"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Discount Amount *</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="Discount Amount"
                     {...field}
                   />
                 </FormControl>

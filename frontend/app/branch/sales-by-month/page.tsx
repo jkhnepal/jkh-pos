@@ -27,18 +27,16 @@ export default function Page() {
   const branch_id = currentUser?.data.branch._id;
 
   const [monthlyDatas, setMonthlyDatas] = React.useState<any>();
-
   const [currentMonth, setCurrentMonth] = React.useState<any>();
 
   const { data: branchInventories } = useGetAllBranchInventoryQuery({ branch: branch_id });
-  console.log(branchInventories?.data?.results);
+  // console.log(branchInventories?.data?.results);
 
   const [refetch, setrefetch] = React.useState<boolean>(false);
   React.useEffect(() => {
     const fetch = async () => {
       try {
         if (branch_id) {
-          //const res = await axios.get(`http://localhost:5010/api/sales/get-sales-by-months/${branch_id}`);
           const res = await axios.get(`${process.env.NEXT_PUBLIC_URL_API}/sales/get-sales-by-months/${branch_id}`);
           setMonthlyDatas(res?.data?.data);
           setrefetch(false);
@@ -48,10 +46,7 @@ export default function Page() {
       }
     };
     fetch();
-  }, [branch_id, currentMonth, refetch]); // Add branch_id to the dependency array
-
-  const [previewImage, setpreviewImage] = React.useState<string>("");
-  console.log(previewImage);
+  }, [branch_id, currentMonth, refetch]);
 
   const [searchName, setSearchName] = React.useState<string>("");
   const [debounceValue] = useDebounce(searchName, 1000);
@@ -60,37 +55,22 @@ export default function Page() {
   const itemsPerPage = 10;
 
   const { data: salesOfABranch, isLoading: isFetching } = useGetAllSaleQuery({ branch: branch_id, sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
-
   let totalItem: number = salesOfABranch?.data.count;
   const startIndex = (currentPage - 1) * itemsPerPage;
 
   const handleDelete = async (date: string) => {
     try {
       const res = await axios.delete(`${process.env.NEXT_PUBLIC_URL_API}/sales/delete-sales-by-month/${branch_id}/${date}`);
-
-      // const singleBranchInventory = branchInventories?.data?.results.find(async (item: any) => {
-      //   const res1 = await axios.patch(`${process.env.NEXT_PUBLIC_URL_API}/branch-inventories/${item.branchInventoryId}`, {
-      //     totalReturnedStockToHeadquarter: 0,
-      //   });
-      // });
-
       const updateStock = async () => {
         const patchRequests = branchInventories?.data?.results.map(async (item: any) => {
           const res1 = await axios.patch(`${process.env.NEXT_PUBLIC_URL_API}/branch-inventories/${item.branchInventoryId}`, {
             totalReturnedStockToHeadquarter: 0,
           });
-          return res1; // Return the response if needed
+          return res1;
         });
-
-        // Execute all patch requests concurrently
         const responses = await Promise.all(patchRequests);
-
-        // Log the responses or handle them as needed
-        console.log(responses);
       };
-      updateStock()
-
-      console.log(res);
+      updateStock();
       setrefetch(true);
     } catch (error) {
       console.log(error);
@@ -136,15 +116,9 @@ export default function Page() {
       accessorKey: "month",
       header: "Month",
       cell: ({ row }: any) => {
-        // Parse the month string to get the year and month
         const [year, month] = row.original.month.split("-");
-
-        // Create a new Date object with the year and month
-        const date = new Date(parseInt(year), parseInt(month) - 1); // Month is zero-based
-
-        // Format the date to display the month name
+        const date = new Date(parseInt(year), parseInt(month) - 1);
         const monthName = date.toLocaleString("en-US", { month: "long" });
-
         return <div>{`${year} ${monthName}`}</div>;
       },
     },
@@ -154,7 +128,8 @@ export default function Page() {
       header: "Total Revenue (Rs)",
       cell: ({ row }: any) => {
         const monthData = monthlyDatas.find((item: any) => item.month === row.getValue("month"));
-        const totalAmount = monthData ? monthData.sales.reduce((acc: number, sale: any) => acc + sale.totalAmountAfterReturn, 0) : 0;
+        // const totalAmount = monthData ? monthData.sales.reduce((acc: number, sale: any) => acc + sale.totalAmountAfterReturn, 0) : 0;
+        const totalAmount = monthData ? monthData.sales.reduce((acc: number, sale: any) => acc + sale.totalAmountAfterReturn - sale.discountAmount * (sale.quantity - sale.returnedQuantity), 0) : 0;
         return <div>{totalAmount.toLocaleString("en-IN")}</div>;
       },
     },

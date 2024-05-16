@@ -7,20 +7,10 @@ export async function createCategory(input: CategoryInput) {
 }
 
 export async function findAllCategory(filter: FilterQuery<CategoryDocument> = {}) {
-  const search = filter.search || "";
   const sort = filter.sort || "";
-  const page: any = filter.page || 1;
-  const limit: any = filter.limit || 5;
-  const skip = (page - 1) * limit;
-
-  const searchQuery: any = {
-    name: { $regex: search, $options: "i" },
-  };
   const count = await CategoryModel.countDocuments();
-  const results = await CategoryModel.find(searchQuery)
-    .skip(skip)
-    .limit(limit)
-    .sort({ createdAt: sort == "latest" ? -1 : 1 });
+  const results = await CategoryModel.find()
+  .sort({ createdAt: sort == "latest" ? -1 : 1 });
   return { count, results };
 }
 

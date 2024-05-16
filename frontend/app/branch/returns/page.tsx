@@ -4,21 +4,17 @@ import { ColumnDef, ColumnFiltersState, SortingState, VisibilityState, flexRende
 import { ArrowDown01, ArrowDown10, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Link from "next/link";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useDebounce } from "use-debounce";
 import * as Dialog from "@radix-ui/react-dialog";
-
-// Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useGetAllReturnQuery } from "@/lib/features/returnSlice";
 import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
 import moment from "moment";
 import { Badge } from "@/components/ui/badge";
-import { useGetAllSaleQuery } from "@/lib/features/saleSlice";
 import Image from "next/image";
 
 export default function Page() {
@@ -28,13 +24,12 @@ export default function Page() {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const [previewImage, setpreviewImage] = React.useState<string>("");
-  console.log(previewImage);
 
   const [searchName, setSearchName] = React.useState<string>("");
   const [debounceValue] = useDebounce(searchName, 1000);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [sort, setSort] = React.useState("latest");
-  const itemsPerPage = 10;
+  const itemsPerPage = 1000;
 
   const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
   const branch_id = currentUser?.data.branch._id;
@@ -43,18 +38,6 @@ export default function Page() {
   let totalItem: number = returnHistoriesOfABranchData?.data.count;
   const pageCount = Math.ceil(totalItem / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-
-  console.log(returnHistoriesOfABranchData?.data.results)
-
-  const goToPreviousPage = () => {
-    setCurrentPage((prevPage) => prevPage - 1);
-  };
-
-  const goToNextPage = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
-  };
-
-  const { data: salesOfABranch, isLoading: isFetching } = useGetAllSaleQuery({ branch: branch_id, sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue  });
 
   const columns: ColumnDef<any>[] = [
     {
@@ -88,7 +71,6 @@ export default function Page() {
       header: "Product Name",
       cell: ({ row }: any) => <div>{row.getValue("sale")?.product?.name} </div>,
     },
-
 
     {
       accessorKey: "sale",
@@ -132,7 +114,6 @@ export default function Page() {
       },
     },
 
-
     {
       accessorKey: "memberPhone",
       header: "Member Phone",
@@ -141,15 +122,14 @@ export default function Page() {
 
     {
       accessorKey: "memberName",
-      header: "Member Phone",
+      header: "Member Name",
       cell: ({ row }: any) => <div> {row.getValue("memberName")}</div>,
     },
-
 
     {
       accessorKey: "sale",
       header: "Sell Date",
-      cell: ({ row }: any) => <div>{moment(row.getValue("sale")?.createdAt).format('MMMM Do YYYY, h:mm:ss a')} </div>,
+      cell: ({ row }: any) => <div>{moment(row.getValue("sale")?.createdAt).format("MMMM Do YYYY, h:mm:ss a")} </div>,
     },
 
     {
@@ -158,19 +138,16 @@ export default function Page() {
       cell: ({ row }: any) => <div>{row.getValue("sale")?.quantity} </div>,
     },
 
-    
     {
       accessorKey: "quantity",
       header: "Returned Quantity",
       cell: ({ row }: any) => <div>{row.getValue("quantity")} </div>,
     },
 
-    
-
     {
       accessorKey: "createdAt",
       header: "Return Date",
-      cell: ({ row }: any) => <div>{moment(row.getValue("createdAt")).format('MMMM Do YYYY, h:mm:ss a')} </div>,
+      cell: ({ row }: any) => <div>{moment(row.getValue("createdAt")).format("MMMM Do YYYY, h:mm:ss a")} </div>,
     },
 
     {
@@ -184,8 +161,6 @@ export default function Page() {
         </div>
       ),
     },
-
-   
   ];
 
   const table = useReactTable({
@@ -298,7 +273,7 @@ export default function Page() {
           </TableBody>
         </Table>
       </div>
-      
+
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
           {startIndex} of {totalItem} row(s) selected.
@@ -309,16 +284,14 @@ export default function Page() {
             variant="outline"
             size="sm"
             onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
+            disabled={!table.getCanPreviousPage()}>
             Previous
           </Button>
           <Button
             variant="outline"
             size="sm"
             onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
+            disabled={!table.getCanNextPage()}>
             Next
           </Button>
         </div>
@@ -327,24 +300,23 @@ export default function Page() {
   );
 }
 
-
 function Breadcumb() {
   return (
-  <>
+    <>
       <Breadcrumb className=" mb-8">
-      <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/branch">Dashboard</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator>
-          <SlashIcon />
-        </BreadcrumbSeparator>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/branch">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <SlashIcon />
+          </BreadcrumbSeparator>
 
-        <BreadcrumbItem>
-          <BreadcrumbPage>Returns</BreadcrumbPage>
-        </BreadcrumbItem>
-      </BreadcrumbList>
-  </Breadcrumb>
+          <BreadcrumbItem>
+            <BreadcrumbPage>Returns</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
     </>
   );
 }

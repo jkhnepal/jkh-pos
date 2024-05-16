@@ -136,9 +136,6 @@
 //   }
 // }
 
-
-
-
 import { NextFunction, Request, Response } from "express";
 import AppError from "../utils/appError";
 import BranchInventoryModel from "../models/branchInventory.model";
@@ -186,11 +183,12 @@ var colors = require("colors");
 export async function createReturnHandler(req: Request<{}, {}, CreateReturnInput["body"]>, res: Response, next: NextFunction) {
   try {
     const body = req.body;
-    console.log("🚀 ~ createReturnHandler ~ body:", body);
-    const sale: any = await findSale({ _id: body.sale });
-    console.log("🚀 ~ createReturnHandler ~ sale:", sale);
+    // console.log(body)
 
-    if (body.quantity > sale.quantity) {
+    const sale: any = await findSale({ _id: body.sale });
+    // console.log(sale)
+
+    if (body.quantity > sale.quantity - sale.returnedQuantity) {
       return res.status(400).json({
         status: "failure",
         msg: "Quantity is greater than the quantity sold",
@@ -206,16 +204,10 @@ export async function createReturnHandler(req: Request<{}, {}, CreateReturnInput
       }
     );
 
-    console.log(updatedSale)
+    console.log(updatedSale);
 
-    // // add that item in branch inventory
     const branchInventory: any = await BranchInventoryModel.findOne({ branch: body.branch, product: updatedSale.product });
     const updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, { $inc: { totalStock: +body.quantity } }, { new: true });
-
-    // const pointsToSubtract = updatedSale.sp * 0.1;
-
-    // const member: any = await findMember({ _id: body.member });
-    // const updatedMember = await findAndUpdateMember({ _id: member._id }, { $inc: { point: -pointsToSubtract } }, { new: true });
 
     return res.status(200).json({
       status: "success",

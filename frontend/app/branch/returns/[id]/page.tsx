@@ -1,29 +1,22 @@
 "use client";
-
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useGetReturnQuery } from "@/lib/features/returnSlice";
 import moment from "moment";
 import { useParams } from "next/navigation";
-// Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import Image from "next/image";
-
 type Props = {};
 
 export default function Page({}: Props) {
   const params = useParams();
-  console.log(params);
-
-  const { data, isFetching } = useGetReturnQuery(params?.id);
-  console.log(data);
+  const { data } = useGetReturnQuery(params?.id);
   const returnItem = data?.data;
-  console.log("🚀 ~ Page ~ returnItem:", returnItem);
 
   return (
     <>
-      {/* <Breadcumb /> */}
+      <Breadcumb />
       {returnItem && (
         <div className=" grid grid-cols-2 gap-4">
           <div>
@@ -86,7 +79,7 @@ export default function Page({}: Props) {
             <Label>Sell date</Label>
             <Input
               readOnly
-              value={moment(returnItem.sale.createdAt).format('MMMM Do YYYY, h:mm:ss a')}
+              value={moment(returnItem.sale.createdAt).format("MMMM Do YYYY, h:mm:ss a")}
             />
           </div>
 
@@ -94,7 +87,7 @@ export default function Page({}: Props) {
             <Label>Returned date</Label>
             <Input
               readOnly
-              value={moment(returnItem.createdAt).format('MMMM Do YYYY, h:mm:ss a')}
+              value={moment(returnItem.createdAt).format("MMMM Do YYYY, h:mm:ss a")}
             />
           </div>
 
@@ -115,32 +108,30 @@ export default function Page({}: Props) {
   );
 }
 
-
-
 function Breadcumb() {
   return (
-  <>
+    <>
       <Breadcrumb className=" mb-8">
-      <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/branch">Dashboard</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator>
-          <SlashIcon />
-        </BreadcrumbSeparator>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/branch">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <SlashIcon />
+          </BreadcrumbSeparator>
 
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/branch/returns">Returns</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator>
-          <SlashIcon />
-        </BreadcrumbSeparator>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/branch/returns">Returns</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <SlashIcon />
+          </BreadcrumbSeparator>
 
-        <BreadcrumbItem>
-          <BreadcrumbPage>Return Detail</BreadcrumbPage>
-        </BreadcrumbItem>
-      </BreadcrumbList>
-  </Breadcrumb>
+          <BreadcrumbItem>
+            <BreadcrumbPage>Return Detail</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
     </>
   );
 }

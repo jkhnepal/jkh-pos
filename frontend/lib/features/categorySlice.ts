@@ -16,14 +16,9 @@ export const categoryApi = createApi({
       }),
     }),
 
-
-
     getAllCategory: builder.query({
-      query: ({ page = 1, limit = 5, search, sort }) => {
+      query: ({ sort }) => {
         const params = {
-          page,
-          limit,
-          search,
           sort,
         };
         return {

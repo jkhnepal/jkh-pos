@@ -183,18 +183,6 @@
 //   }
 // }
 
-
-
-
-
-
-
-
-
-
-
-
-
 // export async function getBranchProfitHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
 //   try {
 //     const queryParameter = req.query;
@@ -238,15 +226,6 @@
 //   }
 // }
 
-
-
-
-
-
-
-
-
-
 import { NextFunction, Request, Response } from "express";
 import AppError from "../utils/appError";
 import BranchInventoryModel from "../models/branchInventory.model";
@@ -260,8 +239,6 @@ import CategoryModel from "../models/category.model";
 import BranchModel from "../models/branch.model";
 import ProductModel from "../models/product.model";
 var colors = require("colors");
-
-
 
 export async function getHeadquarterStatHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
   try {
@@ -279,6 +256,9 @@ export async function getHeadquarterStatHandler(req: Request<{}, {}, {}>, res: R
       },
     ]);
 
+    // const totalSales1 = await SaleModel.find();
+    // console.log("🚀 ~ getHeadquarterStatHandler ~ totalSales1:", totalSales1);
+
     const totalSales = await SaleModel.aggregate([
       {
         $group: {
@@ -286,9 +266,15 @@ export async function getHeadquarterStatHandler(req: Request<{}, {}, {}>, res: R
           totalAmount: { $sum: "$totalAmount" },
           totalProduct: { $sum: "$quantity" },
           totalReturnedQuantity: { $sum: "$returnedQuantity" },
+          totalDiscountGiven: {
+            $sum: {
+              $multiply: ["$discountAmount", { $subtract: ["$quantity", "$returnedQuantity"] }],
+            },
+          },
         },
       },
     ]);
+
 
     const totalreturnSales = await SaleModel.aggregate([
       {
@@ -326,7 +312,7 @@ export async function getHeadquarterStatHandler(req: Request<{}, {}, {}>, res: R
     return res.status(200).json({
       status: "success",
       msg: "Get all member success",
-      data: {  categories, branches, products, totalSales: totalSales[0]?.totalAmount | 0, totalCp: totalCp[0]?.cp | 0, totalQuantitySold: totalSales[0]?.totalProduct | 0,  totalQuantityReturned: totalSales[0]?.totalReturnedQuantity | 0,       totalAvailabeStock: totalStocksAvailable[0]?.totalStock | 0, totalreturnSale: totalreturnSales[0]?.totalAmount | 0, totalReturnCp: totalReturnCp[0]?.totalAmount | 0 },
+      data: { categories, branches, products, totalSales: totalSales[0]?.totalAmount | 0, totalCp: totalCp[0]?.cp | 0, totalQuantitySold: totalSales[0]?.totalProduct | 0, totalQuantityReturned: totalSales[0]?.totalReturnedQuantity | 0, totalAvailabeStock: totalStocksAvailable[0]?.totalStock | 0, totalreturnSale: totalreturnSales[0]?.totalAmount | 0, totalReturnCp: totalReturnCp[0]?.totalAmount | 0 , totalDiscountGiven: totalSales[0]?.totalDiscountGiven | 0},
     });
   } catch (error: any) {
     console.error(colors.red("msg:", error.message));
@@ -384,7 +370,7 @@ export async function getBranchStatHandler(req: Request<{}, {}, {}>, res: Respon
           branch: new mongoose.Types.ObjectId(queryParameter.branch as string),
         },
       },
-      
+
       {
         $group: {
           _id: null,
@@ -402,7 +388,7 @@ export async function getBranchStatHandler(req: Request<{}, {}, {}>, res: Respon
         },
       },
     ]);
-    console.log("🚀 ~ getBranchStatHandler ~ totalCp1:", totalCp1)
+    console.log("🚀 ~ getBranchStatHandler ~ totalCp1:", totalCp1);
 
     const totalCp = await SaleModel.aggregate([
       {
@@ -459,8 +445,8 @@ export async function getBranchStatHandler(req: Request<{}, {}, {}>, res: Respon
         },
       },
     ]);
-    
-   // console.log("🚀 ~ getBranchStatHandler ~ totalSalesByMonth:", totalSalesByMonth);
+
+    // console.log("🚀 ~ getBranchStatHandler ~ totalSalesByMonth:", totalSalesByMonth);
 
     const totalCpByMonth1 = await SaleModel.aggregate([
       {
@@ -497,7 +483,7 @@ export async function getBranchStatHandler(req: Request<{}, {}, {}>, res: Respon
         },
       },
     ]);
-    
+
     //console.log("🚀 ~ getBranchStatHandler ~ totalCpByMonth:", totalCpByMonth);
 
     return res.status(200).json({
@@ -543,7 +529,7 @@ export async function getBranchProfitHandler(req: Request<{}, {}, {}>, res: Resp
       },
     ]);
 
-    const totalCp = await SaleModel.aggregate([
+    const totalReturnedDiscount = await SaleModel.aggregate([
       {
         $match: {
           branch: new mongoose.Types.ObjectId(queryParameter.branch as string),
@@ -552,21 +538,111 @@ export async function getBranchProfitHandler(req: Request<{}, {}, {}>, res: Resp
       {
         $group: {
           _id: null,
+          // totalAmount: { $sum: "$totalAmount" },
+          // totalAmount: { $sum: "$totalAmount" },
+          totalAmount: { $sum: { $multiply: ["$discountAmount", "$returnedQuantity"] } },
+        },
+      },
+    ]);
+
+    const totalSalesAfterDiscount = await SaleModel.aggregate([
+      {
+        $match: {
+          branch: new mongoose.Types.ObjectId(queryParameter.branch as string),
+        },
+      },
+
+      {
+        $group: {
+          _id: null,
+          totalAmount: { $sum: "$totalAmountAfterDiscount" },
+        },
+      },
+    ]);
+
+    // const totalSalesAfterDiscount = await SaleModel.aggregate([
+    //   {
+    //     $match: {
+    //       branch: new mongoose.Types.ObjectId(queryParameter.branch as string),
+    //     },
+    //   },
+    //   {
+    //     $group: {
+    //       _id: null,
+    //       totalAmount: { $sum: "$totalAmountAfterDiscount" },
+    //     },
+    //   },
+    //   {
+    //     $project: {
+    //       _id: 0,
+    //       totalAmount: 1,
+    //       totalAmountAfterSubtraction: {
+    //         $subtract: [
+    //           "$totalAmount",
+    //           { $multiply: ["$returnedQuantity", "$discountAmount"] }
+    //         ]
+    //       }
+    //     }
+    //   }
+    // ]);
+
+    const totalCp = await SaleModel.aggregate([
+      {
+        $match: {
+          branch: new mongoose.Types.ObjectId(queryParameter.branch as string),
+        },
+      },
+
+      {
+        $group: {
+          _id: null,
           cp: { $sum: { $multiply: ["$cp", "$quantity"] } }, // Use $multiply
         },
       },
     ]);
 
-    const res1 = await SaleModel.find({ branch: queryParameter.branch });
-    console.log("🚀 ~ getBranchProfitHandler ~ res1:", res1);
-    console.log("🚀 ~ getBranchProfitHandler ~ totalSales:", totalSales);
-    console.log("🚀 ~ getBranchProfitHandler ~ totalCp:", totalCp);
+    const totalDiscountAmount1 = await SaleModel.aggregate([
+      {
+        $match: {
+          branch: new mongoose.Types.ObjectId(queryParameter.branch as string),
+          // returnedQuantity: { $lt: 1 }
+        },
+      },
+
+      {
+        $group: {
+          _id: null,
+          // discountAmount: { $sum: "$totalDiscountAmount" },
+          discountAmount: { $sum: { $multiply: ["$discountAmount", "$quantity"] } },
+        },
+      },
+    ]);
+
+    const totalDiscountAmount2 = await SaleModel.aggregate([
+      {
+        $match: {
+          branch: new mongoose.Types.ObjectId(queryParameter.branch as string),
+          // returnedQuantity: { $lt: 1 }
+        },
+      },
+
+      {
+        $group: {
+          _id: null,
+          // discountAmount: { $sum: "$totalDiscountAmount" },
+          discountAmount: { $sum: { $multiply: ["$discountAmount", "$returnedQuantity"] } },
+        },
+      },
+    ]);
 
     return res.status(200).json({
       status: "success",
-      msg: "Get all member success",
       totalSales: totalSales[0]?.totalAmount | 0,
+      totalSalesAfterDiscount: totalSalesAfterDiscount[0]?.totalAmount | 0,
       totalCp: totalCp[0]?.cp | 0,
+      // totalDiscountAmount: totalDiscountAmount[0]?.discountAmount | 0,
+      totalReturnedDiscountAmount: totalReturnedDiscount[0]?.totalAmount | 0,
+      totalDiscountAmount: (totalDiscountAmount1[0]?.discountAmount - totalDiscountAmount2[0]?.discountAmount) | 0,
     });
   } catch (error: any) {
     console.error(colors.red("msg:", error.message));

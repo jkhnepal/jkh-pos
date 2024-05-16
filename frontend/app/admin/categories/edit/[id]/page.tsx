@@ -15,7 +15,6 @@ import useCloudinaryFileUpload from "@/app/hooks/useCloudinaryFileUpload";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import OptionalLabel from "@/app/custom-components/OptionalLabel";
 import LoaderPre from "@/app/custom-components/LoaderPre";
-// Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
@@ -152,7 +151,7 @@ export default function Page() {
 
                 <>
                   {uploading ? (
-                    <div className=" flex flex-col gap-2 rounded-md  justify-center h-52 w-52 border">
+                    <div className=" flex flex-col gap-2 rounded-md  justify-center h-52 w-52 object-cover border">
                       <LoaderSpin />
                     </div>
                   ) : (
@@ -161,7 +160,7 @@ export default function Page() {
                       height={100}
                       src={imageUrl || defaultImage}
                       alt="img"
-                      className="p-0.5 rounded-md overflow-hidden h-52 w-52 border"
+                      className="p-0.5 rounded-md overflow-hidden h-52 w-52 object-cover border"
                     />
                   )}
                 </>

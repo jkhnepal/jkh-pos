@@ -9,16 +9,13 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
-import defaultImg from "../../../public/default-images/unit-default-image.png";
 import LoaderPre from "@/app/custom-components/LoaderPre";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useDeleteProductMutation, useGetAllProductQuery } from "@/lib/features/product.sclice";
 import * as Dialog from "@radix-ui/react-dialog";
-// Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { useDebounce } from "use-debounce";
 import moment from "moment";
 
 export default function Page() {
@@ -26,24 +23,13 @@ export default function Page() {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-
   const [previewImage, setpreviewImage] = React.useState<string>("");
-  console.log(previewImage);
-
-  const [searchName, setSearchName] = React.useState<string>("");
-  const [debounceValue] = useDebounce(searchName, 1000);
-  const [currentPage, setCurrentPage] = React.useState(1);
   const [sort, setSort] = React.useState("latest");
-  const itemsPerPage = 10;
+  const { data: products, isLoading: isFetching, refetch } = useGetAllProductQuery({ sort: sort });
 
-  const { data: products, isError, isLoading: isFetching, refetch } = useGetAllProductQuery({ sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
-  
-  
-  
-  console.log(products?.data.results);
-  let totalItem = products?.data.count;
-  const pageCount = Math.ceil(totalItem / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
+  React.useEffect(() => {
+    refetch();
+  }, [refetch]);
 
   const [deleteProduct, { error: deleteError, isLoading: isDeleting }] = useDeleteProductMutation();
   const handleDelete = async (id: string) => {
@@ -64,14 +50,6 @@ export default function Page() {
       toast.error(errorMsg);
     }
   }
-
-  const goToPreviousPage = () => {
-    setCurrentPage((prevPage) => prevPage - 1);
-  };
-
-  const goToNextPage = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
-  };
 
   const columns: ColumnDef<any>[] = [
     {
@@ -97,7 +75,7 @@ export default function Page() {
     {
       accessorKey: "sale",
       header: "S.N",
-      cell: ({ row }: any) => <div>{startIndex + row.index + 1} </div>,
+      cell: ({ row }: any) => <div>{row.index + 1} </div>,
     },
 
     {
@@ -234,11 +212,6 @@ export default function Page() {
               <Link href={`/admin/products/edit/${item.productId}`}>
                 <DropdownMenuItem>View/Edit</DropdownMenuItem>
               </Link>
-              {/* <DropdownMenuItem
-                onClick={() => handleDelete(item.productId)}
-                className=" text-destructive">
-                Delete
-              </DropdownMenuItem> */}
 
               <Dialog.Root>
                 <Dialog.Trigger className=" text-sm text-start py-1 px-2.5 hover:bg-primary-foreground w-full">Delete</Dialog.Trigger>
@@ -265,6 +238,7 @@ export default function Page() {
                         <div className="items-center gap-2 mt-3 text-sm sm:flex">
                           <Dialog.Close asChild>
                             <button
+                              type="button"
                               onClick={() => handleDelete(item.productId)}
                               className="w-full mt-2 p-2.5 flex-1 text-white bg-red-600 rounded-md ring-offset-2 ring-red-600 focus:ring-2">
                               Delete
@@ -272,6 +246,7 @@ export default function Page() {
                           </Dialog.Close>
                           <Dialog.Close asChild>
                             <button
+                              type="button"
                               aria-label="Close"
                               className="w-full mt-2 p-2.5 flex-1 text-gray-800 rounded-md border ring-offset-2 ring-indigo-600 focus:ring-2">
                               Cancel
@@ -320,7 +295,6 @@ export default function Page() {
 
   return (
     <div className="w-full">
-      
       <Breadcrumb className=" mb-8">
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -337,9 +311,9 @@ export default function Page() {
       </Breadcrumb>
       <div className="flex justify-between items-center py-4">
         <Input
-          placeholder="Search by product name..."
-          value={searchName}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
+          placeholder="Filter by product name..."
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+          onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}
           className="max-w-sm"
         />
 
@@ -428,21 +402,21 @@ export default function Page() {
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          {startIndex} of {totalItem} row(s) selected.
+          {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
         <div className="space-x-2">
           <Button
             variant="outline"
             size="sm"
-            disabled={startIndex === 0}
-            onClick={goToPreviousPage}>
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}>
             Previous
           </Button>
           <Button
             variant="outline"
             size="sm"
-            disabled={startIndex + itemsPerPage >= totalItem}
-            onClick={goToNextPage}>
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}>
             Next
           </Button>
         </div>

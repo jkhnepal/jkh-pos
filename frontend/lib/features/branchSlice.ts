@@ -1,4 +1,4 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import baseQuery from "./baseQuery";
 
 // Define common headers
@@ -18,11 +18,8 @@ export const branchApi = createApi({
     }),
 
     getAllBranch: builder.query({
-      query: ({ page = 1, limit = 5, search, sort }) => {
+      query: ({ sort }) => {
         const params = {
-          page,
-          limit,
-          search,
           sort,
         };
         return {
@@ -45,8 +42,6 @@ export const branchApi = createApi({
       }),
     }),
 
-
-    
     deleteBranch: builder.mutation({
       query: (branchId) => ({
         url: `/branches/${branchId}`,

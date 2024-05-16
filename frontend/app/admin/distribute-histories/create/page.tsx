@@ -10,14 +10,10 @@ import { toast } from "sonner";
 import { useCreateDistributeMutation, useGetAllDistributeQuery } from "@/lib/features/distributeSlice";
 import LoaderPre from "@/app/custom-components/LoaderPre";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-
-// Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useGetAllBranchQuery } from "@/lib/features/branchSlice";
-import { useGetAllProductQuery, useGetProductQuery } from "@/lib/features/product.sclice";
-import { useDebounce } from "use-debounce";
-
+import { useGetAllProductQuery } from "@/lib/features/product.sclice";
 
 const formSchema = z.object({
   branch: z.string(),
@@ -26,13 +22,9 @@ const formSchema = z.object({
 });
 
 export default function Page() {
-  const { refetch } = useGetAllDistributeQuery({ name: "" });
   const { data: branches } = useGetAllBranchQuery({});
-
   const [searchName, setSearchName] = React.useState<string>("");
-  const [debounceValue] = useDebounce(searchName, 1000);
-
-  const { data: products } = useGetAllProductQuery({ sort: "latest", page: 1, limit: 5, search: debounceValue });
+  const { data: products } = useGetAllProductQuery({ sort: "latest" });
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -44,23 +36,11 @@ export default function Page() {
     },
   });
 
-
-  // const { watch } = form;
-  // const watchedFields = watch();
-  // const priduct_id = watchedFields.product;
-
-  // const { data } = useGetProductQuery({ productId: priduct_id });
-
-  // React.useEffect(() => {
-  //   console.log(watchedFields);
-  // }, [watchedFields]);
-
   // Define a submit handler.
   const [createDistribute, { error, isLoading: isCreating }] = useCreateDistributeMutation();
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const res: any = await createDistribute(values);
     if (res.data) {
-      refetch();
       toast.success(res.data.msg);
       form.reset();
     }
@@ -198,28 +178,28 @@ export default function Page() {
 
 function Breadcumb() {
   return (
-  <>
+    <>
       <Breadcrumb className=" mb-8">
-      <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator>
-          <SlashIcon />
-        </BreadcrumbSeparator>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <SlashIcon />
+          </BreadcrumbSeparator>
 
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/admin/distribute-histories">Supply Histories</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator>
-          <SlashIcon />
-        </BreadcrumbSeparator>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/admin/distribute-histories">Supply Histories</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <SlashIcon />
+          </BreadcrumbSeparator>
 
-        <BreadcrumbItem>
-          <BreadcrumbPage>New Distribute</BreadcrumbPage>
-        </BreadcrumbItem>
-      </BreadcrumbList>
-  </Breadcrumb>
+          <BreadcrumbItem>
+            <BreadcrumbPage>New Distribute</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
     </>
   );
 }

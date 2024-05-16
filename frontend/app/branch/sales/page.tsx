@@ -4,14 +4,12 @@ import { ColumnDef, ColumnFiltersState, SortingState, VisibilityState, flexRende
 import { ArrowDown01, ArrowDown10, ChevronDown, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Link from "next/link";
 import { useGetAllSaleQuery } from "@/lib/features/saleSlice";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
 import * as Dialog from "@radix-ui/react-dialog";
-// Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
@@ -26,8 +24,6 @@ export default function Page() {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const [previewImage, setpreviewImage] = React.useState<string>("");
-  // console.log(previewImage);
-
   const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
   const branch_id = currentUser?.data.branch._id;
 
@@ -35,7 +31,7 @@ export default function Page() {
   const [debounceValue] = useDebounce(searchName, 1000);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [sort, setSort] = React.useState("latest");
-  const itemsPerPage = 10;
+  const itemsPerPage = 1000;
 
   const { data: salesOfABranch, isLoading: isFetching, refetch } = useGetAllSaleQuery({ branch: branch_id, sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
 
@@ -46,15 +42,7 @@ export default function Page() {
   let totalItem: number = salesOfABranch?.data.count;
   const startIndex = (currentPage - 1) * itemsPerPage;
 
-  console.log(salesOfABranch?.data.results);
-
-  const goToPreviousPage = () => {
-    setCurrentPage((prevPage) => prevPage - 1);
-  };
-
-  const goToNextPage = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
-  };
+  // console.log(salesOfABranch?.data.results);
 
   const columns: ColumnDef<any>[] = [
     {
@@ -120,9 +108,12 @@ export default function Page() {
     },
 
     {
-      accessorKey: "totalAmount",
+      accessorKey: "",
       header: "Total Amount",
-      cell: ({ row }: any) => <div>{row.getValue("totalAmount")}</div>,
+      cell: ({ row }: any) => {
+        const totalAmount = row.original.totalAmount - row.original.discountAmount * (row.original.quantity - row.original.returnedQuantity) - row.original.returnedQuantity * row.original.sp;
+        return <div>{totalAmount}</div>;
+      },
     },
 
     {
@@ -248,13 +239,13 @@ export default function Page() {
   return (
     <div className="w-full">
       <Breadcumb />
-      <div className="flex justify-between items-center py-4">
-        <Input
+      <div className="flex justify-end items-center py-4">
+        {/* <Input
           placeholder="Filter by name ..."
           value={searchName}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
           className="max-w-sm"
-        />
+        /> */}
 
         <div className=" flex space-x-2">
           <DropdownMenu>
@@ -345,15 +336,15 @@ export default function Page() {
           <Button
             variant="outline"
             size="sm"
-            disabled={startIndex === 0}
-            onClick={goToPreviousPage}>
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}>
             Previous
           </Button>
           <Button
             variant="outline"
             size="sm"
-            disabled={startIndex + itemsPerPage >= totalItem}
-            onClick={goToNextPage}>
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}>
             Next
           </Button>
         </div>

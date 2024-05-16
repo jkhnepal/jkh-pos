@@ -45,11 +45,8 @@ export default function Page() {
 
   console.log(returnsHistories?.data.results);
 
-  // import { useGetAllBranchQuery, useGetBranchQuery, useResetPasswordMutation, useUpdateBranchMutation } from "@/lib/features/branchSlice";
 
-  // const { data } = useGetRewardHistoryQuery(branchId);
-  // const branch = data?.data;
-  // console.log(branch);
+
 
   const [updateRewardHistory, { error: updateError, isLoading: isUpdating }] = useUpdateRewardHistoryMutation();
   // Define a submit handler.

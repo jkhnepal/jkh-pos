@@ -7,22 +7,11 @@ export async function createDistribute(input: DistributeInput) {
 }
 
 export async function findAllDistribute(filter: FilterQuery<DistributeDocument> = {}) {
-  const search = filter.search || "";
   const sort = filter.sort || "";
-  const page: any = filter.page || 1;
-  const limit: any = filter.limit || 5;
-  const skip = (page - 1) * limit;
-
-  const searchQuery: any = {
-    name: { $regex: search, $options: "i" },
-  };
   const count = await DistributeModel.countDocuments();
-  const results = await DistributeModel.find(searchQuery)
-    .skip(skip)
-    .limit(limit)
+  const results = await DistributeModel.find()
     .sort({ createdAt: sort == "latest" ? -1 : 1 })
     .populate("branch product");
-
   return { count, results };
 }
 

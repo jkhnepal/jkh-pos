@@ -1,4 +1,4 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import baseQuery from "./baseQuery";
 
 export const distributeApi = createApi({
@@ -6,12 +6,8 @@ export const distributeApi = createApi({
   baseQuery,
   endpoints: (builder) => ({
     getAllDistribute: builder.query({
-      query: ({ branch, page = 1, limit = 5, search, sort }) => {
+      query: ({ sort }) => {
         const params = {
-          branch,
-          page,
-          limit,
-          search,
           sort,
         };
         return {

@@ -25,7 +25,6 @@ export default function Page() {
   const params = useParams();
   console.log(params.id);
 
-  const { refetch } = useGetAllDistributeQuery({ name: "" });
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -55,8 +54,8 @@ export default function Page() {
   const handleReturn = async (e: any) => {
     e.preventDefault();
     const res: any = await createReturnToHeadquarter(dataToBeSend);
-    toast.success(res.data.msg);
     refetchBranchInventory();
+    toast.success(res.data.msg);
     router.push("/branch");
   };
 

@@ -47,7 +47,6 @@ export async function createDistributeHandler(req: Request<{}, {}, CreateDistrib
 export async function getAllDistributeHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
   try {
     const queryParameters = req.query;
-
     const results = await findAllDistribute(queryParameters);
     return res.json({
       status: "success",

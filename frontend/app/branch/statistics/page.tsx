@@ -3,22 +3,26 @@ import { CardTitle, CardHeader, CardContent, Card } from "@/components/ui/card";
 import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
 import { useGetBranchProfitQuery, useGetBranchStatQuery } from "@/lib/features/statSlice";
 import { LineChart, Shapes, Shirt } from "lucide-react";
+import { useEffect } from "react";
 
 export default function Component() {
   const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
   const branch_id = currentUser?.data.branch._id;
-  const { data: stats, isLoading } = useGetBranchStatQuery({ branch: branch_id });
-  console.log("🚀 ~ Component ~ stats:", stats);
 
-  const { data: profitData } = useGetBranchProfitQuery({ branch: branch_id });
-  console.log("🚀 ~ Component ~ profitData:", profitData);
-
-  // Assuming branchInventories.data.results is the array containing inventory objects
+  const { data: stats, isLoading, refetch } = useGetBranchStatQuery({ branch: branch_id });
+  const { data: profitData, refetch: refetchProfitData } = useGetBranchProfitQuery({ branch: branch_id });
   const totalStockSum = stats?.data.inventories.reduce((acc: any, inventory: any) => {
     return acc + inventory.totalStock;
   }, 0);
 
-  console.log("Total Stock Sum:", totalStockSum);
+  useEffect(() => {
+    refetch();
+    refetchProfitData();
+  }, [refetch, refetchProfitData]);
+
+  // console.log("Total Stock Sum:", totalStockSum);
+  // console.log("🚀 ~ Component ~ stats:", stats);
+  // console.log("🚀 ~ Component ~ profitData:", profitData);
 
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -50,7 +54,8 @@ export default function Component() {
 
           <StatCard
             title=" Total Sale Amount"
-            value={`Rs ${(profitData.totalSales - stats.data.totalreturnSale).toLocaleString("en-IN")}`}
+            // value={`Rs ${(profitData.totalSalesAfterDiscount + profitData.totalReturnedDiscountAmount - stats.data.totalreturnSale).toLocaleString("en-IN")}`}
+            value={`Rs ${(profitData.totalSales - profitData.totalDiscountAmount - stats.data.totalreturnSale)}`}
             icon={<Shirt />}
           />
 

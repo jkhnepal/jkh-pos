@@ -3,20 +3,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import moment from "moment";
 import { useParams } from "next/navigation";
-type Props = {};
-// Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import Image from "next/image";
 import { useGetSaleQuery } from "@/lib/features/saleSlice";
+type Props = {};
 
 export default function Page({}: Props) {
   const params = useParams();
-  console.log(params);
-
   const { data } = useGetSaleQuery(params?.id);
   const soldItem = data?.data;
-  console.log(soldItem)
 
   return (
     <>
@@ -39,7 +35,6 @@ export default function Page({}: Props) {
             />
           </div>
 
-
           <div>
             <Label>Product sku</Label>
             <Input
@@ -57,6 +52,14 @@ export default function Page({}: Props) {
           </div>
 
           <div>
+            <Label>Discount Amount Per Item (Rs)</Label>
+            <Input
+              readOnly
+              value={soldItem.product.discountAmount}
+            />
+          </div>
+
+          <div>
             <Label>Selling price</Label>
             <Input
               readOnly
@@ -65,10 +68,18 @@ export default function Page({}: Props) {
           </div>
 
           <div>
+            <Label>Total Amount after discount (Rs)</Label>
+            <Input
+              readOnly
+              value={soldItem.totalAmount - soldItem.discountAmount * (soldItem.quantity - soldItem.returnedQuantity) - soldItem.returnedQuantity * soldItem.sp}
+            />
+          </div>
+
+          <div>
             <Label>Member name</Label>
             <Input
               readOnly
-              value={soldItem.member.name}
+              value={soldItem.memberName}
             />
           </div>
 
@@ -76,7 +87,7 @@ export default function Page({}: Props) {
             <Label>Member Phone number</Label>
             <Input
               readOnly
-              value={soldItem.member.phone}
+              value={soldItem.memberPhone}
             />
           </div>
 
@@ -88,7 +99,6 @@ export default function Page({}: Props) {
             />
           </div>
 
-
           <div>
             <Label>Returned quantity</Label>
             <Input
@@ -96,8 +106,6 @@ export default function Page({}: Props) {
               value={soldItem.returnedQuantity}
             />
           </div>
-
-
 
           <div>
             <Label>Total Sold quantity after return</Label>
@@ -111,7 +119,7 @@ export default function Page({}: Props) {
             <Label>Sell date</Label>
             <Input
               readOnly
-              value={moment(soldItem.createdAt).format('MMMM Do YYYY, h:mm:ss a')}
+              value={moment(soldItem.createdAt).format("MMMM Do YYYY, h:mm:ss a")}
             />
           </div>
 
@@ -132,32 +140,30 @@ export default function Page({}: Props) {
   );
 }
 
-
-
 function Breadcumb() {
   return (
-  <>
+    <>
       <Breadcrumb className=" mb-8">
-      <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/branch">Dashboard</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator>
-          <SlashIcon />
-        </BreadcrumbSeparator>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/branch">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <SlashIcon />
+          </BreadcrumbSeparator>
 
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/branch/sales">Sales</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator>
-          <SlashIcon />
-        </BreadcrumbSeparator>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/branch/sales">Sales</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <SlashIcon />
+          </BreadcrumbSeparator>
 
-        <BreadcrumbItem>
-          <BreadcrumbPage>View Detail</BreadcrumbPage>
-        </BreadcrumbItem>
-      </BreadcrumbList>
-  </Breadcrumb>
+          <BreadcrumbItem>
+            <BreadcrumbPage>View Detail</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
     </>
   );
 }
