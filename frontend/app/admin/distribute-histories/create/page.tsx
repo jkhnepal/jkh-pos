@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { useCreateDistributeMutation, useGetAllDistributeQuery } from "@/lib/features/distributeSlice";
+import { useCreateDistributeMutation } from "@/lib/features/distributeSlice";
 import LoaderPre from "@/app/custom-components/LoaderPre";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SlashIcon } from "@radix-ui/react-icons";

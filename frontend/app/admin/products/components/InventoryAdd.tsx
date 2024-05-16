@@ -21,9 +21,14 @@ type Props = {
 
 const formSchema = z.object({
   product: z.string(),
-  stock: z.coerce.number().min(1, {
-    message: "Stock must be a positive number.",
-  }),
+  stock: z.coerce
+    .number()
+    .positive({
+      message: "Stock must be a positive number.",
+    })
+    .min(1, {
+      message: "Stock must be greater than zero.",
+    }),
 });
 
 export default function InventoryAdd({ product }: Props) {
@@ -169,6 +174,8 @@ export default function InventoryAdd({ product }: Props) {
                               className=" h-6 w-24 mx-0 px-1 shadow-none"
                               type="number"
                               placeholder="Stock"
+                              min={0}
+                              
                               defaultValue={item.stock}
                               onChange={(e: any) => setNewStock(e.target.value)}
                             />
@@ -191,7 +198,7 @@ export default function InventoryAdd({ product }: Props) {
                           item.stock
                         )}
                       </TableCell>
-                      <TableCell> {moment(item.createdAt).format('MMMM Do YYYY, h:mm:ss a')} </TableCell>
+                      <TableCell> {moment(item.createdAt).format("MMMM Do YYYY, h:mm:ss a")} </TableCell>
                       <TableCell className="flex gap-4">
                         <PencilRuler
                           size={18}

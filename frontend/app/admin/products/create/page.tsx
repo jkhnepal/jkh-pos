@@ -29,13 +29,23 @@ const formSchema = z.object({
     message: "Category is required",
   }),
 
-  cp: z.coerce.number().min(1, {
-    message: "Selling price must be a positive number.",
-  }),
+  cp: z.coerce
+    .number()
+    .positive({
+      message: "Cost price must be a positive number.",
+    })
+    .min(1, {
+      message: "Cost price must be greater than zero.",
+    }),
 
-  sp: z.coerce.number().min(1, {
-    message: "Selling price must be a positive number.",
-  }),
+  sp: z.coerce
+    .number()
+    .positive({
+      message: "Selling price must be a positive number.",
+    })
+    .min(1, {
+      message: "Selling price must be greater than zero.",
+    }),
 
   image: z.string().optional(),
   note: z.string().optional(),
@@ -43,7 +53,12 @@ const formSchema = z.object({
   colors: z.string().optional(),
   sizes: z.string().optional(),
 
-  discountAmount: z.coerce.number().optional(),
+  discountAmount: z.coerce
+    .number()
+    .nonnegative({
+      message: "Discount amount cannot be negative.",
+    })
+    .optional(),
 });
 
 export default function Page() {
