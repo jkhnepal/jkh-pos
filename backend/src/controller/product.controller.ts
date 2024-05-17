@@ -38,9 +38,7 @@ export async function createProductHandler(req: Request<{}, {}, CreateProductInp
 export async function getAllProductHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
   try {
     const queryParameters = req.query;
-
     const results = await findAllProduct(queryParameters);
-    // console.log(results);
     return res.json({
       status: "success",
       msg: "Get all product success",

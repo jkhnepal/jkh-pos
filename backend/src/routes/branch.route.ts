@@ -13,8 +13,6 @@ router.get("/:branchId", [validate(getBranchSchema)], getBranchHandler);
 router.get("/", [validate(getAllBranchSchema)], getAllBranchHandler);
 router.delete("/:branchId", [requireAdmin, validate(deleteBranchSchema)], deleteBranchHandler);
 router.post("/login", [validate(loginSchema)], loginBranchHandler);
-// router.patch("/reset-password/:branchId",requireAdmin, resetPasswordHandler); // branchId->email
-
-router.patch("/reset-password/:email",requireAdmin, resetBranchPasswordHandler);
+router.patch("/reset-password/:email", requireAdmin, resetBranchPasswordHandler);
 
 export default router;

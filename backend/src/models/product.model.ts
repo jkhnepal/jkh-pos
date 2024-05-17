@@ -9,6 +9,7 @@ export interface ProductInput {
 
   cp: Number;
   sp: Number;
+  discountAmount: Number;
 
   image?: string;
   note?: string;
@@ -45,6 +46,7 @@ const productSchema = new mongoose.Schema(
 
     totalAddedStock: { type: Number, default: 0 },
     availableStock: { type: Number, default: 0 },
+    discountAmount: { type: Number, default: 0 },
 
     colors: { type: String },
     sizes: { type: String },

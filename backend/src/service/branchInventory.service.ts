@@ -8,25 +8,17 @@ export async function createBranchInventory(input: BranchInventoryInput): Promis
 
 export async function findAllBranchInventory(filter: FilterQuery<BranchInventoryDocument> = {}) {
   const branch = filter.branch || "";
-  const search = filter.search || "";
   const sort = filter.sort || "";
-  const page: any = filter.page || 1;
-  const limit: any = filter.limit || 5;
-  const skip = (page - 1) * limit;
-
   const searchQuery: any = {
-    name: { $regex: search, $options: "i" },
     branch: branch,
     totalStock: { $gt: 0 },
   };
   const count = await BranchInventoryModel.countDocuments(searchQuery);
   const results = await BranchInventoryModel.find(searchQuery)
-    .skip(skip)
-    .limit(limit)
     .sort({ createdAt: sort == "latest" ? -1 : 1 })
     .populate({
       path: "product",
-      select: "name image productId sku cp sp",
+      select: "name image productId sku cp sp discountAmount",
     });
   return { count, results };
 }

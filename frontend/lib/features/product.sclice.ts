@@ -18,11 +18,8 @@ export const productApi = createApi({
     }),
 
     getAllProduct: builder.query({
-      query: ({ page = 1, limit = 5, search, sort }) => {
+      query: ({ sort }) => {
         const params = {
-          page,
-          limit,
-          search,
           sort,
         };
         return {

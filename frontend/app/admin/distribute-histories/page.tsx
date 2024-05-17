@@ -4,17 +4,15 @@ import { ColumnDef, ColumnFiltersState, SortingState, VisibilityState, flexRende
 import { ArrowDown01, ArrowDown10, ArrowUpDown, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Link from "next/link";
 import { useGetAllDistributeQuery } from "@/lib/features/distributeSlice";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
 import moment from "moment";
-import * as Dialog from "@radix-ui/react-dialog"; // Breadcumb
+import * as Dialog from "@radix-ui/react-dialog";
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { useDebounce } from "use-debounce";
 import Image from "next/image";
 import { useGetAllBranchQuery } from "@/lib/features/branchSlice";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -24,46 +22,26 @@ export default function Page() {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-
   const [previewImage, setpreviewImage] = React.useState<string>("");
-  console.log(previewImage);
-
-  const [searchName, setSearchName] = React.useState<string>("");
-  const [debounceValue] = useDebounce(searchName, 1000);
-  const [currentPage, setCurrentPage] = React.useState(1);
   const [sort, setSort] = React.useState("latest");
-  const itemsPerPage = 8;
 
-  const { data: distributes, isLoading: isFetching } = useGetAllDistributeQuery({ sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
-  let totalItem = distributes?.data.count;
-  const startIndex = (currentPage - 1) * itemsPerPage;
-
-  const { data: bran } = useGetAllBranchQuery({ sort: "latest", page: 1, limit: 100, search: "" });
+  const { data: distributes, isLoading: isFetching, refetch } = useGetAllDistributeQuery({ sort: sort });
+  const { data: bran } = useGetAllBranchQuery({ sort: "latest" });
   const branches = bran?.data.results;
+
+  React.useEffect(() => {
+    refetch();
+  }, [refetch]);
 
   const [filteredData, setFilteredData] = React.useState([]);
   const [selectedBranch, setSelectedBranch] = React.useState<any>("");
 
-  console.log(distributes?.data.results);
-  console.log(selectedBranch);
-
-  // Effect to update filteredData when returnHistories changes
   React.useEffect(() => {
     if (distributes) {
       const filtered = distributes?.data?.results?.filter((data: any) => data?.branch?._id === selectedBranch);
       setFilteredData(filtered);
     }
   }, [distributes, selectedBranch]);
-
-  console.log(filteredData)
-
-  const goToPreviousPage = () => {
-    setCurrentPage((prevPage) => prevPage - 1);
-  };
-
-  const goToNextPage = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
-  };
 
   const columns: ColumnDef<any>[] = [
     {
@@ -89,7 +67,7 @@ export default function Page() {
     {
       accessorKey: "sale",
       header: "S.N",
-      cell: ({ row }: any) => <div>{startIndex + row.index + 1} </div>,
+      cell: ({ row }: any) => <div>{row.index + 1} </div>,
     },
 
     {
@@ -193,8 +171,7 @@ export default function Page() {
   ];
 
   const table = useReactTable({
-    // data: distributes?.data.results || [],
-    data: (filteredData && filteredData) || [],
+    data: (selectedBranch ? filteredData : distributes?.data.results) || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -224,14 +201,6 @@ export default function Page() {
     <div className="w-full">
       <Breadcumb />
       <div className="flex justify-between items-center py-4">
-        {/* Opacity-0 */}
-        {/* <Input
-          placeholder="Filter by name..."
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-          onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}
-          className="max-w-sm opacity-0"
-        /> */}
-
         <Select
           onValueChange={(value) => {
             setSelectedBranch(value);
@@ -335,25 +304,24 @@ export default function Page() {
             )}
           </TableBody>
         </Table>
-        {/* {isFetching && <p>Loading</p>} */}
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          {startIndex} of {totalItem} row(s) selected.
+          {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
         <div className="space-x-2">
           <Button
             variant="outline"
             size="sm"
-            disabled={startIndex === 0}
-            onClick={goToPreviousPage}>
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}>
             Previous
           </Button>
           <Button
             variant="outline"
             size="sm"
-            disabled={startIndex + itemsPerPage >= totalItem}
-            onClick={goToNextPage}>
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}>
             Next
           </Button>
         </div>

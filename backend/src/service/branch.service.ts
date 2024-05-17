@@ -7,21 +7,12 @@ export async function createBranch(input: BranchInput) {
 }
 
 export async function findAllBranch(filter: FilterQuery<BranchDocument> = {}) {
-  const search = filter.search || "";
   const sort = filter.sort || "";
-  const page: any = filter.page || 1;
-  const limit: any = filter.limit || 5;
-  const skip = (page - 1) * limit;
-
   const searchQuery: any = {
-    name: { $regex: search, $options: "i" },
-    type: { $ne: "headquarter" }, // not include headquarter
+    type: { $ne: "headquarter" },
   };
-  const count = await BranchModel.countDocuments({ type: { $ne: "headquarter" } }); // not include headquarter
-  const results = await BranchModel.find(searchQuery)
-    .skip(skip)
-    .limit(limit)
-    .sort({ createdAt: sort == "latest" ? -1 : 1 });
+  const count = await BranchModel.countDocuments({ type: { $ne: "headquarter" } });
+  const results = await BranchModel.find(searchQuery).sort({ createdAt: sort == "latest" ? -1 : 1 });
   return { count, results };
 }
 

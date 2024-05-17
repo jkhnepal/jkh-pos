@@ -48,19 +48,20 @@ export async function createBranchHandler(req: Request<{}, {}, CreateBranchInput
     const branch = await createBranch({ ...req.body, password: hashedPassword });
 
     const admin: any = await BranchModel.findOne({ type: "headquarter" });
+
     const info = await transporter.sendMail({
       from: "JKH",
       to: admin.email,
       subject: "New password created",
       html: `<div>
     <div class="container">
-     <div class="content">
-     <p class="heading">Password of the branch (${body.name}) is: <span style="font-weight: bold; color: blue;">${body.password}</span></p>  
-     </div>
-     <div class="footer">
+      <div class="content">
+        <p class="heading">Password of the branch (${body.name}) is: <span style="font-weight: bold; color: blue;">${body.password}</span></p>  
+      </div>
+    <div class="footer">
       <p>Thank You</p>
- </div>
- </div>
+      </div>
+      </div>
    </div>`,
     });
 

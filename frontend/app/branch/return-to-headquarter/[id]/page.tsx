@@ -6,11 +6,10 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { useGetAllDistributeQuery } from "@/lib/features/distributeSlice";
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useParams, useRouter } from "next/navigation";
-import { useGetBranchInventoryQuery } from "@/lib/features/branchInventorySlice";
+import { useGetAllBranchInventoryQuery, useGetBranchInventoryQuery } from "@/lib/features/branchInventorySlice";
 import { useCreateReturnToHeadquarterMutation } from "@/lib/features/returnToHeadquarterSlice";
 
 const formSchema = z.object({
@@ -21,11 +20,7 @@ const formSchema = z.object({
 
 export default function Page() {
   const router = useRouter();
-
   const params = useParams();
-  console.log(params.id);
-
-  const { refetch } = useGetAllDistributeQuery({ name: "" });
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -39,12 +34,11 @@ export default function Page() {
 
   const { data: inventoryData, refetch: refetchBranchInventory } = useGetBranchInventoryQuery(params.id);
   const sale = inventoryData?.data;
-  console.log(sale);
 
-  // To be return quantity
+  const { refetch } = useGetAllBranchInventoryQuery({ branch: sale?.branch, sort: "latest" });
   const [quantity, setQuantity] = React.useState<number>(1);
+  const [createReturnToHeadquarter, { isError, error, status }] = useCreateReturnToHeadquarterMutation();
 
-  const [createReturnToHeadquarter] = useCreateReturnToHeadquarterMutation();
   const dataToBeSend = {
     branch: sale?.branch,
     product: sale?.product,
@@ -53,12 +47,25 @@ export default function Page() {
   };
 
   const handleReturn = async (e: any) => {
-    e.preventDefault();
     const res: any = await createReturnToHeadquarter(dataToBeSend);
-    toast.success(res.data.msg);
-    refetchBranchInventory();
-    router.push("/branch");
+    if (res.data) {
+      refetchBranchInventory();
+      refetch();
+      toast.success(res?.data?.msg);
+      router.push("/branch");
+    }
   };
+
+  if (error) {
+    if ("status" in error) {
+      const errMsg = "error" in error ? error.error : JSON.stringify(error.data);
+      const errorMsg = JSON.parse(errMsg).msg;
+      toast.error(errorMsg);
+    } else {
+      const errorMsg = error.message;
+      toast.error(errorMsg);
+    }
+  }
 
   return (
     <div className="   ">
@@ -81,31 +88,23 @@ export default function Page() {
   );
 }
 
-
 function Breadcumb() {
   return (
-  <>
+    <>
       <Breadcrumb className=" mb-8">
-      <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/branch">Dashboard</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator>
-          <SlashIcon />
-        </BreadcrumbSeparator>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/branch">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <SlashIcon />
+          </BreadcrumbSeparator>
 
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/branch/sales">Sales</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator>
-          <SlashIcon />
-        </BreadcrumbSeparator>
-
-        <BreadcrumbItem>
-          <BreadcrumbPage>Return</BreadcrumbPage>
-        </BreadcrumbItem>
-      </BreadcrumbList>
-  </Breadcrumb>
+          <BreadcrumbItem>
+            <BreadcrumbPage>Return To Headquarter</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
     </>
   );
 }

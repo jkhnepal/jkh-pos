@@ -16,7 +16,6 @@ import OptionalLabel from "@/app/custom-components/OptionalLabel";
 import LoaderPre from "@/app/custom-components/LoaderPre";
 import { useGetAllProductQuery, useGetProductQuery, useUpdateProductMutation } from "@/lib/features/product.sclice";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-// Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useGetAllCategoryQuery } from "@/lib/features/categorySlice";
@@ -28,26 +27,41 @@ const formSchema = z.object({
     message: "Name must be at least 4 characters.",
   }),
 
-  // sku: z.string().min(5, {
-  //   message: "SKU must be at least 5 characters.",
-  // }),
   category: z.string().min(5, {
     message: "Category is required",
   }),
 
-  cp: z.coerce.number().min(1, {
-    message: "Selling price must be a positive number.",
-  }),
+  cp: z.coerce
+    .number()
+    .positive({
+      message: "Cost price must be a positive number.",
+    })
+    .min(1, {
+      message: "Cost price must be greater than zero.",
+    }),
 
-  sp: z.coerce.number().min(1, {
-    message: "Selling price must be a positive number.",
-  }),
+  sp: z.coerce
+    .number()
+    .positive({
+      message: "Selling price must be a positive number.",
+    })
+    .min(1, {
+      message: "Selling price must be greater than zero.",
+    }),
 
   image: z.string().optional(),
   note: z.string().optional(),
 
   colors: z.string().optional(),
+
   sizes: z.string().optional(),
+
+  discountAmount: z.coerce
+    .number()
+    .nonnegative({
+      message: "Discount amount cannot be negative.",
+    })
+    .optional(),
 });
 
 export default function Page() {
@@ -56,13 +70,11 @@ export default function Page() {
 
   const [updateProduct, { error: updateError, isLoading: isUpdating }] = useUpdateProductMutation();
 
-  // For refreshing the table list with new data
-  const { refetch } = useGetAllProductQuery({ page: 1, limit: 1 });
-  const { data: categories } = useGetAllCategoryQuery({});
+  const { refetch } = useGetAllProductQuery({ sort: "latest" });
+  const { data: categories } = useGetAllCategoryQuery({ sort: "latest" });
 
   const { data, isFetching } = useGetProductQuery(productId);
   const product = data?.data;
-  console.log(product);
 
   const { uploading, handleFileUpload } = useCloudinaryFileUpload();
   const [imageUrl, setImageUrl] = useState<string>("");
@@ -72,7 +84,6 @@ export default function Page() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      // sku: "",
       category: product ? product.category : "",
       cp: 0,
       sp: 0,
@@ -80,6 +91,7 @@ export default function Page() {
       note: "",
       colors: "",
       sizes: "",
+      discountAmount: 0,
     },
   });
 
@@ -87,7 +99,6 @@ export default function Page() {
     if (product) {
       form.reset({
         name: product.name || "",
-        // sku: product.sku || "",
         category: product.category || "",
 
         cp: product.cp || 0,
@@ -98,6 +109,7 @@ export default function Page() {
 
         colors: product.colors || "",
         sizes: product.sizes || "",
+        discountAmount: product.discountAmount || 0,
       });
       setImageUrl(product.image || "");
     }
@@ -138,7 +150,7 @@ export default function Page() {
 
   return (
     <div className=" space-y-8">
-  <Breadcrumb className=" mb-8">
+      <Breadcrumb className=" mb-8">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
@@ -213,23 +225,23 @@ export default function Page() {
             )}
           />
 
-          {/* <FormField
+          <FormField
             control={form.control}
-            name="sku"
+            name="discountAmount"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Product SKU *</FormLabel>
+                <FormLabel>Discount Amount *</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Product SKU"
+                    type="number"
+                    placeholder="Discount Amount"
                     {...field}
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
-          /> */}
-
+          />
           <FormField
             control={form.control}
             name="cp"
@@ -312,6 +324,37 @@ export default function Page() {
 
           <FormField
             control={form.control}
+            name="image"
+            render={({ field }) => (
+              <FormItem className="flex flex-col mt-2">
+                <FormLabel>
+                  Image <OptionalLabel /> <span className="text-primary/85  text-xs">[image must be less than 1MB]</span>
+                </FormLabel>
+
+                <Input
+                  type="file"
+                  onChange={(event) => handleFileUpload(event.target.files?.[0], setImageUrl)}
+                />
+
+                {uploading ? (
+                  <div className=" flex flex-col gap-2 rounded-md items-center justify-center h-52 w-52 border">
+                    <LoaderSpin />
+                  </div>
+                ) : (
+                  <Image
+                    width={100}
+                    height={100}
+                    src={imageUrl || defaultImage}
+                    alt="img"
+                    className="p-0.5 rounded-md overflow-hidden h-52 w-52 object-cover border"
+                  />
+                )}
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
             name="colors"
             render={({ field }) => (
               <FormItem>
@@ -329,40 +372,6 @@ export default function Page() {
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="image"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  Image <OptionalLabel /> <span className="text-primary/85  text-xs">[image must be less than 1MB]</span>
-                </FormLabel>
-                <div className=" flex flex-col   gap-2">
-                  <Input
-                    type="file"
-                    onChange={(event) => handleFileUpload(event.target.files?.[0], setImageUrl)}
-                  />
-
-                  <>
-                    {uploading ? (
-                      <div className=" flex flex-col gap-2 rounded-md items-center justify-center h-52 w-52 border">
-                        <LoaderSpin />
-                      </div>
-                    ) : (
-                      <Image
-                        width={100}
-                        height={100}
-                        src={imageUrl || defaultImage}
-                        alt="img"
-                        className="p-0.5 rounded-md overflow-hidden h-52 w-52 border"
-                      />
-                    )}
-                  </>
-                </div>
-              </FormItem>
-            )}
-          />
-
           <div className=" flex flex-col">
             <span className=" opacity-0">.</span>
             <div>
@@ -375,6 +384,3 @@ export default function Page() {
     </div>
   );
 }
-
-
-

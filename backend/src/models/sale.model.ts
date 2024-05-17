@@ -13,6 +13,8 @@ export interface SaleInput {
   sp: number;
   quantity: number;
   totalAmount: number;
+  discountAmount: number;
+  totalDiscountAmount: number;
   returnedQuantity?: number;
   invoiceNo: string;
 }
@@ -40,6 +42,10 @@ const saleSchema = new mongoose.Schema(
 
     memberName: { type: String },
     memberPhone: { type: Number },
+
+    discountAmount: { type: Number, required: true },
+    totalDiscountAmount: { type: Number, required: true },
+
     returnedQuantity: { type: Number, required: true, default: 0 },
     invoiceNo: { type: String, required: true },
   },

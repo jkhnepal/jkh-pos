@@ -12,8 +12,6 @@ import { useParams } from "next/navigation";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { useGetAllProductQuery, useGetProductQuery, useUpdateProductMutation } from "@/lib/features/product.sclice";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-
-// Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useGetAllCategoryQuery } from "@/lib/features/categorySlice";
@@ -266,7 +264,7 @@ export default function Page() {
                       height={200}
                       src={imageUrl || defaultImage}
                       alt="img"
-                      className="p-0.5 rounded-md overflow-hidden h-52 w-52 border"
+                     className="p-0.5 rounded-md overflow-hidden h-52 w-52 object-cover border"
                     />
                   </>
                 </div>

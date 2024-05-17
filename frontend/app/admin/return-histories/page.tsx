@@ -7,14 +7,12 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useDebounce } from "use-debounce";
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useGetAllHistoryQuery } from "@/lib/features/returnToHeadquarterSlice";
 import * as Dialog from "@radix-ui/react-dialog";
 import moment from "moment";
 import Image from "next/image";
-
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useGetAllBranchQuery } from "@/lib/features/branchSlice";
 
@@ -23,33 +21,23 @@ export default function Page() {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-
-  const [currentPage, setCurrentPage] = React.useState(1);
   const [sort, setSort] = React.useState("latest");
-  const itemsPerPage = 10;
-
   const { data: members, isLoading: isFetching, refetch } = useGetAllHistoryQuery({});
-  let totalItem: number = members?.data.count;
-
-  const { data: bran } = useGetAllBranchQuery({ sort: "latest", page: 1, limit: 100, search: "" });
+  const { data: bran } = useGetAllBranchQuery({ sort: "latest" });
   const branches = bran?.data.results;
 
-  const startIndex = (currentPage - 1) * itemsPerPage;
   const [previewImage, setpreviewImage] = React.useState<string>("");
-
   const returnHistories = members?.data.results;
 
   const [filteredData, setFilteredData] = React.useState([]);
   const [selectedBranch, setSelectedBranch] = React.useState<any>("");
 
-  // Effect to update filteredData when returnHistories changes
   React.useEffect(() => {
     if (returnHistories) {
       const filtered = returnHistories.filter((data: any) => data?.branch?._id === selectedBranch);
       setFilteredData(filtered);
     }
-  }, [returnHistories,selectedBranch]);
-
+  }, [returnHistories, selectedBranch]);
 
   const columns: ColumnDef<any>[] = [
     {
@@ -75,7 +63,7 @@ export default function Page() {
     {
       accessorKey: "sale",
       header: "S.N",
-      cell: ({ row }: any) => <div>{startIndex + row.index + 1} </div>,
+      cell: ({ row }: any) => <div>{row.index + 1} </div>,
     },
 
     {
@@ -166,7 +154,8 @@ export default function Page() {
   ];
 
   const table = useReactTable({
-    data: filteredData && filteredData || [],
+    // data: filteredData && filteredData || [],
+    data: selectedBranch ? filteredData : returnHistories || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -197,13 +186,6 @@ export default function Page() {
     <div className="w-full">
       <Breadcumb />
       <div className="flex justify-between items-center py-4 ">
-        {/* <Input
-          placeholder="Filter by name ..."
-          value={searchName}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
-          className="max-w-sm"
-        /> */}
-
         <Select
           onValueChange={(value) => {
             setSelectedBranch(value);
@@ -298,7 +280,7 @@ export default function Page() {
                 <TableCell
                   colSpan={columns.length}
                   className="h-24 text-center">
-                Please select the branch to view the return histories.
+                  Please select the branch to view the return histories.
                 </TableCell>
               </TableRow>
             )}
@@ -307,7 +289,7 @@ export default function Page() {
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          {startIndex} of {totalItem} row(s) selected.
+          {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
 
         <div className="space-x-2">

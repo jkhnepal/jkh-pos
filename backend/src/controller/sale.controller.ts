@@ -53,102 +53,10 @@ export async function getAllSaleHandler(req: Request<{}, {}, {}>, res: Response,
   }
 }
 
-// export async function getAllSaleByMonthHandler(req: any, res: Response, next: NextFunction) {
-//   try {
-//     const branchId = req.params.branchId;
-//     console.log(branchId);
-
-//     const results = await findAllSale();
-//     return res.json({
-//       status: "success",
-//       msg: "Get all sale success",
-//       data: results,
-//     });
-//   } catch (error: any) {
-//     console.error(colors.red("msg:", error.message));
-//     next(new AppError("Internal server error", 500));
-//   }
-// }
-
-// export async function getAllSaleByMonthHandler(req: any, res: Response, next: NextFunction) {
-//   try {
-//     const branchId = req.params.branchId;
-//     console.log(branchId);
-
-//     // Fetch all sales
-//     const allSales: any = await SaleModel.find();
-
-//     // Filter sales by branchId
-//     // const branchSales: any = allSales.filter((sale: any) => sale.branch === branchId);
-//     // const branchSales: await findAllSale();
-//     const branchSales=await SaleModel.find({
-//       branch: branchId,
-//     });
-
-//     // Group sales by month
-//     const salesByMonth = groupSalesByMonth(branchSales);
-//     console.log(salesByMonth);
-
-//     return res.json({
-//       status: "success",
-//       msg: "Get all sale success",
-//       data: salesByMonth,
-//     });
-
-//   } catch (error: any) {
-//     console.error("msg:", error.message);
-//     next(new AppError("Internal server error", 500));
-//   }
-// }
-
-// // Function to group sales by month
-// function groupSalesByMonth(sales:any) {
-//   const salesByMonth: any = {};
-
-//   sales.forEach((sale:any) => {
-//     const date = new Date(sale.createdAt); // Assuming there's a date property in your sale object
-//     const month = date.getMonth() + 1; // Month is 0-indexed, so adding 1 to get actual month
-//     const year = date.getFullYear();
-
-//     const key = `${year}-${month}`;
-//     if (!salesByMonth[key]) {
-//       salesByMonth[key] = [];
-//     }
-//     salesByMonth[key].push(sale);
-//   });
-
-//   return salesByMonth;
-// }
-
 export async function getAllSaleByMonthHandler(req: any, res: Response, next: NextFunction) {
   try {
-    console.log(req.params);
     const branchId = req.params.branchId;
-    console.log(branchId);
-
-    // Fetch all sales
-    const allSales: any = await SaleModel.find();
-
-    // Filter sales by branchId
     const branchSales = await SaleModel.find({ branch: branchId });
-    // console.log(branchSales);
-
-    // // Adjust sales considering returnedQuantity
-    // const adjustedSales = branchSales.map((sale:any) => {
-    //   const totalQuantity = sale.quantity - sale.returnedQuantity;
-    //   return { ...sale, quantity: totalQuantity };
-    // });
-
-    // // console.log(adjustedSales,"adjustedSales")
-    // const adjustedSales=branchSales.map((sale:any)=>{
-    //   // const totalQuantity=sale.quantity-sale.returnedQuantity;
-    //   // return {...sale,quantity:totalQuantity}
-    //   const quantityAfterReturn = sale.quantity - sale.returnedQuantity;
-    //   console.log(quantityAfterReturn,"quantityAfterReturn")
-    //   return { ...sale, quantityAfterReturn: quantityAfterReturn };
-    // })
-
-    // console.log(adjustedSales,"adjustedSales")
 
     const adjustedSales = branchSales.map((sale: any) => {
       const quantityAfterReturn = sale.quantity - sale.returnedQuantity;
@@ -161,8 +69,10 @@ export async function getAllSaleByMonthHandler(req: any, res: Response, next: Ne
         cp: sale.cp,
         sp: sale.sp,
         totalAmount: sale.totalAmount,
-        // returnedAmount: sale.sp * quantityAfterReturn,
-        totalAmountAfterReturn: sale.totalAmount - (sale.sp * sale.returnedQuantity),
+        discountAmount: sale.discountAmount,
+        returnedQuantity: sale.returnedQuantity,
+        invoiceNo: sale.invoiceNo,
+        totalAmountAfterReturn: sale.totalAmount - sale.sp * sale.returnedQuantity,
         memberName: sale.memberName,
         memberPhone: sale.memberPhone,
         saleId: sale.saleId,
@@ -172,16 +82,7 @@ export async function getAllSaleByMonthHandler(req: any, res: Response, next: Ne
       };
     });
 
-    console.log(adjustedSales, "adjustedSales");
-
-    // Group sales by month
-    // const salesByMonth = groupSalesByMonth(branchSales);
     const salesByMonth = groupSalesByMonth(adjustedSales);
-    console.log(salesByMonth);
-
-    // const salesByMonthAfterReturnCalculation = groupSalesByMonth(branchSales);
-    // console.log(salesByMonth);
-
     // Convert object to array
     const salesByMonthArray = Object.entries(salesByMonth).map(([key, value]) => ({ month: key, sales: value }));
 
@@ -282,32 +183,9 @@ export async function deleteSaleHandler(req: Request<UpdateSaleInput["params"]>,
   }
 }
 
-// export async function deleteSalesByMonthHandler(req: any, res: Response, next: NextFunction) {
-//   try {
-//     const { year, month } = req.params; // Extract year and month from request parameters
-//     const startDate = new Date(`${year}-${month}-01`);
-//     const endDate = new Date(`${year}-${month + 1}-01`); // Get the start and end dates of the specified month
-
-//     // Delete sales data for the specified month
-//     const result = await SaleModel.deleteMany({
-//       createdAt: { $gte: startDate, $lt: endDate }
-//     });
-
-//     return res.json({
-//       status: "success",
-//       msg: `Deleted ${result.deletedCount} sales records for month ${year}-${month}`,
-//       data: null,
-//     });
-//   } catch (error: any) {
-//     console.error("msg:", error.message);
-//     next(new AppError("Internal server error", 500));
-//   }
-// }
-
 export async function deleteSalesByMonthHandler(req: any, res: Response, next: NextFunction) {
   try {
     const { branchId, date } = req.params;
-
     const year = parseInt(date.split("-")[0]);
     const month = parseInt(date.split("-")[1]);
 
@@ -317,7 +195,6 @@ export async function deleteSalesByMonthHandler(req: any, res: Response, next: N
         $and: [{ $eq: [{ $year: "$createdAt" }, year] }, { $eq: [{ $month: "$createdAt" }, month] }],
       },
     });
-
 
     const result1 = await ReturnModel.deleteMany({
       branch: branchId,
@@ -350,7 +227,6 @@ export async function deleteSalesByMonthHandler(req: any, res: Response, next: N
 export async function getSalesByBranchAndDateHandler(req: any, res: Response, next: NextFunction) {
   try {
     const { branchId, date } = req.params;
-
     const [year, month] = date.split("-").map(Number);
 
     const startDate = new Date(year, month - 1, 1); // Month in JavaScript is 0-indexed, so we subtract 1
@@ -366,34 +242,29 @@ export async function getSalesByBranchAndDateHandler(req: any, res: Response, ne
       })
       .sort({ createdAt: -1 });
 
-
-      const adjustedSales = sales.map((sale: any) => {
-        const quantityAfterReturn = sale.quantity - sale.returnedQuantity;
-        return {
-          _id: sale._id,
-          branch: sale.branch,
-          product: sale.product,
-          quantity: sale.quantity,
-          quantityAfterReturn: sale.quantity - sale.returnedQuantity,
-          cp: sale.cp,
-          sp: sale.sp,
-          totalAmount: sale.totalAmount,
-          returnedQuantity: sale.returnedQuantity,
-          // returnedAmount: sale.sp * quantityAfterReturn,
-          totalAmountAfterReturn: sale.totalAmount - (sale.sp * sale.returnedQuantity),
-          memberName: sale.memberName,
-          memberPhone: sale.memberPhone,
-          saleId: sale.saleId,
-          createdAt: sale.createdAt,
-          updatedAt: sale.updatedAt,
-          __v: sale.__v,
-        };
-      });
-  
-      console.log(adjustedSales, "adjustedSales");
-
-
-
+    const adjustedSales = sales.map((sale: any) => {
+      const quantityAfterReturn = sale.quantity - sale.returnedQuantity;
+      return {
+        _id: sale._id,
+        branch: sale.branch,
+        product: sale.product,
+        quantity: sale.quantity,
+        quantityAfterReturn: sale.quantity - sale.returnedQuantity,
+        cp: sale.cp,
+        sp: sale.sp,
+        totalAmount: sale.totalAmount,
+        returnedQuantity: sale.returnedQuantity,
+        discountAmount: sale.discountAmount,
+        invoiceNo: sale.invoiceNo,
+        totalAmountAfterReturn: sale.totalAmount - sale.sp * sale.returnedQuantity,
+        memberName: sale.memberName,
+        memberPhone: sale.memberPhone,
+        saleId: sale.saleId,
+        createdAt: sale.createdAt,
+        updatedAt: sale.updatedAt,
+        __v: sale.__v,
+      };
+    });
 
     return res.json({
       status: "success",

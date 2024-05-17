@@ -16,10 +16,8 @@ import OptionalLabel from "@/app/custom-components/OptionalLabel";
 import LoaderPre from "@/app/custom-components/LoaderPre";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useGetBranchStatQuery } from "@/lib/features/statSlice";
+import { useGetBranchProfitQuery, useGetBranchStatQuery } from "@/lib/features/statSlice";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-
-// Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useGetAllBranchQuery, useGetBranchQuery, useResetPasswordMutation, useUpdateBranchMutation } from "@/lib/features/branchSlice";
@@ -46,7 +44,6 @@ const formSchema = z.object({
   image: z.string().optional(),
   panNo: z.string().optional(),
   vatNo: z.string().optional(),
-  
 });
 
 export default function Page() {
@@ -58,21 +55,19 @@ export default function Page() {
   const branch = data?.data;
 
   const { data: stats } = useGetBranchStatQuery({ branch: branch?._id });
+  const { data: profitData } = useGetBranchProfitQuery({ branch: branch?._id });
 
   const { uploading, handleFileUpload } = useCloudinaryFileUpload();
   const [imageUrl, setImageUrl] = useState<string>("");
 
   const [updateBranch, { error: updateError, isLoading: isUpdating }] = useUpdateBranchMutation();
-
   const { data: branchInventories } = useGetAllBranchInventoryQuery({ branch: branch?._id });
   let totalItem = branchInventories?.data.count;
 
-  // Assuming branchInventories.data.results is the array containing inventory objects
   const totalStockSum = branchInventories?.data.results.reduce((acc: any, inventory: any) => {
     return acc + inventory.totalStock;
   }, 0);
 
-  // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -96,7 +91,6 @@ export default function Page() {
         image: branch.image || "",
         panNo: branch.panNo || "",
         vatNo: branch.vatNo || "",
-
       });
       setImageUrl(branch.image || "");
     }
@@ -106,7 +100,6 @@ export default function Page() {
     form.setValue("image", imageUrl);
   }, [form, imageUrl]);
 
-  // Define a submit handler.
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const res: any = await updateBranch({ branchId: branchId, updatedBranch: values });
     if (res.data) {
@@ -154,10 +147,8 @@ export default function Page() {
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="branch-detail">Branch Detail</TabsTrigger>
           <TabsTrigger value="inventory">Inventory</TabsTrigger>
-          {/* <TabsTrigger value="sales-report">Sales Report</TabsTrigger> */}
           <TabsTrigger value="statistics">Statistics</TabsTrigger>
           <TabsTrigger value="reset-password">Reset Paassword</TabsTrigger>
-          {/* <TabsTrigger value="password">Password</TabsTrigger> */}
         </TabsList>
 
         <TabsContent value="branch-detail">
@@ -239,40 +230,39 @@ export default function Page() {
                     )}
                   />
 
-<FormField
-          control={form.control}
-          name="panNo"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>PAN Number</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder=""
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                  <FormField
+                    control={form.control}
+                    name="panNo"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>PAN Number</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder=""
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-
-<FormField
-          control={form.control}
-          name="vatNo"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>VAT No</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder=""
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                  <FormField
+                    control={form.control}
+                    name="vatNo"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>VAT No</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder=""
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
                   <div>
                     <FormLabel>Branch Created Date </FormLabel>
@@ -294,37 +284,34 @@ export default function Page() {
                     control={form.control}
                     name="image"
                     render={({ field }) => (
-                      <FormItem className=" flex">
+                      <FormItem className=" flex flex-col">
                         <FormLabel>
                           Image <OptionalLabel /> <span className="text-primary/85  text-xs">[image must be less than 1MB]</span>
                         </FormLabel>
-                        <div className=" flex flex-col   gap-2">
-                          <Input
-                            type="file"
-                            onChange={(event) => handleFileUpload(event.target.files?.[0], setImageUrl)}
-                          />
 
-                          <>
-                            {uploading ? (
-                              <div className=" flex flex-col gap-2 rounded-md  justify-center h-52 w-52 border">
-                                <LoaderSpin />
-                              </div>
-                            ) : (
-                              <Image
-                                width={200}
-                                height={200}
-                                src={imageUrl || defaultImage}
-                                alt="img"
-                                className="p-0.5 rounded-md overflow-hidden h-52 w-52 border"
-                              />
-                            )}
-                          </>
-                        </div>
+                        <Input
+                          type="file"
+                          onChange={(event) => handleFileUpload(event.target.files?.[0], setImageUrl)}
+                        />
+
+                        {uploading ? (
+                         <div className=" flex flex-col gap-2 rounded-md  justify-center h-52 w-52 object-cover border">
+                            <LoaderSpin />
+                          </div>
+                        ) : (
+                          <Image
+                            width={200}
+                            height={200}
+                            src={imageUrl || defaultImage}
+                            alt="img"
+                           className="p-0.5 rounded-md overflow-hidden h-52 w-52 object-cover border"
+                          />
+                        )}
                       </FormItem>
                     )}
                   />
 
-                  <div className=" flex flex-col gap-1">
+                  <div className=" flex flex-col ">
                     <span className=" opacity-0">.</span>
                     <div>
                       <Button type="submit"> {isUpdating && <LoaderPre />}Save changes</Button>
@@ -396,46 +383,49 @@ export default function Page() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="statistics">
-          <Card>
-            <CardHeader>
-              <CardTitle>Statistics</CardTitle>
-              <CardDescription>Overall indicators of the branch.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                <>
-                  <StatCard
-                    title="Total Sales"
-                    description="Total sales of a branches till now"
-                    value={`Rs. ${(stats?.data.totalSales | 0).toLocaleString("en-IN")}`}
-                    icon={<BarChart4 />}
-                  />
+        {profitData && stats && (
+          <TabsContent value="statistics">
+            <Card>
+              <CardHeader>
+                <CardTitle>Statistics</CardTitle>
+                <CardDescription>Overall indicators of the branch.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                  <>
+                    <StatCard
+                      title="Total Sale Amount"
+                      description="Total sales of a branches till now"
+                      value={`Rs ${(profitData.totalSales - profitData.totalDiscountAmount - stats.data.totalreturnSale).toLocaleString("en-IN")}`}
+                      // value={`Rs ${(profitData.totalSalesAfterDiscount + profitData.totalReturnedDiscountAmount - stats.data.totalreturnSale).toLocaleString("en-IN")}`}
+                      icon={<BarChart4 />}
+                    />
 
-                  <StatCard
-                    title=" Total Profit"
-                    value={`Rs ${(stats?.data.totalSales - stats?.data.totalreturnSale - stats?.data.totalCp + stats?.data.totalReturnCp).toLocaleString("en-IN")}`}
-                    icon={<LineChart />}
-                  />
+                    <StatCard
+                      title=" Total Profits"
+                      value={`Rs ${(stats?.data.totalSales - stats?.data.totalreturnSale - stats?.data.totalCp + stats?.data.totalReturnCp).toLocaleString("en-IN")}`}
+                      icon={<BarChart4 />}
+                    />
 
-                  <StatCard
-                    title="Total Unique Stock"
-                    description="Total unique availabe stocks"
-                    value={totalItem | 0}
-                    icon={<LineChart />}
-                  />
+                    <StatCard
+                      title="Total Unique Stock"
+                      description="Total unique availabe stocks"
+                      value={totalItem | 0}
+                      icon={<LineChart />}
+                    />
 
-                  <StatCard
-                    title="Total Availeble Stock"
-                    description="Total availabe stocks"
-                    value={totalStockSum | 0}
-                    icon={<LineChart />}
-                  />
-                </>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+                    <StatCard
+                      title="Total Availeble Stock"
+                      description="Total availabe stocks"
+                      value={totalStockSum | 0}
+                      icon={<LineChart />}
+                    />
+                  </>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
 
         <TabsContent value="reset-password">
           <Card>
