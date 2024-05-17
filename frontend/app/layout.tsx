@@ -1,6 +1,6 @@
 "use client";
 // import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter,Noto_Serif } from "next/font/google";
 import "./globals.css";
 import StoreProvider from "./StoreProvider";
 import { Toaster } from "@/components/ui/sonner";

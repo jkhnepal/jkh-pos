@@ -1,5 +1,5 @@
 {
-  "name": "rest-api-clean-architecture-boilerplate",
+  "name": "jhk-pos",
   "version": "1.0.0",
   "main": "dist/src/app.js",
   "author": "Loki Chaulagain (webX)",

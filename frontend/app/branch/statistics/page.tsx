@@ -55,7 +55,6 @@ export default function Component() {
           <StatCard
             title=" Total Sale Amount"
             value={`Rs ${(profitData.totalSales - profitData.totalDiscountAmount - stats.data.totalreturnSale).toLocaleString("en-IN")}`}
-
             icon={<BarChart3 />}
           />
 

@@ -396,7 +396,8 @@ export default function Page() {
                     <StatCard
                       title="Total Sale Amount"
                       description="Total sales of a branches till now"
-                      value={`Rs ${(profitData.totalSalesAfterDiscount + profitData.totalReturnedDiscountAmount - stats.data.totalreturnSale).toLocaleString("en-IN")}`}
+                      value={`Rs ${(profitData.totalSales - profitData.totalDiscountAmount - stats.data.totalreturnSale).toLocaleString("en-IN")}`}
+                      // value={`Rs ${(profitData.totalSalesAfterDiscount + profitData.totalReturnedDiscountAmount - stats.data.totalreturnSale).toLocaleString("en-IN")}`}
                       icon={<BarChart4 />}
                     />
 

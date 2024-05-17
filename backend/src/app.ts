@@ -1,6 +1,5 @@
 import express, { NextFunction, Request, Response } from "express";
-import dotenv from "dotenv";
-dotenv.config();
+require("dotenv").config();
 import logger from "./utils/logger";
 import cors from "cors";
 import connectDB from "./utils/connectDB";
@@ -20,7 +19,7 @@ import returnToHeadquarterRoute from "../src/routes/returnToHeadquarter.route";
 import BranchModel from "./models/branch.model";
 
 const app = express();
-// const port = process.env.PORT;
+// const port = process.env.PORT || 5000;
 const port = 5010;
 
 // Middleware
