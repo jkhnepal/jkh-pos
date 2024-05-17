@@ -116,7 +116,7 @@ export default function Cart({ refetch }: any) {
   const createSaleHandler = async () => {
     const res: any = await createSale(dataToSend);
     setSaleHappenedTime(res?.data.updatedBranchInventory.createdAt);
-    toast.success(res?.data.msg);
+    // toast.success(res?.data.msg);
     setSelectedProducts([]);
     refetch();
     setReadModeOnly(!readModeOnly);
@@ -216,7 +216,7 @@ export default function Cart({ refetch }: any) {
             </Select>
           </div>
 
-          <ScrollArea className="  h-[90vh] w-[560px] rounded-md border   ">
+          <div className="  h-[85vh] w-[560px] overflow-y-scroll rounded-md border   ">
             <Table>
               <TableCaption></TableCaption>
 
@@ -325,7 +325,7 @@ export default function Cart({ refetch }: any) {
                       // className={inter.className}
                       // <body className={inter.className}>
                     >
-                      <div className=" ">
+                      <div className=" h-[100vh] overflow-y-scroll">
                         <div className=" p-2 text-xs">
                           <div className=" flex flex-col gap-0.5 items-center ">
                             <p className=" text-base font-semibold">Jacket House ({brabranchInfo.address.split(",")[0]})</p>
@@ -339,7 +339,7 @@ export default function Cart({ refetch }: any) {
                             <p>
                               Bill No: <span className=" ml-2">{invoiceNumber}</span>
                             </p>
-                            <p>Transaction Date: {moment(saleHappenedTime).format("MMMM Do YYYY, h:mm:ss a")}</p>
+                            <p>Date: {moment(saleHappenedTime).format("MMMM Do YYYY, h:mm:ss a")}</p>
                             <p>
                               Bill To: <span className=" ml-4 font-semibold">{memberName}</span>
                             </p>
@@ -391,7 +391,7 @@ export default function Cart({ refetch }: any) {
                           </div>
 
                           <div className=" flex justify-end text-[11px]">
-                            <p className=" w-11/12 md:w-9/12 text-end">
+                            <p className=" w-full text-end">
                               {/* <Separator className="border border-dotted mt-8" /> */}
                               <div className=" w-full bg-gray-400 h-[0.1px] mt-8 ">
                                 <p className=" opacity-0">.</p>
@@ -475,13 +475,15 @@ export default function Cart({ refetch }: any) {
                         </div>
                       </div>
 
-                      <DialogFooter>
+                      <DialogFooter className=" fixed bottom-10">
+                        <div className=" flex justify-end">
                         <Button
                           className="printBtn px-2"
                           onClick={handlePrint}
                           type="submit">
                           Print Receipt
                         </Button>
+                        </div>
                       </DialogFooter>
                     </DialogContent>
                   </Dialog>
@@ -499,7 +501,7 @@ export default function Cart({ refetch }: any) {
                 </div>
               </div>
             )}
-          </ScrollArea>
+          </div>
         </div>
       </div>
     </>
