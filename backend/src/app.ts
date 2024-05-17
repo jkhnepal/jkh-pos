@@ -52,7 +52,7 @@ app.use("/api/return-to-headquarter", returnToHeadquarterRoute);
 app.get("/healthChecker", (req: Request, res: Response, next: NextFunction) => {
   res.status(200).json({
     status: "success",
-    msg: "Welcome to JKH Server.",
+    msg: "Welcome to JKH Server smtp check.",
   });
 });
 
