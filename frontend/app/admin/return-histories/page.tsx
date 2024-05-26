@@ -90,26 +90,26 @@ export default function Page() {
     {
       accessorKey: "product",
       header: "Product Name",
-      cell: ({ row }: any) => <div>{row.getValue("product").name}</div>,
+      cell: ({ row }: any) => <div>{row.getValue("product")?.name}</div>,
     },
 
     {
       accessorKey: "product",
       header: "Product CP",
-      cell: ({ row }: any) => <div>{row.getValue("product").cp}</div>,
+      cell: ({ row }: any) => <div>{row.getValue("product")?.cp}</div>,
     },
 
     {
       accessorKey: "product",
       header: "Product SP",
-      cell: ({ row }: any) => <div>{row.getValue("product").sp}</div>,
+      cell: ({ row }: any) => <div>{row.getValue("product")?.sp}</div>,
     },
 
     {
       accessorKey: "product",
       header: "Image",
       cell: ({ row }: any) => {
-        const image: string = row.getValue("product").image as string;
+        const image: string = row.getValue("product")?.image as string;
         return (
           <div>
             {image && (

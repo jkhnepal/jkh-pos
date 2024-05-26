@@ -11,6 +11,11 @@ import { sendResetPassword } from "../utils/mailService";
 import BranchModel from "../models/branch.model";
 var colors = require("colors");
 import nodemailer from "nodemailer";
+import BranchInventoryModel from "../models/branchInventory.model";
+import DistributeModel from "../models/distribute.model";
+import ReturnModel from "../models/return.model";
+import ReturnToHeadquarterModel from "../models/returnToHeadquarter.model";
+import SaleModel from "../models/sale.model";
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
@@ -181,13 +186,22 @@ export async function deleteBranchHandler(req: Request<UpdateBranchInput["params
   try {
     const branchId = req.params.branchId;
     const branch = await findBranch({ branchId });
+    console.log(branch);
 
     if (!branch) {
       next(new AppError("Branch does not exist", 404));
       return;
     }
 
+    // delete all the data related to this branch
+    await BranchInventoryModel.deleteMany({ branch: branch?._id });
+    await DistributeModel.deleteMany({ branch: branch?._id });
+    await ReturnModel.deleteMany({ branch: branch?._id });
+    await ReturnToHeadquarterModel.deleteMany({ branch: branch?._id });
+    await SaleModel.deleteMany({ branch: branch?._id });
+
     await deleteBranch({ branchId });
+
     return res.json({
       status: "success",
       msg: "Delete success",
