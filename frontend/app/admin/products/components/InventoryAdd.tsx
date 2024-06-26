@@ -93,6 +93,7 @@ export default function InventoryAdd({ product }: Props) {
           <AccordionContent className=" mt-8">
             <Form {...form}>
               <form
+                    autoComplete="off"
                 onSubmit={form.handleSubmit(onSubmit)}
                 className=" flex items-center justify-between gap-8 ">
                 <FormItem className=" w-full">

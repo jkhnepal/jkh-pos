@@ -160,6 +160,7 @@ export default function Page() {
             <CardContent className="space-y-2">
               <Form {...form}>
                 <form
+                      autoComplete="off"
                   onSubmit={form.handleSubmit(onSubmit)}
                   className=" grid grid-cols-2 gap-4">
                   <FormField

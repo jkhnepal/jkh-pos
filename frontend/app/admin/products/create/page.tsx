@@ -127,6 +127,7 @@ export default function Page() {
       <Breadcumb />
       <Form {...form}>
         <form
+              autoComplete="off"
           onSubmit={form.handleSubmit(onSubmit)}
           className=" grid grid-cols-2 gap-4">
           <FormField
