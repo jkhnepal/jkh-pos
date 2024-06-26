@@ -43,11 +43,11 @@ export async function createBranchHandler(req: Request<{}, {}, CreateBranchInput
       return;
     }
 
-    const alreadyExistWithPhone = await findBranch({ phone: body.phone });
-    if (alreadyExistWithPhone) {
-      next(new AppError(`Branch with the phone (${body.phone}) already exist`, 404));
-      return;
-    }
+    // const alreadyExistWithPhone = await findBranch({ phone: body.phone });
+    // if (alreadyExistWithPhone) {
+    //   next(new AppError(`Branch with the phone (${body.phone}) already exist`, 404));
+    //   return;
+    // }
 
     const hashedPassword = await generateHashedPassword(req.body.password);
     const branch = await createBranch({ ...req.body, password: hashedPassword });
