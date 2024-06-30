@@ -29,6 +29,8 @@ const payload = {
 
     colors: string().optional(),
     sizes: string().optional(),
+    season: string().optional(),
+    
   }),
 };
 

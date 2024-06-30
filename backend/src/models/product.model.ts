@@ -19,6 +19,8 @@ export interface ProductInput {
 
   colors?: string;
   sizes?: string;
+
+  season?: string;
 }
 
 export interface ProductDocument extends ProductInput, mongoose.Document {
@@ -50,6 +52,8 @@ const productSchema = new mongoose.Schema(
 
     colors: { type: String },
     sizes: { type: String },
+    season: { type: String },
+
   },
   {
     timestamps: true,

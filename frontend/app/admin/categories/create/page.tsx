@@ -18,7 +18,7 @@ import LoaderSpin from "@/app/custom-components/LoaderSpin";
 // Breadcumb
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -48,6 +48,8 @@ export default function Page() {
     form.setValue("image", imageUrl);
   }, [form, imageUrl]);
 
+  const router =useRouter()
+
   // Define a submit handler.
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const res: any = await createCategory(values);
@@ -56,6 +58,7 @@ export default function Page() {
       toast.success(res.data.msg);
       form.reset();
       setImageUrl("");
+      router.back();
     }
   };
 
@@ -74,7 +77,7 @@ export default function Page() {
     <Form {...form}>
       <Breadcumb />
       <form
-            autoComplete="off"
+        autoComplete="off"
         onSubmit={form.handleSubmit(onSubmit)}
         className=" grid grid-cols-2 gap-4">
         <FormField
@@ -129,7 +132,7 @@ export default function Page() {
 
                 <>
                   {uploading ? (
-                   <div className=" flex flex-col gap-2 rounded-md  justify-center h-52 w-52 object-cover border">
+                    <div className=" flex flex-col gap-2 rounded-md  justify-center h-52 w-52 object-cover border">
                       <LoaderSpin />
                     </div>
                   ) : (
@@ -138,7 +141,7 @@ export default function Page() {
                       height={100}
                       src={imageUrl || defaultImage}
                       alt="img"
-                     className="p-0.5 rounded-md overflow-hidden h-52 w-52 object-cover border"
+                      className="p-0.5 rounded-md overflow-hidden h-52 w-52 object-cover border"
                     />
                   )}
                 </>
@@ -160,28 +163,28 @@ export default function Page() {
 
 function Breadcumb() {
   return (
-  <>
+    <>
       <Breadcrumb className=" mb-8">
-      <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator>
-          <SlashIcon />
-        </BreadcrumbSeparator>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <SlashIcon />
+          </BreadcrumbSeparator>
 
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/admin/categories">Categories</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator>
-          <SlashIcon />
-        </BreadcrumbSeparator>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/admin/categories">Categories</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <SlashIcon />
+          </BreadcrumbSeparator>
 
-        <BreadcrumbItem>
-          <BreadcrumbPage>New Category</BreadcrumbPage>
-        </BreadcrumbItem>
-      </BreadcrumbList>
-  </Breadcrumb>
+          <BreadcrumbItem>
+            <BreadcrumbPage>New Category</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
     </>
   );
 }
