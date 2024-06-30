@@ -9,7 +9,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import defaultImage from "../../../../../public/default-images/unit-default-image.png";
 import { toast } from "sonner";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import useCloudinaryFileUpload from "@/app/hooks/useCloudinaryFileUpload";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import OptionalLabel from "@/app/custom-components/OptionalLabel";
@@ -68,6 +68,8 @@ export default function Page() {
     return acc + inventory.totalStock;
   }, 0);
 
+  const router=useRouter()
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -105,6 +107,7 @@ export default function Page() {
     if (res.data) {
       toast.success(res.data.msg);
       refetch();
+      router.back()
     }
   };
 

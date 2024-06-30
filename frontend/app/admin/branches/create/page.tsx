@@ -16,6 +16,7 @@ import OptionalLabel from "@/app/custom-components/OptionalLabel";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   name: z.string().min(5, {
@@ -68,6 +69,8 @@ export default function Page() {
     form.setValue("image", imageUrl);
   }, [form, imageUrl]);
 
+  const router =useRouter()
+
   // Define a submit handler.
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const res: any = await createBranch(values);
@@ -76,6 +79,7 @@ export default function Page() {
       toast.success(res.data.msg);
       form.reset();
       setImageUrl("");
+      router.back()
     }
   };
 

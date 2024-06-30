@@ -52,6 +52,7 @@ const formSchema = z.object({
 
   colors: z.string().optional(),
   sizes: z.string().optional(),
+  season: z.string().optional(),
 
   discountAmount: z.coerce
     .number()
@@ -91,6 +92,7 @@ export default function Page() {
       note: "",
       colors: "",
       sizes: "",
+      season: "",
       discountAmount: 0,
     },
   });
@@ -127,7 +129,7 @@ export default function Page() {
       <Breadcumb />
       <Form {...form}>
         <form
-              autoComplete="off"
+          autoComplete="off"
           onSubmit={form.handleSubmit(onSubmit)}
           className=" grid grid-cols-2 gap-4">
           <FormField
@@ -141,6 +143,33 @@ export default function Page() {
                     placeholder="Product Name"
                     {...field}
                   />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="season"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Seasons</FormLabel>
+                <FormControl>
+                  <Select
+                    {...field}
+                    onValueChange={field.onChange}
+                    defaultValue={field.name}>
+                    <SelectTrigger className="">
+                      <SelectValue placeholder="Select Season" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value="winter">Winter</SelectItem>
+                        <SelectItem value="summer">Summer</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 </FormControl>
                 <FormMessage />
               </FormItem>

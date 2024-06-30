@@ -18,6 +18,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import { useGetAllBranchQuery, useDeleteBranchMutation } from "@/lib/features/branchSlice";
 import moment from "moment";
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -33,6 +34,7 @@ export default function Page() {
   }, [refetch]);
 
   const [previewImage, setpreviewImage] = React.useState<string>("");
+  const router=useRouter()
 
   const [deleteBranch, { error: deleteError, isLoading: isDeleting }] = useDeleteBranchMutation();
   const handleDelete = async (id: string) => {
@@ -348,6 +350,13 @@ export default function Page() {
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
+                onDoubleClick={() => {
+                  const item = row.original;
+                  router.push(`/admin/branches/edit/${item.branchId}`);
+                  
+
+                  
+                }}
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map((cell) => (

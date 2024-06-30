@@ -26,10 +26,26 @@ export default function Page() {
   const [previewImage, setpreviewImage] = React.useState<string>("");
   const [sort, setSort] = React.useState("latest");
   const { data: products, isLoading: isFetching, refetch } = useGetAllProductQuery({ sort: sort });
+  const [seasonFilter, setSeasonFilter] = React.useState("");
 
   React.useEffect(() => {
     refetch();
   }, [refetch]);
+
+  const handleStatusChange = (event: any) => {
+    setSeasonFilter(event.target.value);
+  };
+
+  console.log(seasonFilter)
+
+  const [filteredProducts, setfilteredProducts] = React.useState([]);
+  React.useEffect(() => {
+    if (seasonFilter === "") {
+      setfilteredProducts(products?.data?.results);
+    } else {
+      setfilteredProducts(products?.data?.results?.filter((product: any) => product.season === seasonFilter));
+    }
+  }, [products?.data?.results, seasonFilter]);
 
   const [deleteProduct, { error: deleteError, isLoading: isDeleting }] = useDeleteProductMutation();
   const handleDelete = async (id: string) => {
@@ -266,7 +282,8 @@ export default function Page() {
   ];
 
   const table = useReactTable({
-    data: products?.data.results || [],
+    // data: products?.data.results || [],
+    data: filteredProducts || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -310,12 +327,25 @@ export default function Page() {
         </BreadcrumbList>
       </Breadcrumb>
       <div className="flex justify-between items-center py-4">
-        <Input
+       <div className=" flex items-center gap-4">
+       <Input
           placeholder="Filter by product name..."
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}
           className="max-w-sm"
         />
+
+        <select
+          className=" border rounded-sm py-1.5 outline-none px-2  w-48"
+          name="season"
+          id="season"
+          value={seasonFilter}
+          onChange={handleStatusChange}>
+          <option value="">All</option>
+          <option value="winter">Winter</option>
+          <option value="summer">Summer</option>
+        </select>
+       </div>
 
         <div className="flex space-x-2">
           <Link href={"/admin/products/create"}>

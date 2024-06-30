@@ -9,7 +9,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import defaultImage from "../../../../../public/default-images/unit-default-image.png";
 import { toast } from "sonner";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useGetAllCategoryQuery, useGetCategoryQuery, useUpdateCategoryMutation } from "@/lib/features/categorySlice";
 import useCloudinaryFileUpload from "@/app/hooks/useCloudinaryFileUpload";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
@@ -63,6 +63,7 @@ export default function Page() {
   useEffect(() => {
     form.setValue("image", imageUrl);
   }, [form, imageUrl]);
+  const router=useRouter()
 
   // Define a submit handler.
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -70,6 +71,7 @@ export default function Page() {
     if (res.data) {
       toast.success(res.data.msg);
       refetch();
+      router.back()
     }
   };
 

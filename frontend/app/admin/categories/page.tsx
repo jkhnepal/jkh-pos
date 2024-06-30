@@ -18,6 +18,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import { Input } from "@/components/ui/input";
 import { ICategoryOut } from "@/interfaces/category";
 import moment from "moment";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -31,6 +32,8 @@ export default function Page() {
   React.useEffect(() => {
     refetch();
   }, [refetch]);
+
+  const router = useRouter();
 
   const [deleteCategory, { error: deleteError, isLoading: isDeleting }] = useDeleteCategoryMutation();
   const handleDelete = async (id: string) => {
@@ -334,6 +337,11 @@ export default function Page() {
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
+                  onDoubleClick={() => {
+                    const item = row.original;
+                    router.push(`/admin/categories/edit/${item.categoryId}`);
+               
+                  }}
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map((cell) => (

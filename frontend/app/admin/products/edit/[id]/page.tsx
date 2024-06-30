@@ -21,15 +21,15 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import { useGetAllCategoryQuery } from "@/lib/features/categorySlice";
 import InventoryAdd from "../../components/InventoryAdd";
 import moment from "moment";
+import { Label } from "@/components/ui/label";
 
 const formSchema = z.object({
   name: z.string().min(5, {
     message: "Name must be at least 4 characters.",
   }),
 
-  category: z.string().min(5, {
-    message: "Category is required",
-  }),
+  category: z.any(),
+  season: z.any(),
 
   cp: z.coerce
     .number()
@@ -75,6 +75,7 @@ export default function Page() {
 
   const { data, isFetching } = useGetProductQuery(productId);
   const product = data?.data;
+  console.log(product);
 
   const { uploading, handleFileUpload } = useCloudinaryFileUpload();
   const [imageUrl, setImageUrl] = useState<string>("");
@@ -84,13 +85,14 @@ export default function Page() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      category: product ? product.category : "",
+      category: "",
       cp: 0,
       sp: 0,
       image: "",
       note: "",
       colors: "",
       sizes: "",
+      season: "",
       discountAmount: 0,
     },
   });
@@ -110,6 +112,7 @@ export default function Page() {
         colors: product.colors || "",
         sizes: product.sizes || "",
         discountAmount: product.discountAmount || 0,
+        season: product.season || 0,
       });
       setImageUrl(product.image || "");
     }
@@ -119,9 +122,21 @@ export default function Page() {
     form.setValue("image", imageUrl);
   }, [form, imageUrl]);
 
+  const [category, setCategory] = useState<any>(product?.category);
+
+  useEffect(() => {
+    setCategory(product?.category);
+  }, [product?.category]);
+
+  const [season, setSeason] = useState<any>(product?.season);
+
+  useEffect(() => {
+    setSeason(product?.season);
+  }, [product?.season]);
+
   // Define a submit handler.
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const res: any = await updateProduct({ productId: productId, updatedProduct: values });
+    const res: any = await updateProduct({ productId: productId, updatedProduct: { ...values, category: category, season: season } });
     if (res.data) {
       toast.success(res.data.msg);
       refetch();
@@ -173,7 +188,7 @@ export default function Page() {
       </Breadcrumb>
       <Form {...form}>
         <form
-              autoComplete="off"
+          autoComplete="off"
           onSubmit={form.handleSubmit(onSubmit)}
           className=" grid grid-cols-2 gap-4">
           <FormField
@@ -192,8 +207,31 @@ export default function Page() {
               </FormItem>
             )}
           />
+          {/* 
+          <div className=" space-y-2">
+            <Label>Season *</Label>
+            <Select
+              defaultValue={product.category}
+              onValueChange={(value: any) => setCategory(value)}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Categories</SelectLabel>
+                  {categories?.data.results.map((item: any) => (
+                    <SelectItem
+                      key={item._id}
+                      value={item._id}>
+                      {item.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div> */}
 
-          <FormField
+          {/* <FormField
             control={form.control}
             name="category"
             render={({ field }) => (
@@ -224,7 +262,48 @@ export default function Page() {
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
+
+          <div className=" space-y-2">
+            <Label>Category *</Label>
+            <Select
+              defaultValue={product.category}
+              onValueChange={(value: any) => setCategory(value)}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Categories</SelectLabel>
+                  {categories?.data.results.map((item: any) => (
+                    <SelectItem
+                      key={item._id}
+                      value={item._id}>
+                      {item.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className=" space-y-2">
+            <Label>Season *</Label>
+            <Select
+              defaultValue={product.season}
+              onValueChange={(value: any) => setSeason(value)}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Seasons</SelectLabel>
+                  <SelectItem value="winter">Winter</SelectItem>
+                  <SelectItem value="summer">Summer</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
 
           <FormField
             control={form.control}
