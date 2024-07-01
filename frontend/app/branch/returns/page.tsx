@@ -16,6 +16,7 @@ import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
 import moment from "moment";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
+import { Input } from "@/components/ui/input";
 
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -185,13 +186,13 @@ export default function Page() {
   return (
     <div className="w-full">
       <Breadcumb />
-      <div className="flex justify-end items-center py-4 -mt-8">
-        {/* <Input
-          placeholder="Filter by name ..."
-          value={searchName}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
-          className="max-w-sm   "
-        /> */}
+      <div className="flex justify-between items-center py-4 -mt-8">
+      <Input
+          placeholder="Filter phone..."
+          value={(table.getColumn("memberPhone")?.getFilterValue() as string) ?? ""}
+          onChange={(event) => table.getColumn("memberPhone")?.setFilterValue(event.target.value)}
+          className="max-w-sm"
+        />
 
         <div className="flex space-x-2">
           <DropdownMenu>

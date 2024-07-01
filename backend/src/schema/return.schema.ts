@@ -7,7 +7,7 @@ const payload = {
       required_error: "branch is required",
     }),
 
-    memberPhone: number({
+    memberPhone: string({
       required_error: "member phone  is required",
     }),
 

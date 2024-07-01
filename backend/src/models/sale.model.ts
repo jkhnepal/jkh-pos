@@ -41,7 +41,7 @@ const saleSchema = new mongoose.Schema(
     totalAmount: { type: Number, required: true },
 
     memberName: { type: String },
-    memberPhone: { type: Number },
+    memberPhone: { type: String },
 
     discountAmount: { type: Number, required: true },
     totalDiscountAmount: { type: Number, required: true },
