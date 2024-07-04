@@ -145,7 +145,7 @@ function StatCard({ title, value, icon, description }: any) {
   );
 }
 
-export function TopSellingDialog({ top10SellingProducts }: any) {
+ function TopSellingDialog({ top10SellingProducts }: any) {
   console.log(top10SellingProducts);
   return (
     <Dialog>
