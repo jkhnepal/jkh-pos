@@ -43,7 +43,6 @@ export async function getHeadquarterStatHandler(req: Request<{}, {}, {}>, res: R
       {
         $group: {
           _id: null,
-
           totalAmount: { $sum: { $multiply: ["$sp", "$returnedQuantity"] } },
         },
       },
@@ -67,10 +66,67 @@ export async function getHeadquarterStatHandler(req: Request<{}, {}, {}>, res: R
       },
     ]);
 
+    const totalSumOfRemainingStocks = await ProductModel.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalStock: { $sum: { $multiply: ["$availableStock", "$cp"] } },
+        },
+      },
+    ]);
+
+    const top10SellingProducts = await SaleModel.aggregate([
+      {
+        $group: {
+          _id: "$product",
+          totalQuantitySold: { $sum: "$quantity" },
+        },
+      },
+      {
+        $sort: { totalQuantitySold: -1 },
+      },
+      {
+        $limit: 10,
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id",
+          foreignField: "_id",
+          as: "productDetails",
+        },
+      },
+      {
+        $unwind: "$productDetails",
+      },
+      {
+        $project: {
+          _id: 1,
+          productId: "$productDetails.productId",
+          productName: "$productDetails.name",
+          totalQuantitySold: 1,
+        },
+      },
+    ]);
+
     return res.status(200).json({
       status: "success",
       msg: "Get all member success",
-      data: { categories, branches, products, totalSales: totalSales[0]?.totalAmount | 0, totalCp: totalCp[0]?.cp | 0, totalQuantitySold: totalSales[0]?.totalProduct | 0, totalQuantityReturned: totalSales[0]?.totalReturnedQuantity | 0, totalAvailabeStock: totalStocksAvailable[0]?.totalStock | 0, totalreturnSale: totalreturnSales[0]?.totalAmount | 0, totalReturnCp: totalReturnCp[0]?.totalAmount | 0, totalDiscountGiven: totalSales[0]?.totalDiscountGiven | 0 },
+      data: {
+        categories,
+        branches,
+        products,
+        totalSales: totalSales[0]?.totalAmount | 0,
+        totalCp: totalCp[0]?.cp | 0,
+        totalQuantitySold: totalSales[0]?.totalProduct | 0,
+        totalQuantityReturned: totalSales[0]?.totalReturnedQuantity | 0,
+        totalAvailabeStock: totalStocksAvailable[0]?.totalStock | 0,
+        totalreturnSale: totalreturnSales[0]?.totalAmount | 0,
+        totalReturnCp: totalReturnCp[0]?.totalAmount | 0,
+        totalDiscountGiven: totalSales[0]?.totalDiscountGiven | 0,
+        InventoryValue: totalSumOfRemainingStocks[0]?.totalStock,
+        top10SellingProducts,
+      },
     });
   } catch (error: any) {
     console.error(colors.red("msg:", error.message));
