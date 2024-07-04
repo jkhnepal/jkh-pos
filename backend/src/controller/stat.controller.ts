@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 import CategoryModel from "../models/category.model";
 import BranchModel from "../models/branch.model";
 import ProductModel from "../models/product.model";
+import DistributeModel from "../models/distribute.model";
 var colors = require("colors");
 
 export async function getHeadquarterStatHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
@@ -109,6 +110,29 @@ export async function getHeadquarterStatHandler(req: Request<{}, {}, {}>, res: R
       },
     ]);
 
+    const totalDistributedStock = await DistributeModel.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalStock: { $sum: "$stock" },
+        },
+      },
+    ]);
+
+
+    // const totalAddedStock = await ProductModel.aggregate([
+    //   {
+    //     $group: {
+    //       _id: null,
+    //       totalStock: { $sum: "$totalAddedStock" },
+    //     },
+    //   },
+    // ]);
+
+    // console.log(totalDistributedStock[0]?.totalStock);
+
+    // console.log(totalAddedStock[0]?.totalStock);
+
     return res.status(200).json({
       status: "success",
       msg: "Get all member success",
@@ -126,6 +150,7 @@ export async function getHeadquarterStatHandler(req: Request<{}, {}, {}>, res: R
         totalDiscountGiven: totalSales[0]?.totalDiscountGiven | 0,
         InventoryValue: totalSumOfRemainingStocks[0]?.totalStock,
         top10SellingProducts,
+        totalDistributedStock: totalDistributedStock[0]?.totalStock | 0,
       },
     });
   } catch (error: any) {

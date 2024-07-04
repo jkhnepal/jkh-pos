@@ -81,12 +81,12 @@ export default function Page() {
           value={stats?.data.categories | 0}
           icon={<Shapes />}
         />
-        <StatCard
+        {/* <StatCard
           title=" Total Quantity Sold"
           description="Total Quantity Sold including all branches"
           value={(stats?.data.totalQuantitySold - stats?.data.totalQuantityReturned) | 0}
           icon={<Shirt />}
-        />
+        /> */}
 
         {/* <StatCard
           title=" Total Unique Products"
@@ -100,6 +100,13 @@ export default function Page() {
           description="Total sum of all available stock"
           value={stats?.data.totalAvailabeStock | 0}
           icon={<Shirt />}
+        />
+
+        <StatCard
+          title="Total Distributed Stock"
+          description="Total distributed stock to all branches"
+          value={`Rs. ${stats?.data.totalDistributedStock.toLocaleString("en-IN")}`}
+          icon={<BarChart4 />}
         />
 
         {/* <StatCard
@@ -116,7 +123,7 @@ export default function Page() {
           icon={<BarChart4 />}
         />
 
-        <TopSellingDialog top10SellingProducts={stats?.data.top10SellingProducts} />
+        {/* <TopSellingDialog top10SellingProducts={stats?.data.top10SellingProducts} /> */}
 
         {/* <StatCard
           title="Total Profits"
@@ -145,7 +152,7 @@ function StatCard({ title, value, icon, description }: any) {
   );
 }
 
- function TopSellingDialog({ top10SellingProducts }: any) {
+function TopSellingDialog({ top10SellingProducts }: any) {
   console.log(top10SellingProducts);
   return (
     <Dialog>
