@@ -2,8 +2,8 @@
 import { CardTitle, CardHeader, CardContent, Card } from "@/components/ui/card";
 import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
 import { useGetBranchProfitQuery, useGetBranchStatQuery } from "@/lib/features/statSlice";
-import { AreaChart, BarChart3, LineChart, PackageSearch, ScanBarcode, Shapes, Shirt } from "lucide-react";
-import { useEffect } from "react";
+import { Eye, EyeOff, PackageSearch, ScanBarcode, Shapes } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function Component() {
   const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
@@ -23,6 +23,11 @@ export default function Component() {
   // console.log("Total Stock Sum:", totalStockSum);
   // console.log("🚀 ~ Component ~ stats:", stats);
   // console.log("🚀 ~ Component ~ profitData:", profitData);
+  console.log(stats?.data?.totalSumOfRemainingStocks);
+
+  const [isSaleVisisble, setIsSaleVisisble] = useState(false);
+  const [isProfitVisible, setIsProfitVisible] = useState(false);
+  const [isSumofAvailableStockVisivle, setisSumofAvailableStockVisivle] = useState(false);
 
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -33,18 +38,39 @@ export default function Component() {
             value={stats.data.categories}
             icon={<Shapes />}
           />
-          <StatCard
-            title=" Unique Products"
-            value={stats.data.products}
-            icon={<Shirt />}
-          />
 
           <StatCard
-            title="Total Stock"
+            title="Total Available Stock"
             description="Total availabe stocks"
             value={totalStockSum | 0}
             icon={<PackageSearch />}
           />
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+              <CardTitle className="text-sm font-medium uppercase">Total Sum of Available Stock</CardTitle>
+
+              {isSumofAvailableStockVisivle ? (
+                <EyeOff
+                  onClick={() => {
+                    setisSumofAvailableStockVisivle(!isSumofAvailableStockVisivle);
+                  }}
+                  className=" cursor-pointer"
+                />
+              ) : (
+                <Eye
+                  onClick={() => {
+                    setisSumofAvailableStockVisivle(!isSumofAvailableStockVisivle);
+                  }}
+                  className=" cursor-pointer"
+                />
+              )}
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{isSumofAvailableStockVisivle ? (stats?.data?.totalSumOfRemainingStocks ? stats.data.totalSumOfRemainingStocks.toLocaleString("en-IN") : "*****") : "*******"}</div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Total profits till now</p>
+            </CardContent>
+          </Card>
 
           <StatCard
             title=" Total Quantituy Sold  "
@@ -52,17 +78,57 @@ export default function Component() {
             icon={<ScanBarcode />}
           />
 
-          <StatCard
-            title=" Total Sale Amount"
-            value={`Rs ${(profitData.totalSales - profitData.totalDiscountAmount - stats.data.totalreturnSale).toLocaleString("en-IN")}`}
-            icon={<BarChart3 />}
-          />
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+              <CardTitle className="text-sm font-medium uppercase">Total Sale Amount</CardTitle>
 
-          <StatCard
-            title=" Total Profit"
-            value={`Rs ${(stats?.data.totalSales - stats?.data.totalreturnSale - stats?.data.totalCp + stats?.data.totalReturnCp).toLocaleString("en-IN")}`}
-            icon={<AreaChart />}
-          />
+              {isSaleVisisble ? (
+                <EyeOff
+                  onClick={() => {
+                    setIsSaleVisisble(!isSaleVisisble);
+                  }}
+                  className=" cursor-pointer"
+                />
+              ) : (
+                <Eye
+                  onClick={() => {
+                    setIsSaleVisisble(!isSaleVisisble);
+                  }}
+                  className=" cursor-pointer"
+                />
+              )}
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{` ${isSaleVisisble ? `Rs ${(profitData.totalSales - profitData.totalDiscountAmount - stats.data.totalreturnSale).toLocaleString("en-IN")}` : "********"} `}</div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Total of sales till now</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+              <CardTitle className="text-sm font-medium uppercase">Total Profit Amount</CardTitle>
+
+              {isProfitVisible ? (
+                <EyeOff
+                  onClick={() => {
+                    setIsProfitVisible(!isProfitVisible);
+                  }}
+                  className=" cursor-pointer"
+                />
+              ) : (
+                <Eye
+                  onClick={() => {
+                    setIsProfitVisible(!isProfitVisible);
+                  }}
+                  className=" cursor-pointer"
+                />
+              )}
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{` ${isProfitVisible ? `Rs ${(stats?.data.totalSales - stats?.data.totalreturnSale - stats?.data.totalCp + stats?.data.totalReturnCp).toLocaleString("en-IN")}` : "********"} `}</div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Total profits till now</p>
+            </CardContent>
+          </Card>
         </>
       )}
 
@@ -76,13 +142,13 @@ export default function Component() {
   );
 }
 
-function StatCard({ title, value, icon }: any) {
+function StatCard({ title, value, icon, nexticon, isSaleVisisble }: any) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
         <CardTitle className="text-sm font-medium uppercase">{title}</CardTitle>
 
-        {icon}
+        {isSaleVisisble ? <div>{nexticon}</div> : <div>{icon}</div>}
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
