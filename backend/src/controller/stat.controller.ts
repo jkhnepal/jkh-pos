@@ -7,6 +7,7 @@ import CategoryModel from "../models/category.model";
 import BranchModel from "../models/branch.model";
 import ProductModel from "../models/product.model";
 import DistributeModel from "../models/distribute.model";
+import InventoryModel from "../models/inventory.model";
 var colors = require("colors");
 
 export async function getHeadquarterStatHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
@@ -119,7 +120,6 @@ export async function getHeadquarterStatHandler(req: Request<{}, {}, {}>, res: R
       },
     ]);
 
-
     // const totalAddedStock = await ProductModel.aggregate([
     //   {
     //     $group: {
@@ -210,14 +210,6 @@ export async function getBranchStatHandler(req: Request<{}, {}, {}>, res: Respon
       },
     ]);
 
-    const totalCp1 = await SaleModel.aggregate([
-      {
-        $match: {
-          branch: new mongoose.Types.ObjectId(queryParameter.branch as string),
-        },
-      },
-    ]);
-
     const totalCp = await SaleModel.aggregate([
       {
         $match: {
@@ -268,20 +260,6 @@ export async function getBranchStatHandler(req: Request<{}, {}, {}>, res: Respon
       },
     ]);
 
-    const totalCpByMonth1 = await SaleModel.aggregate([
-      {
-        $match: {
-          branch: new mongoose.Types.ObjectId(queryParameter.branch as string),
-        },
-      },
-      {
-        $group: {
-          _id: { $month: "$createdAt" },
-          cp: { $sum: { $multiply: ["$cp", "$quantity"] } },
-        },
-      },
-    ]);
-
     const totalCpByMonth = await SaleModel.aggregate([
       {
         $match: {
@@ -303,6 +281,39 @@ export async function getBranchStatHandler(req: Request<{}, {}, {}>, res: Respon
       },
     ]);
 
+    console.log();
+
+    const test = await BranchInventoryModel.find(queryParameter);
+
+    console.log(test);
+
+    const totalSumOfRemainingStocks = await BranchInventoryModel.aggregate([
+      {
+        $match: {
+          branch: new mongoose.Types.ObjectId(queryParameter.branch as string),
+        },
+      },
+      {
+        $lookup: {
+          from: "products", // The name of the products collection
+          localField: "product",
+          foreignField: "_id",
+          as: "productDetails",
+        },
+      },
+      {
+        $unwind: "$productDetails",
+      },
+      {
+        $group: {
+          _id: null,
+          totalStockValue: { $sum: { $multiply: ["$totalStock", "$productDetails.cp"] } },
+        },
+      },
+    ]);
+
+    // console.log(totalSumOfRemainingStocks);
+
     return res.status(200).json({
       status: "success",
       msg: "Get all member success",
@@ -319,6 +330,7 @@ export async function getBranchStatHandler(req: Request<{}, {}, {}>, res: Respon
         totalReturnedQuantity: totalQuantitySoldByBranch[0]?.totalReturnedQuantity | 0,
         totalreturnSale: totalreturnSales[0]?.totalAmount | 0,
         totalReturnCp: totalReturnCp[0]?.totalAmount | 0,
+        totalSumOfRemainingStocks: totalSumOfRemainingStocks[0]?.totalStockValue,
       },
     });
   } catch (error: any) {
