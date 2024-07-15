@@ -27,8 +27,8 @@ const formSchema = z.object({
   product: z.string().min(24, {
     message: "Product is required",
   }),
-  quantity: z.coerce.number().min(1, {
-    message: "Quantity must be a positive number.",
+  stock: z.coerce.number().min(1, {
+    message: "stock must be a positive number.",
   }),
 });
 
@@ -39,18 +39,20 @@ export default function Page() {
   const { data: products } = useGetAllProductQuery({});
   const params = useParams();
   const distributeId = params.id;
+  console.log(distributeId)
 
   const { data, isFetching } = useGetDistributeQuery(distributeId);
   const distribute = data?.data;
+  console.log(distribute)
 
   const [updateDistribute, { error: updateError, isError: ab, isLoading: isUpdating }] = useUpdateDistributeMutation();
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      branch: "",
-      product: "",
-      quantity: 0,
+      branch: distribute?.branch,
+      product: distribute?.product,
+      stock: 0,
     },
   });
 
@@ -59,7 +61,7 @@ export default function Page() {
       form.reset({
         branch: distribute.branch || "",
         product: distribute.product || "",
-        quantity: distribute.quantity || 0,
+        stock: distribute.stock || 0,
       });
     }
   }, [form, distribute]);
@@ -100,7 +102,7 @@ export default function Page() {
             autoComplete="off"
         onSubmit={form.handleSubmit(onSubmit)}
         className=" grid grid-cols-2 gap-4">
-        <FormField
+        {/* <FormField
           control={form.control}
           name="branch"
           render={({ field }) => (
@@ -131,9 +133,9 @@ export default function Page() {
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
 
-        <FormField
+        {/* <FormField
           control={form.control}
           name="product"
           render={({ field }) => (
@@ -170,18 +172,18 @@ export default function Page() {
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
 
         <FormField
           control={form.control}
-          name="quantity"
+          name="stock"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Quantity</FormLabel>
+              <FormLabel>stock</FormLabel>
               <FormControl>
                 <Input
                   type="number"
-                  placeholder="Quantity"
+                  placeholder="stock"
                   {...field}
                 />
               </FormControl>

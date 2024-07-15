@@ -411,12 +411,7 @@ export default function Page() {
                       icon={<BarChart4 />}
                     />
 
-                    <StatCard
-                      title="Total Unique Stock"
-                      description="Total unique availabe stocks"
-                      value={totalItem | 0}
-                      icon={<LineChart />}
-                    />
+                  
 
                     <StatCard
                       title="Total Availeble Stock"
