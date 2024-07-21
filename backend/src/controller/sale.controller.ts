@@ -58,6 +58,28 @@ export async function getAllSaleByMonthHandler(req: any, res: Response, next: Ne
     const branchId = req.params.branchId;
     const branchSales = await SaleModel.find({ branch: branchId });
 
+    // Calculate total sales amount amount  for today
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const startDate = new Date(today);
+    const endDate = new Date(today);
+    endDate.setHours(23, 59, 59, 999);
+
+    const result = await SaleModel.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startDate, $lte: endDate },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalSalesAmount: { $sum: "$totalAmount" },
+        },
+      },
+    ]);
+    const totalSalesAmountOfToday = result.length > 0 ? result[0].totalSalesAmount : 0;
+
     const adjustedSales = branchSales.map((sale: any) => {
       const quantityAfterReturn = sale.quantity - sale.returnedQuantity;
       return {
@@ -82,14 +104,26 @@ export async function getAllSaleByMonthHandler(req: any, res: Response, next: Ne
       };
     });
 
+    const groupSalesByMonth = (sales: any[]) => {
+      return sales.reduce((acc, sale) => {
+        const month = sale.createdAt.toISOString().slice(0, 7); // Extract year-month in format YYYY-MM
+        if (!acc[month]) acc[month] = [];
+        acc[month].push(sale);
+        return acc;
+      }, {} as { [key: string]: any[] });
+    };
+
     const salesByMonth = groupSalesByMonth(adjustedSales);
+
     // Convert object to array
     const salesByMonthArray = Object.entries(salesByMonth).map(([key, value]) => ({ month: key, sales: value }));
 
+    // Sort by month in descending order
+    salesByMonthArray.sort((a, b) => b.month.localeCompare(a.month));
     return res.json({
       status: "success",
       msg: "Get all sale success",
-      data: salesByMonthArray,
+      data: { salesByMonthArray, totalSalesAmountOfToday },
     });
   } catch (error: any) {
     console.error("msg:", error.message);
@@ -227,6 +261,7 @@ export async function deleteSalesByMonthHandler(req: any, res: Response, next: N
 export async function getSalesByBranchAndDateHandler(req: any, res: Response, next: NextFunction) {
   try {
     const { branchId, date } = req.params;
+
     const [year, month] = date.split("-").map(Number);
 
     const startDate = new Date(year, month - 1, 1); // Month in JavaScript is 0-indexed, so we subtract 1

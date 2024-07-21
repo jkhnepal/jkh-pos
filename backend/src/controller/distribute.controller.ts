@@ -23,7 +23,7 @@ export async function createDistributeHandler(req: Request<{}, {}, CreateDistrib
       });
     }
 
-    // if body.stock is 0 or negative number 
+    // if body.stock is 0 or negative number
     if (body.stock <= 0) {
       return res.status(400).json({
         status: "failure",
@@ -127,7 +127,7 @@ export async function getAllUniqueProductInventoryOfABranchHandler(req: Request<
 }
 
 export async function getTotalStock(product: string) {
-  const product_id = new mongoose.Types.ObjectId(product); 
+  const product_id = new mongoose.Types.ObjectId(product);
 
   const totalAddedStock = await DistributeModel.aggregate([
     {
@@ -167,7 +167,10 @@ export async function updateDistributeHandler(req: Request<UpdateDistributeInput
   try {
     const distributeId = req.params.distributeId;
     const distribute: any = await findDistribute({ distributeId });
-    const branchInventory: any = await BranchInventoryModel.findOne({ branch: distribute.branch, product: distribute.product });
+    console.log(req.body);
+
+    const branchInventory: any = await BranchInventoryModel.findOne({ branch: req.body.branch, product: req.body.product });
+    console.log(branchInventory)
 
     if (!distribute) {
       return res.status(404).json({
@@ -180,16 +183,27 @@ export async function updateDistributeHandler(req: Request<UpdateDistributeInput
       new: true,
     });
 
+    // console.log(updatedDistribute);
+
     let updatedBranchInventory;
     if (branchInventory) {
-      const newTotalstock = (branchInventory.totalStock += req.body.quantity -= distribute.quantity);
-      updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, { totalStock: newTotalstock }, { new: true });
+      const newTotalstock = branchInventory.totalStock + req.body.stock;
+      const newTotalPreviousStock = branchInventory.previousStock + req.body.stock;
+      updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, { totalStock: newTotalstock, previousStock: newTotalPreviousStock }, { new: true });
     }
+
+    console.log(updatedBranchInventory)
+
+
+
+
+
+    await findAndUpdateProduct({ _id: distribute.product }, { $inc: { availableStock: -req.body.stock } }, { new: true });
 
     return res.status(200).json({
       status: "success",
       msg: "Update success",
-      data: updatedDistribute,
+      // data: updatedDistribute,
     });
   } catch (error: any) {
     console.error("Error:", error.message);

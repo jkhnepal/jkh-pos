@@ -11,8 +11,6 @@ router.get("/:saleId", [validate(getSaleSchema)], getSaleHandler);
 router.patch("/:saleId", [validate(updateSaleSchema)], updateSaleHandler);
 router.delete("/:saleId", [validate(deleteSaleSchema)], deleteSaleHandler);
 router.get("/get-sales-by-months/:branchId", getAllSaleByMonthHandler);
-
-
 router.delete("/delete-sales-by-month/:branchId/:date", deleteSalesByMonthHandler);
 router.get("/get-sales-by-branch-and-date/:branchId/:date", getSalesByBranchAndDateHandler);
 
