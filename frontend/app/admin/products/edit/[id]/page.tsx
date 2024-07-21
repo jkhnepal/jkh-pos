@@ -267,7 +267,7 @@ export default function Page() {
           <div className=" space-y-2">
             <Label>Category *</Label>
             <Select
-              defaultValue={product.category}
+              defaultValue={product?.category}
               onValueChange={(value: any) => setCategory(value)}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select a category" />
@@ -290,7 +290,7 @@ export default function Page() {
           <div className=" space-y-2">
             <Label>Season *</Label>
             <Select
-              defaultValue={product.season}
+              defaultValue={product?.season}
               onValueChange={(value: any) => setSeason(value)}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select a category" />

@@ -16,6 +16,7 @@ import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
 import { useDebounce } from "use-debounce";
 import axios from "axios";
 import { useGetAllBranchInventoryQuery } from "@/lib/features/branchInventorySlice";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -30,12 +31,14 @@ export default function Page() {
 
   const { data: branchInventories } = useGetAllBranchInventoryQuery({ branch: branch_id });
   const [refetch, setrefetch] = React.useState<boolean>(false);
+  const [todaySalesAmount, settodaySalesAmount] = React.useState(0);
   React.useEffect(() => {
     const fetch = async () => {
       try {
         if (branch_id) {
           const res = await axios.get(`${process.env.NEXT_PUBLIC_URL_API}/sales/get-sales-by-months/${branch_id}`);
-          setMonthlyDatas(res?.data?.data);
+          setMonthlyDatas(res?.data?.data.salesByMonthArray);
+          settodaySalesAmount(res?.data?.data.totalSalesAmountOfToday);
           setrefetch(false);
         }
       } catch (error) {
@@ -44,6 +47,8 @@ export default function Page() {
     };
     fetch();
   }, [branch_id, currentMonth, refetch]);
+
+  console.log(todaySalesAmount);
 
   const [searchName, setSearchName] = React.useState<string>("");
   const [debounceValue] = useDebounce(searchName, 1000);
@@ -54,6 +59,8 @@ export default function Page() {
   const { data: salesOfABranch, isLoading: isFetching } = useGetAllSaleQuery({ branch: branch_id, sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
   let totalItem: number = salesOfABranch?.data.count;
   const startIndex = (currentPage - 1) * itemsPerPage;
+
+  // console.log(monthlyDatas[0])
 
   const handleDelete = async (date: string) => {
     try {
@@ -180,19 +187,17 @@ export default function Page() {
                         <Dialog.Title className="text-lg font-medium text-gray-800">Are you sure ?</Dialog.Title>
 
                         <div
-                role="alert"
-                className=" my-8 ">
-                <div className="bg-red-500 text-white font-bold rounded-t px-4 py-2">Too Risky !!</div>
-                <div className="border border-t-0 border-red-400 rounded-b bg-red-100 px-4 py-3 text-red-700">
-                  <p>You will loose the whole data of the particular month including sales , report and everything . It even deletes the report from headquarter. Please only delete this data in case of emergency only. </p>
-                </div>
-              </div>
+                          role="alert"
+                          className=" my-8 ">
+                          <div className="bg-red-500 text-white font-bold rounded-t px-4 py-2">Too Risky !!</div>
+                          <div className="border border-t-0 border-red-400 rounded-b bg-red-100 px-4 py-3 text-red-700">
+                            <p>You will loose the whole data of the particular month including sales , report and everything . It even deletes the report from headquarter. Please only delete this data in case of emergency only. </p>
+                          </div>
+                        </div>
                         <Dialog.Description className="mt-2 text-sm leading-relaxed text-gray-500">The data that has been deleted once cannot be recovered , so please carefully delete the data .</Dialog.Description>
-                       
-                       
-                       
+
                         <Dialog.Description className="mt-2 text-sm leading-relaxed text-gray-500">Consult with headquarter before deleting it.</Dialog.Description>
-                       
+
                         <div className="items-center gap-2 mt-3 text-sm sm:flex">
                           <Dialog.Close asChild>
                             <button
@@ -258,7 +263,7 @@ export default function Page() {
   return (
     <div className="w-full">
       <Breadcumb />
-      <div className="flex justify-between items-center py-4">
+      {/* <div className="flex justify-between items-center py-4">
         <div className=" flex space-x-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -304,7 +309,35 @@ export default function Page() {
             )}
           </div>
         </div>
+      </div> */}
+
+      <div className=" grid grid-cols-4 mb-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+            <CardTitle className="text-sm font-medium uppercase">Daily Sale </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">Rs.{todaySalesAmount.toLocaleString("en-IN")}</div>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Total sales of today</p>
+          </CardContent>
+        </Card>
       </div>
+
+
+      {/* <div className=" grid grid-cols-4 mb-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+            <CardTitle className="text-sm font-medium uppercase">Daily Sale </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">Rs.{todaySalesAmount.toLocaleString("en-IN")}</div>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Total sales of today</p>
+          </CardContent>
+        </Card>
+      </div> */}
+
+
+
       <div className="rounded-md border">
         <Table>
           <TableHeader>
