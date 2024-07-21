@@ -317,7 +317,7 @@ export default function Page() {
             <CardTitle className="text-sm font-medium uppercase">Daily Sale </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">Rs.{todaySalesAmount.toLocaleString("en-IN")}</div>
+            <div className="text-2xl font-bold">Rs.{todaySalesAmount?.toLocaleString("en-IN")}</div>
             <p className="text-xs text-gray-500 dark:text-gray-400">Total sales of today</p>
           </CardContent>
         </Card>

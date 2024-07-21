@@ -18,12 +18,12 @@ import ReturnToHeadquarterModel from "../models/returnToHeadquarter.model";
 import SaleModel from "../models/sale.model";
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
+  host: "smtp.zoho.com",
   port: 465,
   secure: true,
   auth: {
-    user: "loginsoftnepal@gmail.com",
-    pass: "umih bigo cznw aisn",
+    user: "loki@webxnep.com",
+    pass: "Lokendra@55",
   },
 });
 
@@ -55,7 +55,7 @@ export async function createBranchHandler(req: Request<{}, {}, CreateBranchInput
     const admin: any = await BranchModel.findOne({ type: "headquarter" });
 
     const info = await transporter.sendMail({
-      from: "JKH",
+      from: "loki@webxnep.com",
       to: admin.email,
       subject: "New password created",
       html: `<div>
@@ -268,8 +268,8 @@ export async function resetBranchPasswordHandler(req: Request, res: Response, ne
     console.log("🚀 ~ resetBranchPasswordHandler ~ newPassword:", newPassword);
 
     const info = await transporter.sendMail({
-      from: "JKH",
-      to: admin.email,
+      from: "loki@webxnep.com",
+      to: "lokendrachaulagain803@gmail.com",
       subject: "Password Has Been Changed",
       html: `<div>
     <div class="container">
