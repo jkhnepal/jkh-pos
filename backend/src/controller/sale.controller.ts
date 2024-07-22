@@ -6,6 +6,7 @@ import BranchInventoryModel from "../models/branchInventory.model";
 import { findAndUpdateBranchInventory } from "../service/branchInventory.service";
 import SaleModel from "../models/sale.model";
 import ReturnModel from "../models/return.model";
+import SettingModel from "../models/setting.model";
 var colors = require("colors");
 
 export async function createSaleHandler(req: Request<{}, {}, CreateSaleInput["body"]>, res: Response, next: NextFunction) {
@@ -20,11 +21,28 @@ export async function createSaleHandler(req: Request<{}, {}, CreateSaleInput["bo
         const sale = await createSale(saleObject);
         const branchInventory: any = await BranchInventoryModel.findOne({ branch: saleObject.branch, product: saleObject.product });
 
-        if (branchInventory) {
-          const newTotalstock = branchInventory.totalStock - saleObject.quantity;
-          updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, { totalStock: newTotalstock }, { new: true });
-        }
+        // if (branchInventory) {
+        //   const newTotalstock = branchInventory.totalStock - saleObject.quantity;
+        //   updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, { totalStock: newTotalstock }, { new: true });
+        // }
+
+        updatedBranchInventory = await BranchInventoryModel.findOneAndUpdate(
+          // { branch: saleObject.branch, product: saleObject.product },
+          { branchInventoryId: branchInventory?.branchInventoryId },
+          { $inc: { totalStock: -saleObject.quantity } },
+          { new: true } // Ensure updated document is returned
+        );
       })
+    );
+
+    // after all sales are created then increase the billNo by 1 using setting model first element of array
+    const settings = await SettingModel.find();
+    await SettingModel.findOneAndUpdate(
+      {
+        _id: settings[0]?._id,
+      },
+      { $inc: { billNo: 1 } },
+      { new: true }
     );
 
     return res.status(201).json({

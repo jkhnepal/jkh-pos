@@ -16,7 +16,9 @@ import branchInventoryRoute from "../src/routes/branchInventory.route";
 import statRoute from "../src/routes/stat.route";
 import returnRoute from "../src/routes/return.route";
 import returnToHeadquarterRoute from "../src/routes/returnToHeadquarter.route";
+import settingRoute from "../src/routes/setting.route";
 import BranchModel from "./models/branch.model";
+import SettingModel from "./models/setting.model";
 
 const app = express();
 // const port = process.env.PORT || 5000;
@@ -28,7 +30,7 @@ app.use(express.json({ limit: "10kb" }));
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:3001",  "http://localhost:3002","https://jkh.webxnep.com", "https://pos-h8ki.vercel.app", "https://jackethouse.vercel.app"],
+    origin: ["http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "https://jkh.webxnep.com", "https://pos-h8ki.vercel.app", "https://jackethouse.vercel.app"],
     credentials: true,
   })
 );
@@ -47,6 +49,7 @@ app.use("/api/branch-inventories", branchInventoryRoute);
 app.use("/api/returns", returnRoute);
 app.use("/api/stats", statRoute);
 app.use("/api/return-to-headquarter", returnToHeadquarterRoute);
+app.use("/api/settings", settingRoute);
 
 // Testing
 app.get("/healthChecker", (req: Request, res: Response, next: NextFunction) => {
@@ -93,9 +96,20 @@ async function createAdminIfNotPresent() {
     logger.error(`Error creating admin user: ${error.message}`);
   }
 }
+// creating setting if even one setting is not present
+async function createSettingIfNotPresent() {
+  const settings = await SettingModel.find();
+  if (settings.length === 0) {
+    await SettingModel.create({
+      billNo: 0,
+    });
+    logger.info("Setting created successfully.");
+  }
+}
 
 app.listen(port, async () => {
   logger.info(`App is running at http://localhost:${port}`);
   await connectDB();
   await createAdminIfNotPresent();
+  createSettingIfNotPresent();
 });

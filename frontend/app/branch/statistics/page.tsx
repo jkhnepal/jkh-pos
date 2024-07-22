@@ -68,7 +68,7 @@ export default function Component() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{isSumofAvailableStockVisivle ? (stats?.data?.totalSumOfRemainingStocks ? stats.data.totalSumOfRemainingStocks.toLocaleString("en-IN") : "*****") : "*******"}</div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total profits till now</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Total sum of all available products </p>
             </CardContent>
           </Card>
 
