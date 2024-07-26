@@ -81,7 +81,7 @@ export default function Page({}: Props) {
                     <div className="relative  overflow-hidden ">
                       <div className=" flex mx-auto items-center justify-center">
                         <Image
-                          src={item.product.image}
+                          src={item?.product?.image}
                           alt="img"
                           height={100}
                           width={100}
@@ -137,7 +137,7 @@ export default function Page({}: Props) {
                     <div className="relative  overflow-hidden ">
                       <div className=" flex mx-auto items-center justify-center">
                         <Image
-                          src={item.product.image}
+                          src={item?.product?.image}
                           alt="img"
                           height={100}
                           width={100}

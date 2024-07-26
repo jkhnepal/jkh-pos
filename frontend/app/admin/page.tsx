@@ -119,7 +119,7 @@ export default function Page() {
         <StatCard
           title="Total Inventory Value"
           description="Total inventory value of stock products"
-          value={`Rs. ${stats?.data.InventoryValue.toLocaleString("en-IN")}`}
+          value={`Rs. ${stats?.data.InventoryValue?.toLocaleString("en-IN")}`}
           icon={<BarChart4 />}
         />
 
