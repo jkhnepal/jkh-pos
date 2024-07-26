@@ -116,7 +116,8 @@ export default function Cart({ refetch }: any) {
   const [createSale, { isSuccess }] = useCreateSaleMutation();
   const createSaleHandler = async () => {
     const res: any = await createSale(dataToSend);
-    setSaleHappenedTime(res?.data.updatedBranchInventory.createdAt);
+    console.log("res", res);
+    setSaleHappenedTime(res?.data.updatedBranchInventory.updatedAt);
     // toast.success(res?.data.msg);
     setSelectedProducts([]);
     refetch();
@@ -345,7 +346,10 @@ export default function Cart({ refetch }: any) {
                               <p>
                                 Bill No: <span className=" ml-2">JKH-{settings?.data[0]?.billNo}</span>
                               </p>
-                              <p>Date: {moment(saleHappenedTime).format("MMMM Do YYYY, h:mm:ss a")}</p>
+                              <p>
+                                Date:
+                                {" "} {moment(saleHappenedTime).format("llll")}
+                              </p>
                               <p>
                                 Bill To: <span className=" ml-4 font-semibold">{memberName}</span>
                               </p>
@@ -393,8 +397,8 @@ export default function Cart({ refetch }: any) {
                                   <span className=" w-4/12 font-semibold">Total Discount </span> <span className=" w-4/12">:</span> <span className=" w-4/12 font-semibold">{calculateTotalDiscount().toLocaleString("en-IN")}</span>{" "}
                                 </p>
 
-                                <p className="flex items-center  ">
-                                  <span className=" w-4/12">Net Amount </span> <span className=" w-4/12">:</span> <span className=" w-4/12 font-semibold">{netAmount.toLocaleString("en-IN")}</span>{" "}
+                                <p className="flex items-center text-[12px]   ">
+                                  <span className=" w-4/12 font-bold tracking-wide">Net Amount </span> <span className=" w-4/12">:</span> <span className=" w-4/12 font-bold tracking-wider">{netAmount.toLocaleString("en-IN")}</span>{" "}
                                 </p>
 
                                 <p className="flex items-center  ">
