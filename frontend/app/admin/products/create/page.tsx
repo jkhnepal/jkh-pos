@@ -125,7 +125,7 @@ export default function Page() {
   }
 
   return (
-    <div>
+    <div className=" min-h-[150vh]">
       <Breadcumb />
       <Form {...form}>
         <form
@@ -187,10 +187,10 @@ export default function Page() {
                     {...field}
                     onValueChange={field.onChange}
                     defaultValue={field.name}>
-                    <SelectTrigger className="">
+                    <SelectTrigger className=" ">
                       <SelectValue placeholder="Select Category" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className=" h-96">
                       <SelectGroup>
                         <SelectLabel>Categories (Expense)</SelectLabel>
                         {categories?.data.results.map((item: any) => (
