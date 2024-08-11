@@ -241,7 +241,7 @@ export default function Page() {
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    // getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -264,7 +264,7 @@ export default function Page() {
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full  pb-32">
       <Breadcumb />
       <div className="flex justify-between items-center py-4">
         <Input
@@ -361,7 +361,7 @@ export default function Page() {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
+      {/* <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
@@ -381,7 +381,7 @@ export default function Page() {
             Next
           </Button>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
