@@ -123,6 +123,10 @@ export default function Page() {
       toast.error(errorMsg);
     }
   }
+  // Inside your component
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredCategories = categories?.data.results.filter((item: any) => item.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
     <div className=" min-h-[150vh]">
@@ -176,7 +180,7 @@ export default function Page() {
             )}
           />
 
-          <FormField
+          {/* <FormField
             control={form.control}
             name="category"
             render={({ field }) => (
@@ -194,6 +198,48 @@ export default function Page() {
                       <SelectGroup>
                         <SelectLabel>Categories (Expense)</SelectLabel>
                         {categories?.data.results.map((item: any) => (
+                          <SelectItem
+                            key={item._id}
+                            value={item._id}>
+                            {item.name}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          /> */}
+
+          <FormField
+            control={form.control}
+            name="category"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Categories</FormLabel>
+                <FormControl>
+                  <Select
+                    {...field}
+                    onValueChange={field.onChange}
+                    value={field.value} // Use field.value to manage selected value
+                  >
+                    <SelectTrigger className=" ">
+                      <SelectValue placeholder="Select Category" />
+                    </SelectTrigger>
+                    <SelectContent className="h-96">
+                      <div className="p-2">
+                        <Input
+                          type="text"
+                          placeholder="Search categories..."
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                      </div>
+                      <SelectGroup>
+                        <SelectLabel>Categories (Expense)</SelectLabel>
+                        {filteredCategories?.map((item: any) => (
                           <SelectItem
                             key={item._id}
                             value={item._id}>

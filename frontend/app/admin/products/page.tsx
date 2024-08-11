@@ -152,6 +152,7 @@ export default function Page() {
       header: "Image",
       cell: ({ row }) => {
         const image: string = row.getValue("image") as string;
+        console.log(image)
         return (
           <div>
             {image && (
