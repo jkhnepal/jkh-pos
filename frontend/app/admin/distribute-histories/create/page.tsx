@@ -24,7 +24,8 @@ const formSchema = z.object({
 export default function Page() {
   const { data: branches } = useGetAllBranchQuery({});
   const [searchName, setSearchName] = React.useState<string>("");
-  const { data: products } = useGetAllProductQuery({ sort: "latest" });
+  const { data: products, refetch } = useGetAllProductQuery({ sort: "latest" });
+  const [seasonFilter, setSeasonFilter] = React.useState("");
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -57,11 +58,35 @@ export default function Page() {
     }
   }
 
+  React.useEffect(() => {
+    refetch();
+  }, [refetch]);
+
+  const handleStatusChange = (event: any) => {
+    setSeasonFilter(event.target.value);
+  };
+
+  console.log(seasonFilter);
+
+  const [filteredProducts, setfilteredProducts] = React.useState([]);
+  React.useEffect(() => {
+    if (seasonFilter === "") {
+      setfilteredProducts(products?.data?.results);
+    } else {
+      setfilteredProducts(products?.data?.results?.filter((product: any) => product.season === seasonFilter));
+    }
+  }, [products?.data?.results, seasonFilter]);
+
+  // Inside your component
+  const [searchTerm, setSearchTerm] = React.useState("");
+
+  const searchedProducts = filteredProducts?.filter((item: any) => item.name.toLowerCase().includes(searchTerm.toLowerCase()));
+
   return (
     <Form {...form}>
       <Breadcumb />
       <form
-            autoComplete="off"
+        autoComplete="off"
         onSubmit={form.handleSubmit(onSubmit)}
         className=" grid grid-cols-2 gap-4">
         <FormField
@@ -123,16 +148,27 @@ export default function Page() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
+                      <select
+                        className=" border rounded-sm py-1.5 outline-none px-2  w-48"
+                        name="season"
+                        id="season"
+                        value={seasonFilter}
+                        onChange={handleStatusChange}>
+                        <option value="">All</option>
+                        <option value="winter">Winter</option>
+                        <option value="summer">Summer</option>
+                      </select>
+
                       <SelectLabel>
-                        Products
                         <Input
                           className="my-2"
                           placeholder="Select product"
-                          value={searchName}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                          
                         />
                       </SelectLabel>
-                      {products?.data.results.map((item: any) => (
+                      {filteredProducts?.map((item: any) => (
                         <SelectItem
                           key={item._id}
                           value={item._id}>
