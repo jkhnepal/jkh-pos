@@ -12,9 +12,9 @@ cloudinary.config({
   api_secret: "rXZJIvoFw1FsS708gdAX8YrhCWI",
 });
 
-export async function POST(request: Request) {
-  const body = await request.json();
-  const { paramsToSign } = body;
-  const signature = cloudinary.utils.api_sign_request(paramsToSign, "rXZJIvoFw1FsS708gdAX8YrhCWI");
-  return Response.json({ signature });
-}
+// export async function POST(request: Request) {
+//   const body = await request.json();
+//   const { paramsToSign } = body;
+//   const signature = cloudinary.utils.api_sign_request(paramsToSign, "rXZJIvoFw1FsS708gdAX8YrhCWI");
+//   return Response.json({ signature });
+// }
