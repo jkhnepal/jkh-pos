@@ -49,6 +49,7 @@ export default function Page() {
   const { refetch } = useGetAllBranchQuery({ name: "" });
   const { uploading, handleFileUpload } = useCloudinaryFileUpload();
   const [imageUrl, setImageUrl] = useState<string>("");
+  console.log(imageUrl)
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
@@ -73,6 +74,7 @@ export default function Page() {
 
   // Define a submit handler.
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log(values)
     const res: any = await createBranch(values);
     if (res.data) {
       refetch();

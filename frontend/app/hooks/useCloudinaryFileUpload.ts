@@ -11,14 +11,18 @@ export default function useCloudinaryFileUpload() {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("upload_preset", "jkh-preset");
-       fetch("https://api.cloudinary.com/v1_1/dgnd6ay3m/image/upload", {
+      //  fetch("https://api.cloudinary.com/v1_1/dgnd6ay3m/image/upload", {
+        fetch("https://api.cloudinary.com/v1_1/db9vimrao/image/upload", {
+
         method: "POST",
         body: formData,
       })
         .then((response) => response.json())
         .then((data) => {
           // Set the imageUrl using setImageUrl
-          console.log(data);
+          // console.log(data);
+          // console.log(data.secure_url);
+          // console.log(data.url);
           setImageUrl(data.secure_url);
         })
         .catch((error) => {

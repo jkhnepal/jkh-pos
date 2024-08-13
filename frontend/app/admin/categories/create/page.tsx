@@ -46,7 +46,9 @@ export default function Page() {
 
   useEffect(() => {
     form.setValue("image", imageUrl);
+    console.log(imageUrl);
   }, [form, imageUrl]);
+  console.log(imageUrl);
 
   const router =useRouter()
 
