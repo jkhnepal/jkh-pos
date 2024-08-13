@@ -22,8 +22,9 @@ export default function useCloudinaryFileUpload() {
           // Set the imageUrl using setImageUrl
           // console.log(data);
           // console.log(data.secure_url);
-          console.log(data.url);
+          // console.log(data.url);
           // setImageUrl(data.secure_url);
+          setImageUrl(data.url);
         })
         .catch((error) => {
           console.error("Error uploading image:", error);
