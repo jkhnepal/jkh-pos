@@ -36,8 +36,11 @@ export default function Page() {
   const { data, isFetching } = useGetCategoryQuery(categoryId);
   const category = data?.data;
 
-  const { uploading, handleFileUpload } = useCloudinaryFileUpload();
-  const [imageUrl, setImageUrl] = useState<string>("");
+  // const { uploading, handleFileUpload } = useCloudinaryFileUpload();
+  // const [imageUrl, setImageUrl] = useState<string>("");
+
+  const { uploading, handleFileUpload, imageUrl, setImageUrl } = useCloudinaryFileUpload();
+  const [previewUrl, setPreviewUrl] = useState("");
 
   // 1. Define your form.
   const form = useForm({
@@ -58,7 +61,7 @@ export default function Page() {
       });
       setImageUrl(category.image || "");
     }
-  }, [form, category]);
+  }, [form, category, setImageUrl]);
 
   useEffect(() => {
     form.setValue("image", imageUrl);
@@ -149,7 +152,13 @@ export default function Page() {
               <div className=" flex flex-col   gap-2">
                 <Input
                   type="file"
-                  onChange={(event) => handleFileUpload(event.target.files?.[0], setImageUrl)}
+                  // onChange={(event) => handleFileUpload(event.target.files?.[0], setImageUrl)}
+                  onChange={(e: any) => {
+                    field.onChange(e.target.files[0]);
+                    handleFileUpload(e.target.files[0]);
+                    const preview = URL?.createObjectURL(e.target.files[0]);
+                    setPreviewUrl(preview);
+                  }}
                 />
 
                 <>

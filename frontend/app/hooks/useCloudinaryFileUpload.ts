@@ -44,7 +44,7 @@ import { toast } from "sonner";
 
 export default function useCloudinaryFileUpload() {
   const [uploading, setUploading] = useState(false);
-  const [imageUrl, setImageUrl] = useState<string>();
+  const [imageUrl, setImageUrl] = useState<any>();
 
   const handleFileUpload = (file: any) => {
     if (file) {
