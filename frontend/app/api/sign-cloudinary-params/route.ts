@@ -7,9 +7,9 @@ import { v2 as cloudinary } from "cloudinary";
 // });
 
 cloudinary.config({
-  cloud_name: "db9vimrao",
-  api_key: "745115532881289",
-  api_secret: "rXZJIvoFw1FsS708gdAX8YrhCWI",
+  cloud_name: "duv0sr2ua",
+  api_key: "457615813374964",
+  api_secret: "36Ul4B5-9KAuBnsQBVAqr4MB2d0",
 });
 
 // export async function POST(request: Request) {
