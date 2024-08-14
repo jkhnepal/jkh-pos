@@ -47,10 +47,8 @@ const formSchema = z.object({
 export default function Page() {
   const [createBranch, { error, isLoading: isCreating }] = useCreateBranchMutation();
   const { refetch } = useGetAllBranchQuery({ name: "" });
-  // const { uploading, handleFileUpload } = useCloudinaryFileUpload();
-  // const [imageUrl, setImageUrl] = useState<string>("");
-  const { uploading, handleFileUpload, imageUrl, setImageUrl } = useCloudinaryFileUpload();
-  const [previewUrl, setPreviewUrl] = useState("");
+  const { uploading, handleFileUpload } = useCloudinaryFileUpload();
+  const [imageUrl, setImageUrl] = useState<string>("");
   console.log(imageUrl)
 
   // 1. Define your form.
@@ -219,13 +217,7 @@ export default function Page() {
 
               <Input
                 type="file"
-                // onChange={(event) => handleFileUpload(event.target.files?.[0], setImageUrl)}
-                onChange={(e: any) => {
-                  field.onChange(e.target.files[0]);
-                  handleFileUpload(e.target.files[0]);
-                  const preview = URL?.createObjectURL(e.target.files[0]);
-                  setPreviewUrl(preview);
-                }}
+                onChange={(event) => handleFileUpload(event.target.files?.[0], setImageUrl)}
               />
 
               {uploading ? (

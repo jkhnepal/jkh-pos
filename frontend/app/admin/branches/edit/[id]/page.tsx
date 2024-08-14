@@ -57,11 +57,8 @@ export default function Page() {
   const { data: stats } = useGetBranchStatQuery({ branch: branch?._id });
   const { data: profitData } = useGetBranchProfitQuery({ branch: branch?._id });
 
-  // const { uploading, handleFileUpload } = useCloudinaryFileUpload();
-  // const [imageUrl, setImageUrl] = useState<string>("");
-
-  const { uploading, handleFileUpload, imageUrl, setImageUrl } = useCloudinaryFileUpload();
-  const [previewUrl, setPreviewUrl] = useState("");
+  const { uploading, handleFileUpload } = useCloudinaryFileUpload();
+  const [imageUrl, setImageUrl] = useState<string>("");
 
   const [updateBranch, { error: updateError, isLoading: isUpdating }] = useUpdateBranchMutation();
   const { data: branchInventories } = useGetAllBranchInventoryQuery({ branch: branch?._id });
@@ -298,13 +295,7 @@ export default function Page() {
 
                         <Input
                           type="file"
-                          // onChange={(event) => handleFileUpload(event.target.files?.[0], setImageUrl)}
-                          onChange={(e: any) => {
-                            field.onChange(e.target.files[0]);
-                            handleFileUpload(e.target.files[0]);
-                            const preview = URL?.createObjectURL(e.target.files[0]);
-                            setPreviewUrl(preview);
-                          }}
+                          onChange={(event) => handleFileUpload(event.target.files?.[0], setImageUrl)}
                         />
 
                         {uploading ? (

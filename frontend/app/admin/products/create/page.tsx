@@ -67,12 +67,8 @@ export default function Page() {
   const { data: categories } = useGetAllCategoryQuery({});
 
   const { refetch } = useGetAllProductQuery({ name: "" });
-  // const { uploading, handleFileUpload } = useCloudinaryFileUpload();
-  // const [imageUrl, setImageUrl] = useState<string>("");
-
-  const { uploading, handleFileUpload, imageUrl, setImageUrl } = useCloudinaryFileUpload();
-  const [previewUrl, setPreviewUrl] = useState("");
-  
+  const { uploading, handleFileUpload } = useCloudinaryFileUpload();
+  const [imageUrl, setImageUrl] = useState<string>("");
   const [recentlyCreatedProductId, setrecentlyCreatedProductId] = useState<string>("");
 
   useEffect(() => {
@@ -379,13 +375,7 @@ export default function Page() {
                 <div className=" flex items-center  gap-2">
                   <Input
                     type="file"
-                    // onChange={(event) => handleFileUpload(event.target.files?.[0], setImageUrl)}
-                    onChange={(e: any) => {
-                      field.onChange(e.target.files[0]);
-                      handleFileUpload(e.target.files[0]);
-                      const preview = URL?.createObjectURL(e.target.files[0]);
-                      setPreviewUrl(preview);
-                    }}
+                    onChange={(event) => handleFileUpload(event.target.files?.[0], setImageUrl)}
                   />
 
                   <>
