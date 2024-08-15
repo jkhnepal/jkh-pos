@@ -30,7 +30,7 @@ app.use(express.json({ limit: "10kb" }));
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:3001", "https://jkh-pos.vercel.app/", "http://localhost:3002","https://jkh.webxnep.com", "https://pos-h8ki.vercel.app", "https://jackethouse.vercel.app","https://pos.jackethousenepal.com"],
+    origin: ["http://localhost:3000", "http://localhost:3001", "https://jkh-pos.vercel.app/", "http://localhost:3002", "https://jkh.webxnep.com", "https://pos-h8ki.vercel.app", "https://jackethouse.vercel.app", "https://pos.jackethousenepal.com"],
     credentials: true,
   })
 );
