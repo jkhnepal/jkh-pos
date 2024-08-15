@@ -12,7 +12,7 @@ export default function useCloudinaryFileUpload() {
       formData.append("file", file);
       formData.append("upload_preset", "jkh-preset");
       //  fetch("https://api.cloudinary.com/v1_1/dgnd6ay3m/image/upload", {
-        fetch("https://api.cloudinary.com/v1_1/db9vimrao/image/upload", {
+        fetch("https://api.cloudinary.com/v1_1/dgnd6ay3m/image/upload", {
 
         method: "POST",
         body: formData,
