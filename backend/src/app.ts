@@ -55,7 +55,7 @@ app.use("/api/settings", settingRoute);
 app.get("/healthChecker", (req: Request, res: Response, next: NextFunction) => {
   res.status(200).json({
     status: "success",
-    msg: "Welcome to JKH Server smtp check 88.",
+    msg: "Welcome to JKH Server smtp check 89.",
   });
 });
 
