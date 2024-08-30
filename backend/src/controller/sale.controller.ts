@@ -89,13 +89,35 @@ export async function getAllSaleByMonthHandler(req: any, res: Response, next: Ne
           createdAt: { $gte: startDate, $lte: endDate },
         },
       },
+      // {
+      //   $group: {
+      //     _id: null,
+      //     totalSalesAmount: { $sum: "$totalAmount" },
+      //   },
+      // },
+      
       {
         $group: {
           _id: null,
           totalSalesAmount: { $sum: "$totalAmount" },
+          totalReturnWorth: {
+            $sum: {
+              $multiply: ["$returnedQuantity", "$sp"],
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          totalSalesAmount: {
+            $subtract: ["$totalSalesAmount", "$totalReturnWorth"],
+          },
         },
       },
     ]);
+    console.log(result)
+
     const totalSalesAmountOfToday = result.length > 0 ? result[0].totalSalesAmount : 0;
 
     const adjustedSales = branchSales.map((sale: any) => {
@@ -135,6 +157,8 @@ export async function getAllSaleByMonthHandler(req: any, res: Response, next: Ne
 
     // Convert object to array
     const salesByMonthArray = Object.entries(salesByMonth).map(([key, value]) => ({ month: key, sales: value }));
+
+    console.log(totalSalesAmountOfToday);
 
     // Sort by month in descending order
     salesByMonthArray.sort((a, b) => b.month.localeCompare(a.month));
