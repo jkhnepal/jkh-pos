@@ -165,7 +165,7 @@
 //                           placeholder="Select product"
 //                           value={searchTerm}
 //                           onChange={(e) => setSearchTerm(e.target.value)}
-                          
+
 //                         />
 //                       </SelectLabel>
 //                       {filteredProducts?.map((item: any) => (
@@ -241,45 +241,23 @@
 //   );
 // }
 
-
 "use client";
 import * as React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useCreateDistributeMutation } from "@/lib/features/distributeSlice";
 import LoaderPre from "@/app/custom-components/LoaderPre";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SlashIcon } from "@radix-ui/react-icons";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useGetAllBranchQuery } from "@/lib/features/branchSlice";
 import { useGetAllProductQuery } from "@/lib/features/product.sclice";
+import Image from "next/image";
 
 const formSchema = z.object({
   branch: z.string(),
@@ -307,8 +285,7 @@ export default function Page() {
   });
 
   // Define a submit handler.
-  const [createDistribute, { error, isLoading: isCreating }] =
-    useCreateDistributeMutation();
+  const [createDistribute, { error, isLoading: isCreating }] = useCreateDistributeMutation();
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const res: any = await createDistribute(values);
     if (res.data) {
@@ -340,14 +317,10 @@ export default function Page() {
   React.useEffect(() => {
     let filtered = products?.data?.results || [];
     if (seasonFilter) {
-      filtered = filtered.filter(
-        (product: any) => product.season === seasonFilter
-      );
+      filtered = filtered.filter((product: any) => product.season === seasonFilter);
     }
     if (searchTerm) {
-      filtered = filtered.filter((item: any) =>
-        item.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      filtered = filtered.filter((item: any) => item.name.toLowerCase().includes(searchTerm.toLowerCase()));
     }
     setFilteredProducts(filtered);
   }, [products, seasonFilter, searchTerm]);
@@ -358,8 +331,7 @@ export default function Page() {
       <form
         autoComplete="off"
         onSubmit={form.handleSubmit(onSubmit)}
-        className="grid grid-cols-2 gap-4"
-      >
+        className="grid grid-cols-2 gap-4">
         <FormField
           control={form.control}
           name="branch"
@@ -370,8 +342,7 @@ export default function Page() {
                 <Select
                   {...field}
                   onValueChange={field.onChange}
-                  defaultValue={field.name}
-                >
+                  defaultValue={field.name}>
                   <SelectTrigger className="">
                     <SelectValue placeholder="Select branch" />
                   </SelectTrigger>
@@ -383,8 +354,7 @@ export default function Page() {
                         .map((item: any) => (
                           <SelectItem
                             key={item._id}
-                            value={item._id}
-                          >
+                            value={item._id}>
                             {item.name}
                           </SelectItem>
                         ))}
@@ -407,8 +377,7 @@ export default function Page() {
                 <Select
                   {...field}
                   onValueChange={field.onChange}
-                  defaultValue={field.name}
-                >
+                  defaultValue={field.name}>
                   <SelectTrigger className="">
                     <SelectValue placeholder="Select product" />
                   </SelectTrigger>
@@ -419,8 +388,7 @@ export default function Page() {
                         name="season"
                         id="season"
                         value={seasonFilter}
-                        onChange={handleStatusChange}
-                      >
+                        onChange={handleStatusChange}>
                         <option value="">All</option>
                         <option value="winter">Winter</option>
                         <option value="summer">Summer</option>
@@ -436,9 +404,22 @@ export default function Page() {
                       {filteredProducts?.map((item: any) => (
                         <SelectItem
                           key={item._id}
-                          value={item._id}
-                        >
-                          {item.name}
+                          value={item._id}>
+                          <div className=" flex items-center gap-2">
+                            {item.image ? (
+                              <Image
+                                alt="img"
+                                src={item.image}
+                                width={30}
+                                height={15}
+                                className=" rounded-md"
+                              />
+                            ) : (
+                              <div className=" border h-8 w-8   bg-gray-200 rounded-md"></div>
+                            )}
+
+                            <p>{item.name}</p>
+                          </div>
                         </SelectItem>
                       ))}
                     </SelectGroup>
@@ -471,9 +452,7 @@ export default function Page() {
         <div className="flex flex-col gap-1.5">
           <span className="opacity-0">.</span>
           <div>
-            <Button type="submit">
-              {isCreating && <LoaderPre />} Submit
-            </Button>
+            <Button type="submit">{isCreating && <LoaderPre />} Submit</Button>
           </div>
         </div>
       </form>
@@ -493,9 +472,7 @@ function Breadcumb() {
         </BreadcrumbSeparator>
 
         <BreadcrumbItem>
-          <BreadcrumbLink href="/admin/distribute-histories">
-            Supply Histories
-          </BreadcrumbLink>
+          <BreadcrumbLink href="/admin/distribute-histories">Supply Histories</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator>
           <SlashIcon />
