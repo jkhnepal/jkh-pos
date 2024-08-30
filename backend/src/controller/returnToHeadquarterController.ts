@@ -37,9 +37,12 @@ export async function createReturnToHeadquarterHandler(req: Request<{}, {}, Crea
 
     const returnToHeadquarter = await createReturnToHeadquarter(body);
 
+    // Increase the available stock of the product by the returned quantity
     await findAndUpdateProduct({ _id: body.product }, { $inc: { availableStock: +body.returnedQuantity } }, { new: true });
     const branchInventory: any = await BranchInventoryModel.findOne({ branch: body.branch, product: body.product });
 
+
+    // Decrease the total stock of the product by the returned quantity in the branch inventory
     let updatedBranchInventory;
     if (branchInventory) {
       updatedBranchInventory = await findAndUpdateBranchInventory({ branchInventoryId: branchInventory?.branchInventoryId }, { $inc: { totalStock: -body.returnedQuantity, totalReturnedStockToHeadquarter: +body.returnedQuantity } }, { new: true });

@@ -154,6 +154,8 @@ export default function Page() {
     }
   }
 
+  console.log(product?.image)
+
   if (isFetching) {
     return (
       <div>

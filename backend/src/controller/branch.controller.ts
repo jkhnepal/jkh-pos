@@ -226,9 +226,7 @@ export async function resetPasswordHandler(req: Request<UpdateBranchInput["param
     }
 
     const newPassword = generateRandomPassword(10);
-    console.log(newPassword);
     const re = await sendResetPassword(branch.email, newPassword);
-    console.log(re);
 
     const hashedPassword = await generateHashedPassword(newPassword);
 
@@ -245,7 +243,6 @@ export async function resetPasswordHandler(req: Request<UpdateBranchInput["param
       msg: "Password reset successful , check your email",
     });
   } catch (error) {
-    console.error("Error:", error);
     next(new AppError("Internal server error", 500));
   }
 }
@@ -262,10 +259,7 @@ export async function resetBranchPasswordHandler(req: Request, res: Response, ne
     }
 
     const admin: any = await BranchModel.findOne({ type: "headquarter" });
-    console.log("🚀 ~ resetBranchPasswordHandler ~ admin:", admin);
-
     const newPassword = generateRandomPassword(10);
-    console.log("🚀 ~ resetBranchPasswordHandler ~ newPassword:", newPassword);
 
     const info = await transporter.sendMail({
       from: "loki@webxnep.com",
@@ -282,21 +276,16 @@ export async function resetBranchPasswordHandler(req: Request, res: Response, ne
  </div>
    </div>`,
     });
-    console.log("🚀 ~ resetBranchPasswordHandler ~ info:", info);
 
     // Update password
     const hashedPassword = await generateHashedPassword(newPassword);
-    console.log("🚀 ~ resetBranchPasswordHandler ~ hashedPassword:", hashedPassword);
-
     const updatedBranch = await BranchModel.findOneAndUpdate({ branchId: branch?.branchId }, { password: hashedPassword }, { new: true });
-    console.log("🚀 ~ resetBranchPasswordHandler ~ updatedBranch:", updatedBranch);
 
     return res.status(200).json({
       status: "success",
       msg: "Password reset successful , check your email",
     });
   } catch (error) {
-    console.error("Error:", error);
     next(new AppError("Internal server error", 500));
   }
 }

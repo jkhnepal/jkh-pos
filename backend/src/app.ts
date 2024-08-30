@@ -48,7 +48,9 @@ app.use("/api/headquarter-inventories", headquarterInventoryRoute);
 app.use("/api/branch-inventories", branchInventoryRoute);
 app.use("/api/returns", returnRoute);
 app.use("/api/stats", statRoute);
+
 app.use("/api/return-to-headquarter", returnToHeadquarterRoute);
+
 app.use("/api/settings", settingRoute);
 
 // Testing

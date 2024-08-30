@@ -23,18 +23,20 @@ export async function createUserHandler(req: Request<{}, {}, CreateUserInput["bo
     }
 
     const token = crypto.randomBytes(20).toString("hex");
+
     const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
+      host: "smtp.zoho.com",
       port: 465,
       secure: true,
       auth: {
-        user: "lokendrachaulagain803@gmail.com",
-        pass: "hvcf tefh hfjd tgop",
+        user: "admin@jackethousenepal.com",
+        pass: "JKH-Admin002",
       },
     });
 
+    // Send Email for email verification
     const info = await transporter.sendMail({
-      from: "epeak",
+      from: "JACKET HOUSE",
       to: req.body.email,
       subject: "Verify Email ✔",
       html: `<div>
@@ -45,7 +47,7 @@ export async function createUserHandler(req: Request<{}, {}, CreateUserInput["bo
              Email</a>
      </div>
      <div class="footer">
-         <p>Thanks and Regards, epeak .</p>
+         <p>Thanks and Regards, jkh .</p>
          <p>For any queries contact us here:</p>
          <p>Phone: 98948465474323</p>     
  </div>

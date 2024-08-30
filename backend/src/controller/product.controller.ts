@@ -9,6 +9,7 @@ var colors = require("colors");
 export async function createProductHandler(req: Request<{}, {}, CreateProductInput["body"]>, res: Response, next: NextFunction) {
   try {
     const body = req.body;
+    // check if the product name already exist
     const alreadyExist = await findProduct({ name: body.name });
 
     if (alreadyExist) {
@@ -18,10 +19,11 @@ export async function createProductHandler(req: Request<{}, {}, CreateProductInp
       });
     }
 
+    // generate random sku
     const sku = generateSKU(6);
     const product = await createProduct({ ...body, sku: sku });
 
-    // Fist time when the product is created , the headquarterInventory must be created with totalStock=0
+    // when the product is created , the headquarterInventory must be created with totalStock=0
     const headquarterInventory = await createHeadquarterInventory({ product: product?._id, totalStock: 0 });
 
     return res.status(201).json({

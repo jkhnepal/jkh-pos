@@ -5,6 +5,7 @@ import { createInventorySchema, updateInventorySchema, getInventorySchema, getAl
 
 const router = express.Router();
 
+
 router.post("/", [validate(createInventorySchema)], createInventoryHandler);
 router.patch("/:inventoryId", [validate(updateInventorySchema)], updateInventoryHandler);
 router.get("/:inventoryId", [validate(getInventorySchema)], getInventoryHandler);
