@@ -31,7 +31,7 @@ export default function Page() {
   const [debounceValue] = useDebounce(searchName, 1000);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [sort, setSort] = React.useState("latest");
-  const itemsPerPage = 10;
+  const itemsPerPage = 200;
 
   const params = useParams();
 
@@ -49,6 +49,9 @@ export default function Page() {
     };
     fetch();
   }, [branch_id, params?.date]);
+
+  console.log(sales?.length)
+
 
   const columns: ColumnDef<any>[] = [
     {
@@ -69,6 +72,12 @@ export default function Page() {
       ),
       enableSorting: false,
       enableHiding: false,
+    },
+
+    {
+      accessorKey: "sale",
+      header: "S.N",
+      cell: ({ row }: any) => <div>{ row.index + 1} </div>,
     },
 
     
