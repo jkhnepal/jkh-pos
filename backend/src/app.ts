@@ -17,6 +17,7 @@ import statRoute from "../src/routes/stat.route";
 import returnRoute from "../src/routes/return.route";
 import returnToHeadquarterRoute from "../src/routes/returnToHeadquarter.route";
 import settingRoute from "../src/routes/setting.route";
+import transactionRoute from "../src/routes/transaction.route";
 import BranchModel from "./models/branch.model";
 import SettingModel from "./models/setting.model";
 
@@ -48,6 +49,7 @@ app.use("/api/headquarter-inventories", headquarterInventoryRoute);
 app.use("/api/branch-inventories", branchInventoryRoute);
 app.use("/api/returns", returnRoute);
 app.use("/api/stats", statRoute);
+app.use("/api/transactions", transactionRoute);
 
 app.use("/api/return-to-headquarter", returnToHeadquarterRoute);
 

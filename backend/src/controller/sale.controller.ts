@@ -7,18 +7,45 @@ import { findAndUpdateBranchInventory } from "../service/branchInventory.service
 import SaleModel from "../models/sale.model";
 import ReturnModel from "../models/return.model";
 import SettingModel from "../models/setting.model";
+import TransactionModel from "../models/transaction.model";
 var colors = require("colors");
 
 export async function createSaleHandler(req: Request<{}, {}, CreateSaleInput["body"]>, res: Response, next: NextFunction) {
   try {
     const body: any = req.body;
-    console.log(body);
+    console.log("🚀 ~ createSaleHandler ~ body:", body);
+    console.log("🚀 ~ hahahhahahahaha ~ body:", body.selectedProducts[0]);
+
+    //  create transaction also
+    const transaction = await TransactionModel.create({
+      branch: body?.selectedProducts[0]?.branch,
+      memberName: body?.selectedProducts[0]?.memberName,
+      memberPhone: body?.selectedProducts[0]?.memberPhone,
+      invoiceNo: body?.selectedProducts[0]?.invoiceNo,
+      sales: body.selectedProducts.map((saleObject: any) => {
+        return {
+          product: saleObject.product,
+          memberName: saleObject.memberName,
+          memberPhone: saleObject.memberPhone,
+          cp: saleObject.cp,
+          sp: saleObject.sp,
+          quantity: saleObject.quantity,
+          totalAmount: saleObject.totalAmount,
+          discountAmount: saleObject.discountAmount,
+          totalDiscountAmount: saleObject.totalDiscountAmount,
+          returnedQuantity: 0,
+          invoiceNo: saleObject.invoiceNo,
+        };
+      }),
+    });
+    console.log("🚀 ~ createSaleHandler ~ transaction:", transaction);
 
     // sale objects comes in array so i am using loop with promise
     let updatedBranchInventory;
     await Promise.all(
       body.selectedProducts.map(async (saleObject: any) => {
-        const sale = await createSale(saleObject);
+        const sale = await createSale({ ...saleObject, transaction: transaction?._id });
+        console.log("🚀 ~ createSaleHandler ~ sale:", sale);
         const branchInventory: any = await BranchInventoryModel.findOne({ branch: saleObject.branch, product: saleObject.product });
 
         // if (branchInventory) {
@@ -59,7 +86,9 @@ export async function createSaleHandler(req: Request<{}, {}, CreateSaleInput["bo
 export async function getAllSaleHandler(req: Request<{}, {}, {}>, res: Response, next: NextFunction) {
   try {
     const queryParameters = req.query;
+    console.log("queryParameters", queryParameters);
     const results = await findAllSale(queryParameters);
+    // console.log(results)
     return res.json({
       status: "success",
       msg: "Get all sale success",
@@ -89,13 +118,7 @@ export async function getAllSaleByMonthHandler(req: any, res: Response, next: Ne
           createdAt: { $gte: startDate, $lte: endDate },
         },
       },
-      // {
-      //   $group: {
-      //     _id: null,
-      //     totalSalesAmount: { $sum: "$totalAmount" },
-      //   },
-      // },
-      
+
       {
         $group: {
           _id: null,
@@ -104,21 +127,29 @@ export async function getAllSaleByMonthHandler(req: any, res: Response, next: Ne
             $sum: {
               $multiply: ["$returnedQuantity", "$sp"],
             },
+            
           },
+          totalOfferDiscount: { $sum: "$offerDiscountAmount" }
         },
       },
       {
         $project: {
           _id: 0,
           totalSalesAmount: {
-            $subtract: ["$totalSalesAmount", "$totalReturnWorth"],
+            // $subtract: ["$totalSalesAmount", "$totalReturnWorth"],
+            $subtract: [
+              { $subtract: ["$totalSalesAmount", "$totalReturnWorth"] }, // First subtract return worth
+              "$totalOfferDiscount", // Then subtract offer discount
+            ],
           },
         },
       },
     ]);
-    console.log(result)
+    console.log("🚀 ~ getAllSaleByMonthHandler ~ result:", result)
+
 
     const totalSalesAmountOfToday = result.length > 0 ? result[0].totalSalesAmount : 0;
+    console.log(totalSalesAmountOfToday);
 
     const adjustedSales = branchSales.map((sale: any) => {
       const quantityAfterReturn = sale.quantity - sale.returnedQuantity;
@@ -134,7 +165,9 @@ export async function getAllSaleByMonthHandler(req: any, res: Response, next: Ne
         discountAmount: sale.discountAmount,
         returnedQuantity: sale.returnedQuantity,
         invoiceNo: sale.invoiceNo,
-        totalAmountAfterReturn: sale.totalAmount - sale.sp * sale.returnedQuantity,
+        totalAmountAfterReturn: sale.totalAmount - sale.sp * sale.returnedQuantity - sale.totalDiscountAmount,
+        // totalAmountAfterReturn: sale.totalAmount - sale.sp * sale.returnedQuantity - sale.discountAmount - sale.offerDiscountAmount,
+        // totalamountafterreturn:   sale.totalAmount -   (sale.sp * sale.returnedQuantity) -   sale.discountAmount -   sale.offerDiscountAmount?sale.offerDiscountAmount:0,
         memberName: sale.memberName,
         memberPhone: sale.memberPhone,
         saleId: sale.saleId,
@@ -194,6 +227,8 @@ function groupSalesByMonth(sales: any) {
 
 export async function getSaleHandler(req: Request<UpdateSaleInput["params"]>, res: Response, next: NextFunction) {
   try {
+    console.log(req.params);
+
     const saleId = req.params.saleId;
     const sale = await findSale({ saleId });
 
