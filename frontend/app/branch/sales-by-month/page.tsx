@@ -126,8 +126,9 @@ export default function Page() {
       header: "Total Revenue (Rs)",
       cell: ({ row }: any) => {
         const monthData = monthlyDatas.find((item: any) => item.month === row.getValue("month"));
-        // const totalAmount = monthData ? monthData.sales.reduce((acc: number, sale: any) => acc + sale.totalAmountAfterReturn, 0) : 0;
-        const totalAmount = monthData ? monthData.sales.reduce((acc: number, sale: any) => acc + sale.totalAmountAfterReturn - sale.discountAmount * (sale.quantity - sale.returnedQuantity), 0) : 0;
+        const totalAmount = monthData ? monthData.sales.reduce((acc: number, sale: any) => acc + sale.totalAmountAfterReturn, 0) : 0;
+        
+        // const totalAmount = monthData ? monthData.sales.reduce((acc: number, sale: any) => acc + sale.totalAmountAfterReturn - sale.discountAmount * (sale.quantity - sale.returnedQuantity), 0) : 0;
         return <div>{totalAmount.toLocaleString("en-IN")}</div>;
       },
     },

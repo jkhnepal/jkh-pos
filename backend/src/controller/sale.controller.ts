@@ -118,7 +118,13 @@ export async function getAllSaleByMonthHandler(req: any, res: Response, next: Ne
           createdAt: { $gte: startDate, $lte: endDate },
         },
       },
-
+      // {
+      //   $group: {
+      //     _id: null,
+      //     totalSalesAmount: { $sum: "$totalAmount" },
+      //   },
+      // },
+      
       {
         $group: {
           _id: null,
@@ -127,29 +133,21 @@ export async function getAllSaleByMonthHandler(req: any, res: Response, next: Ne
             $sum: {
               $multiply: ["$returnedQuantity", "$sp"],
             },
-            
           },
-          totalOfferDiscount: { $sum: "$offerDiscountAmount" }
         },
       },
       {
         $project: {
           _id: 0,
           totalSalesAmount: {
-            // $subtract: ["$totalSalesAmount", "$totalReturnWorth"],
-            $subtract: [
-              { $subtract: ["$totalSalesAmount", "$totalReturnWorth"] }, // First subtract return worth
-              "$totalOfferDiscount", // Then subtract offer discount
-            ],
+            $subtract: ["$totalSalesAmount", "$totalReturnWorth"],
           },
         },
       },
     ]);
-    console.log("🚀 ~ getAllSaleByMonthHandler ~ result:", result)
-
+    console.log(result)
 
     const totalSalesAmountOfToday = result.length > 0 ? result[0].totalSalesAmount : 0;
-    console.log(totalSalesAmountOfToday);
 
     const adjustedSales = branchSales.map((sale: any) => {
       const quantityAfterReturn = sale.quantity - sale.returnedQuantity;
@@ -165,9 +163,7 @@ export async function getAllSaleByMonthHandler(req: any, res: Response, next: Ne
         discountAmount: sale.discountAmount,
         returnedQuantity: sale.returnedQuantity,
         invoiceNo: sale.invoiceNo,
-        totalAmountAfterReturn: sale.totalAmount - sale.sp * sale.returnedQuantity - sale.totalDiscountAmount,
-        // totalAmountAfterReturn: sale.totalAmount - sale.sp * sale.returnedQuantity - sale.discountAmount - sale.offerDiscountAmount,
-        // totalamountafterreturn:   sale.totalAmount -   (sale.sp * sale.returnedQuantity) -   sale.discountAmount -   sale.offerDiscountAmount?sale.offerDiscountAmount:0,
+        totalAmountAfterReturn: sale.totalAmount - sale.sp * sale.returnedQuantity,
         memberName: sale.memberName,
         memberPhone: sale.memberPhone,
         saleId: sale.saleId,

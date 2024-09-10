@@ -17,6 +17,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import moment from "moment";
 import { Noto_Serif } from "next/font/google";
 import { useGetAllSettingQuery } from "@/lib/features/settingSlice";
+import { off } from "process";
 const serif = Noto_Serif({ subsets: ["latin"] });
 
 export default function Cart({ refetch }: any) {
@@ -87,7 +88,11 @@ export default function Cart({ refetch }: any) {
         totalAmount: sp * count,
         invoiceNo: invoiceNo,
         discountAmount: discountAmount,
-        totalDiscountAmount: discountAmount * count,
+        // offer discount is 10% prduct amount
+        offerDiscountAmount: (sp * count) * 0.1,
+        // totalDiscountAmount: discountAmount * count,
+        totalDiscountAmount: discountAmount * count + (sp * count) * 0.1,
+        
       };
     });
 
@@ -104,7 +109,9 @@ export default function Cart({ refetch }: any) {
     return products?.reduce((total, product) => total + product.sp * product.count, 0);
   };
   const calculateTotalDiscount = () => {
-    return products?.reduce((total, product) => total + product.discountAmount * product.count, 0);
+    // return products?.reduce((total, product) => total + product.discountAmount * product.count, 0);
+    // also subtract the offer discount 10 % of each product
+    return products?.reduce((total, product) => total + product.discountAmount * product.count + (product.sp * product.count) * 0.1, 0);
   };
   const calculateTotalCount = () => {
     return products.reduce((total, product) => total + product.count, 0);
@@ -117,7 +124,7 @@ export default function Cart({ refetch }: any) {
   const createSaleHandler = async () => {
     const res: any = await createSale(dataToSend);
     console.log("res", res);
-    setSaleHappenedTime(res?.data.updatedBranchInventory.updatedAt);
+    setSaleHappenedTime(res?.data?.updatedBranchInventory.updatedAt);
     // toast.success(res?.data.msg);
     setSelectedProducts([]);
     refetch();
@@ -171,7 +178,8 @@ export default function Cart({ refetch }: any) {
             onClick={() => setSetShowCartDrawer(false)}
           />
 
-          <div className=" flex items-center gap-4 mb-4  ">
+          <div className=" flex items-center gap-4 mb-4 ">
+            
             <Input
               placeholder="Customer Name (Optional)"
               disabled={readModeOnly}
@@ -207,7 +215,7 @@ export default function Cart({ refetch }: any) {
               onValueChange={(value) => {
                 setSelectedPaymentMethod(value);
               }}>
-              <SelectTrigger className="w-[280px]">
+              <SelectTrigger className="w-[380px]">
                 <SelectValue placeholder="Select a payment method" />
               </SelectTrigger>
               <SelectContent>
@@ -220,7 +228,7 @@ export default function Cart({ refetch }: any) {
             </Select>
           </div>
 
-          <div className="   w-[560px]  rounded-md border   ">
+          <div className="   w-[960px]  rounded-md border   ">
             <Table>
               <TableCaption></TableCaption>
 
@@ -231,7 +239,9 @@ export default function Cart({ refetch }: any) {
                   <TableHead>Price(Rs)</TableHead>
                   <TableHead>Qty</TableHead>
                   <TableHead>Discount(Rs)</TableHead>
+                  <TableHead>Offer Discount(Rs)</TableHead>
                   <TableHead className="text-right">Amount(Rs)</TableHead>
+                  <TableHead className="text-right">Net Amount(Rs)</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody >
@@ -261,25 +271,53 @@ export default function Cart({ refetch }: any) {
                       {" "}
                       {item?.discountAmount}*{item?.count}
                     </TableCell>
+
+                    <TableCell className="flex text-center  ">
+                      {" "}
+                      {/* {item?.discountAmount}*{item?.count} */}
+                      {/* <Input placeholder="%"/> */}
+                      <Input
+                          className=" w-16 py-0 px-1 h-6 "
+                          type="number"
+                          value={item.count}
+                          disabled={readModeOnly}
+                          // onChange={(e) => handleCountChange(index, parseInt(e.target.value))}
+                        />
+                        =
+                        {
+                           item?.sp * item?.count * 0.1
+                        }
+                    </TableCell>
+
+
                     <TableCell className="text-right"> {(item.sp * item.count).toLocaleString("en-IN")}</TableCell>
+                    <TableCell className="text-right"> 
+                      {/* net amount after subtracting discount */}
+                      {(item.sp * item.count - item.discountAmount * item.count - (item.sp * item.count) * 0.1).toLocaleString("en-IN")}
+
+
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
 
               <TableFooter>
                 <TableRow>
-                  <TableCell colSpan={5}>Net Amount</TableCell>
+                  <TableCell colSpan={7}>Net Amount</TableCell>
                   <TableCell className="text-right">Rs.{netAmount.toLocaleString("en-IN")}</TableCell>
                 </TableRow>
               </TableFooter>
 
-              <TableFooter>
+              {/* <TableFooter>
                 <TableRow>
                   <TableCell colSpan={4}>Calculation</TableCell>
                   <TableCell className="text-center">Rs.{calculateTotalDiscount().toLocaleString("en-IN")}</TableCell>
+                  <TableCell className="text-center">Rs.{calculateTotalDiscount().toLocaleString("en-IN")}</TableCell>
                   <TableCell className="text-right">Rs.{totalAmountBeforeReward.toLocaleString("en-IN")}</TableCell>
                 </TableRow>
-              </TableFooter>
+              </TableFooter> */}
+
+              
             </Table>
 
             {!isSuccess && (

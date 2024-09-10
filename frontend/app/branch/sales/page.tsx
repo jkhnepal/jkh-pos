@@ -9,14 +9,13 @@ import Link from "next/link";
 import { useGetAllSaleQuery } from "@/lib/features/saleSlice";
 import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
-import * as Dialog from "@radix-ui/react-dialog";
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useGetCurrentUserFromTokenQuery } from "@/lib/features/authSlice";
 import { useDebounce } from "use-debounce";
 import moment from "moment";
-import Image from "next/image";
 import { Input } from "@/components/ui/input";
+import axios from "axios";
 
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -43,7 +42,24 @@ export default function Page() {
   let totalItem: number = salesOfABranch?.data.count;
   const startIndex = (currentPage - 1) * itemsPerPage;
 
-  // console.log(salesOfABranch?.data.results);
+
+  const [transactions, setTransactions] = React.useState();
+  React.useEffect(() => {
+    const fetch = async () => {
+      try {
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_URL_API}/transactions`, {
+          params: {
+            branch: branch_id,
+          },
+        });
+        setTransactions(res.data.data.results);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetch();
+  }, [branch_id]);
+
 
   const columns: ColumnDef<any>[] = [
     {
@@ -73,24 +89,6 @@ export default function Page() {
     },
 
     {
-      accessorKey: "product",
-      header: "Product Name",
-      cell: ({ row }: any) => <div>{row.getValue("product")?.name}</div>,
-    },
-
-    {
-      accessorKey: "product",
-      header: "CP",
-      cell: ({ row }: any) => <div>{row.getValue("product")?.cp}</div>,
-    },
-
-    {
-      accessorKey: "product",
-      header: "SP",
-      cell: ({ row }: any) => <div>{row.getValue("product")?.sp}</div>,
-    },
-
-    {
       accessorKey: "memberName",
       header: "Member Name",
       cell: ({ row }: any) => <div>{row.getValue("memberName")}</div>,
@@ -100,69 +98,6 @@ export default function Page() {
       accessorKey: "memberPhone",
       header: "Member Phone",
       cell: ({ row }: any) => <div>{row.getValue("memberPhone")}</div>,
-    },
-
- {
-      accessorKey: "quantity",
-      header: "Sold Quantity",
-      cell: ({ row }: any) => <div>{row.getValue("quantity")}</div>,
-    },   
-
-    {
-      accessorKey: "",
-      header: "Total Amount",
-      cell: ({ row }: any) => {
-        const totalAmount = row.original.totalAmount - row.original.discountAmount * (row.original.quantity - row.original.returnedQuantity) - row.original.returnedQuantity * row.original.sp;
-        return <div>{totalAmount}</div>;
-      },
-    },
-
-    {
-      accessorKey: "returnedQuantity",
-      header: "Returned Quantity",
-      cell: ({ row }: any) => <div>{row.getValue("returnedQuantity")}</div>,
-    },
-
-    {
-      accessorKey: "product",
-      header: "Image",
-      cell: ({ row }: any) => {
-        const image: any = row.getValue("product")?.image;
-
-        return (
-          <div>
-            {image && (
-              <Dialog.Root>
-                <Dialog.Trigger
-                  onClick={() => setpreviewImage(image)}
-                  className=" text-sm text-start  hover:bg-primary-foreground w-full">
-                  <Image
-                    src={image}
-                    alt="Branch Image"
-                    width={40}
-                    height={40}
-                    className=" border rounded-md"
-                  />
-                </Dialog.Trigger>
-                <Dialog.Portal>
-                  <Dialog.Overlay className="fixed inset-0 w-full h-full bg-black opacity-40" />
-                  <Dialog.Content className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] px-4 w-full max-w-lg">
-                    {previewImage && (
-                      <Image
-                        src={previewImage}
-                        alt="Branch Image"
-                        width={400}
-                        height={400}
-                        className="  rounded-md"
-                      />
-                    )}
-                  </Dialog.Content>
-                </Dialog.Portal>
-              </Dialog.Root>
-            )}
-          </div>
-        );
-      },
     },
 
     {
@@ -183,7 +118,6 @@ export default function Page() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
-                disabled={item.quantity === item.returnedQuantity}
                 variant="ghost"
                 className="h-8 w-8 p-0">
                 <span className="sr-only">Open menu</span>
@@ -195,11 +129,7 @@ export default function Page() {
 
               <DropdownMenuSeparator />
 
-              <Link href={`/branch/sales/return/${item.saleId}`}>
-                <DropdownMenuItem>Return</DropdownMenuItem>
-              </Link>
-
-              <Link href={`/branch/sales/view/${item.saleId}`}>
+              <Link href={`/branch/transactions/${item._id}`}>
                 <DropdownMenuItem>View detail</DropdownMenuItem>
               </Link>
             </DropdownMenuContent>
@@ -210,7 +140,7 @@ export default function Page() {
   ];
 
   const table = useReactTable({
-    data: salesOfABranch?.data.results || [],
+    data: transactions || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
