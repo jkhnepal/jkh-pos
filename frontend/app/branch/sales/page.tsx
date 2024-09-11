@@ -1,13 +1,11 @@
 "use client";
 import * as React from "react";
-import { ColumnDef, ColumnFiltersState, SortingState, VisibilityState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
+import { ColumnDef, ColumnFiltersState, SortingState, VisibilityState, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
 import { ArrowDown01, ArrowDown10, ChevronDown, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Link from "next/link";
-import { useGetAllSaleQuery } from "@/lib/features/saleSlice";
-import LoaderSpin from "@/app/custom-components/LoaderSpin";
 import { Checkbox } from "@/components/ui/checkbox";
 import { SlashIcon } from "@radix-ui/react-icons";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
@@ -23,7 +21,6 @@ export default function Page() {
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const [previewImage, setpreviewImage] = React.useState<string>("");
   const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
   const branch_id = currentUser?.data.branch._id;
 
@@ -33,15 +30,7 @@ export default function Page() {
   const [sort, setSort] = React.useState("latest");
   const itemsPerPage = 1000;
 
-  const { data: salesOfABranch, isLoading: isFetching, refetch } = useGetAllSaleQuery({ branch: branch_id, sort: sort, page: currentPage, limit: itemsPerPage, search: debounceValue });
-
-  React.useEffect(() => {
-    refetch();
-  }, [refetch]);
-
-  let totalItem: number = salesOfABranch?.data.count;
   const startIndex = (currentPage - 1) * itemsPerPage;
-
 
   const [transactions, setTransactions] = React.useState();
   React.useEffect(() => {
@@ -59,7 +48,7 @@ export default function Page() {
     };
     fetch();
   }, [branch_id]);
-
+  console.log(transactions)
 
   const columns: ColumnDef<any>[] = [
     {
@@ -158,15 +147,6 @@ export default function Page() {
     },
   });
 
-  if (isFetching) {
-    return (
-      <div>
-        {" "}
-        <LoaderSpin />
-      </div>
-    );
-  }
-
   return (
     <div className="w-full">
       <Breadcumb />
@@ -262,23 +242,6 @@ export default function Page() {
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-
-        {/* <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}>
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}>
-            Next
-          </Button>
-        </div> */}
       </div>
     </div>
   );

@@ -153,25 +153,16 @@ export default function Page() {
     },
   });
 
-  // if (isFetching) {
-  //   return (
-  //     <div>
-  //       {" "}
-  //       <LoaderSpin />
-  //     </div>
-  //   );
-  // }
-
   return (
     <div className="w-full">
       <Breadcumb />
-      <div className="flex justify-end items-center py-4">
-        {/* <Input
-          placeholder="Filter by name ..."
-          value={searchName}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
+      <div className="flex justify-between items-center py-4">
+        <Input
+          placeholder="Filter phone..."
+          value={(table.getColumn("memberPhone")?.getFilterValue() as string) ?? ""}
+          onChange={(event) => table.getColumn("memberPhone")?.setFilterValue(event.target.value)}
           className="max-w-sm"
-        /> */}
+        />
 
         <div className=" flex space-x-2">
           <DropdownMenu>
@@ -292,7 +283,7 @@ function Breadcumb() {
           </BreadcrumbSeparator>
 
           <BreadcrumbItem>
-            <BreadcrumbPage>Sales</BreadcrumbPage>
+            <BreadcrumbPage>Transactions</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>

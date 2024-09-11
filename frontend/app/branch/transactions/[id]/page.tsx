@@ -86,10 +86,19 @@ export default function Page({ params }: any) {
       cell: ({ row }: any) => <div>{row.getValue("product")?.cp}</div>,
     },
 
+
+   
+
     {
       accessorKey: "product",
       header: "SP",
       cell: ({ row }: any) => <div>{row.getValue("product")?.sp}</div>,
+    },
+
+    {
+      accessorKey: "soldAt",
+      header: "soldAt",
+      cell: ({ row }: any) => <div>{row.getValue("soldAt")}</div>,
     },
 
     {
@@ -110,14 +119,25 @@ export default function Page({ params }: any) {
       cell: ({ row }: any) => <div>{row.getValue("quantity")}</div>,
     },
 
+    // {
+    //   accessorKey: "",
+    //   header: "Total Amount",
+    //   cell: ({ row }: any) => {
+    //     const totalAmount = row.original.totalAmount - row.original.discountAmount * (row.original.quantity - row.original.returnedQuantity) - row.original.returnedQuantity * row.original.sp;
+    //     return <div>{totalAmount}</div>;
+    //   },
+    // },
+
     {
       accessorKey: "",
       header: "Total Amount",
       cell: ({ row }: any) => {
-        const totalAmount = row.original.totalAmount - row.original.discountAmount * (row.original.quantity - row.original.returnedQuantity) - row.original.returnedQuantity * row.original.sp;
+        const totalAmount = row.original.soldAt * (row.original.quantity - row.original.returnedQuantity) 
         return <div>{totalAmount}</div>;
       },
     },
+
+
 
     {
       accessorKey: "returnedQuantity",

@@ -51,13 +51,7 @@ export default function Page({}: Props) {
             />
           </div>
 
-          <div>
-            <Label>Discount Amount Per Item (Rs)</Label>
-            <Input
-              readOnly
-              value={soldItem.product.discountAmount}
-            />
-          </div>
+          
 
           <div>
             <Label>Selling price</Label>
@@ -67,11 +61,19 @@ export default function Page({}: Props) {
             />
           </div>
 
-          <div>
+          {/* <div>
             <Label>Total Amount after discount (Rs)</Label>
             <Input
               readOnly
               value={soldItem.totalAmount - soldItem.discountAmount * (soldItem.quantity - soldItem.returnedQuantity) - soldItem.returnedQuantity * soldItem.sp}
+            />
+          </div> */}
+
+<div>
+            <Label>Sold At</Label>
+            <Input
+              readOnly
+              value={soldItem.soldAt}
             />
           </div>
 

@@ -15,6 +15,8 @@ export default function Component() {
     return acc + inventory.totalStock;
   }, 0);
 
+  console.log(profitData)
+
   useEffect(() => {
     refetch();
     refetchProfitData();
@@ -99,7 +101,8 @@ export default function Component() {
               )}
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{` ${isSaleVisisble ? `Rs ${(profitData.totalSales - profitData.totalDiscountAmount - stats.data.totalreturnSale).toLocaleString("en-IN")}` : "********"} `}</div>
+            <div className="text-2xl font-bold">{` ${isSaleVisisble ? `Rs ${(profitData.totalSales).toLocaleString("en-IN")}` : "********"} `}</div>
+              {/* <div className="text-2xl font-bold">{` ${isSaleVisisble ? `Rs ${(profitData.totalSales - profitData.totalDiscountAmount - stats.data.totalreturnSale).toLocaleString("en-IN")}` : "********"} `}</div> */}
               <p className="text-xs text-gray-500 dark:text-gray-400">Total of sales till now</p>
             </CardContent>
           </Card>
@@ -125,7 +128,10 @@ export default function Component() {
               )}
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{` ${isProfitVisible ? `Rs ${(stats?.data.totalSales - stats?.data.totalreturnSale - stats?.data.totalCp + stats?.data.totalReturnCp).toLocaleString("en-IN")}` : "********"} `}</div>
+              {/* <div className="text-2xl font-bold">{` ${isProfitVisible ? `Rs ${(stats?.data.totalSales - stats?.data.totalreturnSale - stats?.data.totalCp + stats?.data.totalReturnCp).toLocaleString("en-IN")}` : "********"} `}</div> */}
+
+              <div className="text-2xl font-bold">{` ${isProfitVisible ? `Rs ${(profitData?.totalProfit).toLocaleString("en-IN")}` : "********"} `}</div>
+              
               <p className="text-xs text-gray-500 dark:text-gray-400">Total profits till now</p>
             </CardContent>
           </Card>
