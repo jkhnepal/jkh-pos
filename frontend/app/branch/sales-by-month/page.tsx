@@ -29,6 +29,9 @@ export default function Page() {
   const [monthlyDatas, setMonthlyDatas] = React.useState<any>();
   const [currentMonth, setCurrentMonth] = React.useState<any>();
 
+
+  console.log(monthlyDatas)
+
   const { data: branchInventories } = useGetAllBranchInventoryQuery({ branch: branch_id });
   const [refetch, setrefetch] = React.useState<boolean>(false);
   const [todaySalesAmount, settodaySalesAmount] = React.useState(0);
@@ -126,21 +129,22 @@ export default function Page() {
       header: "Total Revenue (Rs)",
       cell: ({ row }: any) => {
         const monthData = monthlyDatas.find((item: any) => item.month === row.getValue("month"));
-        // const totalAmount = monthData ? monthData.sales.reduce((acc: number, sale: any) => acc + sale.totalAmountAfterReturn, 0) : 0;
-        const totalAmount = monthData ? monthData.sales.reduce((acc: number, sale: any) => acc + sale.totalAmountAfterReturn - sale.discountAmount * (sale.quantity - sale.returnedQuantity), 0) : 0;
+        const totalAmount = monthData ? monthData.sales.reduce((acc: number, sale: any) => acc + sale.totalAmountAfterReturn, 0) : 0;
+        
+        // const totalAmount = monthData ? monthData.sales.reduce((acc: number, sale: any) => acc + sale.totalAmountAfterReturn - sale.discountAmount * (sale.quantity - sale.returnedQuantity), 0) : 0;
         return <div>{totalAmount.toLocaleString("en-IN")}</div>;
       },
     },
 
-    {
-      accessorKey: "profit",
-      header: "Total Profit (Rs)",
-      cell: ({ row }: any) => {
-        const monthData = monthlyDatas.find((item: any) => item.month === row.getValue("month"));
-        const totalProfit = monthData ? monthData.sales.reduce((acc: number, sale: any) => acc + (sale.sp - sale.cp) * sale.quantityAfterReturn, 0) : 0;
-        return <div>{totalProfit.toLocaleString("en-IN")}</div>;
-      },
-    },
+    // {
+    //   accessorKey: "profit",
+    //   header: "Total Profit (Rs)",
+    //   cell: ({ row }: any) => {
+    //     const monthData = monthlyDatas.find((item: any) => item.month === row.getValue("month"));
+    //     const totalProfit = monthData ? monthData.sales.reduce((acc: number, sale: any) => acc + (sale.sp - sale.cp) * sale.quantityAfterReturn, 0) : 0;
+    //     return <div>{totalProfit.toLocaleString("en-IN")}</div>;
+    //   },
+    // },
 
     {
       id: "actions",

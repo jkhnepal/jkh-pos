@@ -17,9 +17,27 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import moment from "moment";
 import { Noto_Serif } from "next/font/google";
 import { useGetAllSettingQuery } from "@/lib/features/settingSlice";
+import { off } from "process";
 const serif = Noto_Serif({ subsets: ["latin"] });
 
 export default function Cart({ refetch }: any) {
+  const [setting, setSetting] = useState<any>();
+  // Fetch the setting when the component is mounted
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_URL_API}/settings`);
+        const settingData = res?.data.data[0];
+        setSetting(settingData);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetch();
+  }, []);
+  console.log(setting);
+  const offerDiscount = setting?.discountOfferPercentage;
+
   const [showCartDrawer, setSetShowCartDrawer] = useState(true);
   const [selectedMember_Id, setSelectedMember_Id] = useState();
 
@@ -87,12 +105,18 @@ export default function Cart({ refetch }: any) {
         totalAmount: sp * count,
         invoiceNo: invoiceNo,
         discountAmount: discountAmount,
-        totalDiscountAmount: discountAmount * count,
+        // offer discount is 10% prduct amount
+        offerDiscountAmount: (sp * count * offerDiscount) / 100,
+        // totalDiscountAmount: discountAmount * count,
+        totalDiscountAmount: discountAmount * count + (sp * count * offerDiscount) / 100,
+        // per item sold at after all discount
+        soldAt: sp - discountAmount - (sp * offerDiscount) / 100,
+        // cashPaid:
       };
     });
 
     setSelectedProducts(newData);
-  }, [products, branch_id, totalAmountBeforeReward, memberName, memberPhone]);
+  }, [products, branch_id, totalAmountBeforeReward, memberName, memberPhone, offerDiscount]);
 
   const dataToSend = {
     selectedProducts: selectedProducts,
@@ -104,7 +128,9 @@ export default function Cart({ refetch }: any) {
     return products?.reduce((total, product) => total + product.sp * product.count, 0);
   };
   const calculateTotalDiscount = () => {
-    return products?.reduce((total, product) => total + product.discountAmount * product.count, 0);
+    // return products?.reduce((total, product) => total + product.discountAmount * product.count, 0);
+    // also subtract the offer discount 10 % of each product
+    return products?.reduce((total, product) => total + product.discountAmount * product.count + (product.sp * product.count * offerDiscount) / 100, 0);
   };
   const calculateTotalCount = () => {
     return products.reduce((total, product) => total + product.count, 0);
@@ -117,7 +143,7 @@ export default function Cart({ refetch }: any) {
   const createSaleHandler = async () => {
     const res: any = await createSale(dataToSend);
     console.log("res", res);
-    setSaleHappenedTime(res?.data.updatedBranchInventory.updatedAt);
+    setSaleHappenedTime(res?.data?.updatedBranchInventory.updatedAt);
     // toast.success(res?.data.msg);
     setSelectedProducts([]);
     refetch();
@@ -171,7 +197,7 @@ export default function Cart({ refetch }: any) {
             onClick={() => setSetShowCartDrawer(false)}
           />
 
-          <div className=" flex items-center gap-4 mb-4  ">
+          <div className=" flex items-center gap-4 mb-4 ">
             <Input
               placeholder="Customer Name (Optional)"
               disabled={readModeOnly}
@@ -207,7 +233,7 @@ export default function Cart({ refetch }: any) {
               onValueChange={(value) => {
                 setSelectedPaymentMethod(value);
               }}>
-              <SelectTrigger className="w-[280px]">
+              <SelectTrigger className="w-[380px]">
                 <SelectValue placeholder="Select a payment method" />
               </SelectTrigger>
               <SelectContent>
@@ -215,12 +241,13 @@ export default function Cart({ refetch }: any) {
                   <SelectLabel>Payment Methods</SelectLabel>
                   <SelectItem value="cash">Cash</SelectItem>
                   <SelectItem value="online">Online</SelectItem>
+                  <SelectItem value="cash-online">Cash & Online</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
           </div>
 
-          <div className="   w-[560px]  rounded-md border   ">
+          <div className="   w-[960px]  rounded-md border   ">
             <Table>
               <TableCaption></TableCaption>
 
@@ -231,11 +258,12 @@ export default function Cart({ refetch }: any) {
                   <TableHead>Price(Rs)</TableHead>
                   <TableHead>Qty</TableHead>
                   <TableHead>Discount(Rs)</TableHead>
+                  <TableHead>Offer Discount(Rs)</TableHead>
                   <TableHead className="text-right">Amount(Rs)</TableHead>
+                  <TableHead className="text-right">Net Amount(Rs)</TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody >
-
+              <TableBody>
                 {products?.map((item: any, index: number) => (
                   <TableRow key={index}>
                     <TableCell className="font-medium">{index + 1}.</TableCell>
@@ -261,25 +289,45 @@ export default function Cart({ refetch }: any) {
                       {" "}
                       {item?.discountAmount}*{item?.count}
                     </TableCell>
+
+                    <TableCell className="flex text-center  ">
+                      {" "}
+                      {/* {item?.discountAmount}*{item?.count} */}
+                      {/* <Input placeholder="%"/> */}
+                      <Input
+                        className=" w-16 py-0 px-1 h-6 "
+                        type="number"
+                        value={item.count}
+                        disabled={readModeOnly}
+                        // onChange={(e) => handleCountChange(index, parseInt(e.target.value))}
+                      />
+                      ={(item?.sp * item?.count * offerDiscount) / 100}
+                    </TableCell>
+
                     <TableCell className="text-right"> {(item.sp * item.count).toLocaleString("en-IN")}</TableCell>
+                    <TableCell className="text-right">
+                      {/* net amount after subtracting discount */}
+                      {(item.sp * item.count - item.discountAmount * item.count - (item.sp * item.count * offerDiscount) / 100).toLocaleString("en-IN")}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
 
               <TableFooter>
                 <TableRow>
-                  <TableCell colSpan={5}>Net Amount</TableCell>
+                  <TableCell colSpan={7}>Net Amount</TableCell>
                   <TableCell className="text-right">Rs.{netAmount.toLocaleString("en-IN")}</TableCell>
                 </TableRow>
               </TableFooter>
 
-              <TableFooter>
+              {/* <TableFooter>
                 <TableRow>
                   <TableCell colSpan={4}>Calculation</TableCell>
                   <TableCell className="text-center">Rs.{calculateTotalDiscount().toLocaleString("en-IN")}</TableCell>
+                  <TableCell className="text-center">Rs.{calculateTotalDiscount().toLocaleString("en-IN")}</TableCell>
                   <TableCell className="text-right">Rs.{totalAmountBeforeReward.toLocaleString("en-IN")}</TableCell>
                 </TableRow>
-              </TableFooter>
+              </TableFooter> */}
             </Table>
 
             {!isSuccess && (
@@ -347,10 +395,7 @@ export default function Cart({ refetch }: any) {
                               <p>
                                 Bill No: <span className=" ml-2">JKH-{settings?.data[0]?.billNo}</span>
                               </p>
-                              <p>
-                                Date:
-                                {" "} {moment(saleHappenedTime).format("llll")}
-                              </p>
+                              <p>Date: {moment(saleHappenedTime).format("llll")}</p>
                               <p>
                                 Bill To: <span className=" ml-4 font-semibold">{memberName}</span>
                               </p>
@@ -409,6 +454,10 @@ export default function Cart({ refetch }: any) {
                                 <p className="flex items-center  ">
                                   <span className=" w-4/12">Change</span> <span className=" w-4/12">:</span> <span className=" w-4/12">{(tender - (calculateGrossTotal() - calculateTotalDiscount())).toLocaleString("en-IN")}</span>{" "}
                                 </p>
+
+                                
+                            
+                                
 
                                 <p className="flex items-center  ">
                                   <span className=" w-4/12">Total Qty</span> <span className=" w-4/12">:</span> <span className=" w-4/12">{calculateTotalCount()}</span>{" "}
@@ -493,4 +542,3 @@ function generateInvoiceNumber() {
 
 // Example usage
 const invoiceNumber = generateInvoiceNumber();
-

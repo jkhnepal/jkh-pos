@@ -13,7 +13,10 @@ export default function Page({}: Props) {
   const params = useParams();
   const { data } = useGetReturnQuery(params?.id);
   const returnItem = data?.data;
+  console.log(returnItem);
 
+
+  console.log(returnItem?.sale?.product)
   return (
     <>
       <Breadcumb />
@@ -50,6 +53,17 @@ export default function Page({}: Props) {
               value={returnItem.sale.product.sp}
             />
           </div>
+
+
+          <div>
+            <Label>Sold At price</Label>
+            <Input
+              readOnly
+              value={returnItem.sale.soldAt}
+            />
+          </div>
+
+
 
           <div>
             <Label>Member name</Label>

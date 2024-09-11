@@ -397,17 +397,31 @@ export default function Page() {
               <CardContent className="space-y-2">
                 <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                   <>
-                    <StatCard
+                    {/* <StatCard
                       title="Total Sale Amount"
                       description="Total sales of a branches till now"
                       value={`Rs ${(profitData.totalSales - profitData.totalDiscountAmount - stats.data.totalreturnSale).toLocaleString("en-IN")}`}
                       // value={`Rs ${(profitData.totalSalesAfterDiscount + profitData.totalReturnedDiscountAmount - stats.data.totalreturnSale).toLocaleString("en-IN")}`}
                       icon={<BarChart4 />}
+                    /> */}
+
+<StatCard
+                      title="Total Sale Amount"
+                      description="Total sales of a branches till now"
+                      value={`Rs ${(profitData.totalSales).toLocaleString("en-IN")}`}
+                      // value={`Rs ${(profitData.totalSalesAfterDiscount + profitData.totalReturnedDiscountAmount - stats.data.totalreturnSale).toLocaleString("en-IN")}`}
+                      icon={<BarChart4 />}
                     />
 
-                    <StatCard
+                    {/* <StatCard
                       title=" Total Profits"
                       value={`Rs ${(stats?.data.totalSales - stats?.data.totalreturnSale - stats?.data.totalCp + stats?.data.totalReturnCp).toLocaleString("en-IN")}`}
+                      icon={<BarChart4 />}
+                    /> */}
+
+<StatCard
+                      title=" Total Profits"
+                      value={`Rs ${(profitData.totalProfit).toLocaleString("en-IN")}`}
                       icon={<BarChart4 />}
                     />
 

@@ -13,13 +13,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import moment from "moment";
 
 export default function Page() {
   const { data: currentUser } = useGetCurrentUserFromTokenQuery({});
   const branch_id = currentUser?.data.branch._id;
   const [sort, setSort] = React.useState("latest");
 
-  const { data: branchInventories, refetch } = useGetAllBranchInventoryQuery({ branch: branch_id, sort: sort });
+  const { data: branchInventories, refetch } = useGetAllBranchInventoryQuery({ branch: branch_id, sort: sort, length });
   const products = branchInventories?.data.results;
 
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -37,6 +38,8 @@ export default function Page() {
   useEffect(() => {
     refetch();
   }, [refetch]);
+
+  console.log(products?.length);
 
   const [previewImage, setpreviewImage] = React.useState<string>("");
 
@@ -164,6 +167,12 @@ export default function Page() {
       cell: ({ row }) => <div className="capitalize">{row.getValue("totalStock")}</div>,
     },
 
+    {
+      accessorKey: "createdAt",
+      header: "Entry Date",
+      cell: ({ row }: any) => <div>{moment(row.getValue("createdAt")).format("MMMM Do YYYY, h:mm:ss a")}</div>,
+    },
+
     // {
     //   id: "actions",
     //   enableHiding: false,
@@ -199,7 +208,7 @@ export default function Page() {
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    // getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -283,11 +292,12 @@ export default function Page() {
           </TableBody>
         </Table>
       </div>
+
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-        <div className="space-x-2">
+        {/* <div className="space-x-2">
           <Button
             variant="outline"
             size="sm"
@@ -302,7 +312,7 @@ export default function Page() {
             disabled={!table.getCanNextPage()}>
             Next
           </Button>
-        </div>
+        </div> */}
       </div>
     </div>
   );

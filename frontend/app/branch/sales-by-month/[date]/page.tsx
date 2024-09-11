@@ -1,9 +1,9 @@
 "use client";
 import * as React from "react";
 import { ColumnDef, ColumnFiltersState, SortingState, VisibilityState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
-import { ArrowDown01, ArrowDown10, ChevronDown } from "lucide-react";
+import { ArrowDown01, ArrowDown10, ChevronDown, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -16,6 +16,7 @@ import moment from "moment";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import axios from "axios";
+import Link from "next/link";
 
 export default function Page() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -31,7 +32,7 @@ export default function Page() {
   const [debounceValue] = useDebounce(searchName, 1000);
   const [currentPage, setCurrentPage] = React.useState(1);
   const [sort, setSort] = React.useState("latest");
-  const itemsPerPage = 10;
+  const itemsPerPage = 200;
 
   const params = useParams();
 
@@ -40,7 +41,7 @@ export default function Page() {
     const fetch = async () => {
       try {
         if (branch_id) {
-          const res = await axios.get(`${process.env.NEXT_PUBLIC_URL_API}/sales/get-sales-by-branch-and-date/${branch_id}/${params?.date}`);
+          const res = await axios.get(`${process.env.NEXT_PUBLIC_URL_API}/transactions/get-transactions-by-branch-and-date/${branch_id}/${params?.date}`);
           setSales(res.data.data);
         }
       } catch (error) {
@@ -49,6 +50,8 @@ export default function Page() {
     };
     fetch();
   }, [branch_id, params?.date]);
+
+  console.log(sales?.length);
 
   const columns: ColumnDef<any>[] = [
     {
@@ -71,23 +74,10 @@ export default function Page() {
       enableHiding: false,
     },
 
-    
     {
-      accessorKey: "product",
-      header: "Product Name",
-      cell: ({ row }: any) => <div>{row.getValue("product")?.name}</div>,
-    },
-
-    {
-      accessorKey: "product",
-      header: "CP",
-      cell: ({ row }: any) => <div>{row.getValue("product")?.cp}</div>,
-    },
-
-    {
-      accessorKey: "product",
-      header: "SP",
-      cell: ({ row }: any) => <div>{row.getValue("product")?.sp}</div>,
+      accessorKey: "sale",
+      header: "S.N",
+      cell: ({ row }: any) => <div>{row.index + 1} </div>,
     },
 
     {
@@ -103,108 +93,45 @@ export default function Page() {
     },
 
     {
-      accessorKey: "quantity",
-      header: "Sold  Quantity",
-      cell: ({ row }: any) => <div>{row.getValue("quantity")}</div>,
-    },
-
-    {
-      accessorKey: "returnedQuantity",
-      header: "Returned Quantity",
-      cell: ({ row }: any) => <div>{row.getValue("returnedQuantity")}</div>,
-    },
-
-    {
-      accessorKey: "",
-      header: "Total Amount",
-      cell: ({ row }: any) => {
-        const totalAmount = row.original.totalAmount - row.original.discountAmount * (row.original.quantity - row.original.returnedQuantity) - row.original.returnedQuantity * row.original.sp;
-        return <div>{totalAmount}</div>;
-      },
-    },
-
-    {
-      accessorKey: "product",
-      header: "Image",
-      cell: ({ row }: any) => {
-        const image: any = row.getValue("product")?.image;
-
-        return (
-          <div>
-            {image && (
-              <Dialog.Root>
-                <Dialog.Trigger
-                  onClick={() => setpreviewImage(image)}
-                  className=" text-sm text-start  hover:bg-primary-foreground w-full">
-                  <Image
-                    src={image}
-                    alt="Branch Image"
-                    width={40}
-                    height={40}
-                    className=" border rounded-md"
-                  />
-                </Dialog.Trigger>
-                <Dialog.Portal>
-                  <Dialog.Overlay className="fixed inset-0 w-full h-full bg-black opacity-40" />
-                  <Dialog.Content className="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] px-4 w-full max-w-lg">
-                    {previewImage && (
-                      <Image
-                        src={previewImage}
-                        alt="Branch Image"
-                        width={400}
-                        height={400}
-                        className="  rounded-md"
-                      />
-                    )}
-                  </Dialog.Content>
-                </Dialog.Portal>
-              </Dialog.Root>
-            )}
-          </div>
-        );
-      },
-    },
-
-    {
       accessorKey: "createdAt",
       header: "Sold Date",
       cell: ({ row }: any) => <div>{moment(row.getValue("createdAt")).format("MMMM Do YYYY, h:mm:ss a")}</div>,
     },
 
-    // {
-    //   id: "actions",
-    //   header: "Action",
-    //   enableHiding: false,
-    //   cell: ({ row }) => {
-    //     const item = row.original;
+    {
+      id: "actions",
+      header: "Action",
+      enableHiding: false,
+      cell: ({ row }) => {
+        const item = row.original;
 
-    //     return (
-    //       <DropdownMenu>
-    //         <DropdownMenuTrigger asChild>
-    //           <Button
-    //             variant="ghost"
-    //             className="h-8 w-8 p-0">
-    //             <span className="sr-only">Open menu</span>
-    //             <MoreHorizontal className="h-4 w-4" />
-    //           </Button>
-    //         </DropdownMenuTrigger>
-    //         <DropdownMenuContent align="end">
-    //           <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
-    //           <DropdownMenuSeparator />
+              <DropdownMenuSeparator />
 
-    //           {/* <Link href={`/branch/sales/return/${item.saleId}`}>
-    //             <DropdownMenuItem>Return</DropdownMenuItem>
-    //           </Link> */}
+              {/* <Link href={`/branch/sales/return/${item.saleId}`}>
+                <DropdownMenuItem>Return</DropdownMenuItem>
+              </Link> */}
 
-    //           {/* <Link href={`/branch/sales/view/${item.saleId}`}>
-    //             <DropdownMenuItem>View detail</DropdownMenuItem>
-    //           </Link> */}
-    //         </DropdownMenuContent>
-    //       </DropdownMenu>
-    //     );
-    //   },
-    // },
+              <Link href={`/branch/transactions/${item._id}`}>
+                <DropdownMenuItem>View detail</DropdownMenuItem>
+              </Link>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
   ];
 
   const table = useReactTable({
@@ -226,25 +153,16 @@ export default function Page() {
     },
   });
 
-  // if (isFetching) {
-  //   return (
-  //     <div>
-  //       {" "}
-  //       <LoaderSpin />
-  //     </div>
-  //   );
-  // }
-
   return (
     <div className="w-full">
       <Breadcumb />
-      <div className="flex justify-end items-center py-4">
-        {/* <Input
-          placeholder="Filter by name ..."
-          value={searchName}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
+      <div className="flex justify-between items-center py-4">
+        <Input
+          placeholder="Filter phone..."
+          value={(table.getColumn("memberPhone")?.getFilterValue() as string) ?? ""}
+          onChange={(event) => table.getColumn("memberPhone")?.setFilterValue(event.target.value)}
           className="max-w-sm"
-        /> */}
+        />
 
         <div className=" flex space-x-2">
           <DropdownMenu>
@@ -365,7 +283,7 @@ function Breadcumb() {
           </BreadcrumbSeparator>
 
           <BreadcrumbItem>
-            <BreadcrumbPage>Sales</BreadcrumbPage>
+            <BreadcrumbPage>Transactions</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>

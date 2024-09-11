@@ -6,13 +6,14 @@ export const saleApi = createApi({
   baseQuery,
   endpoints: (builder) => ({
     getAllSale: builder.query({
-      query: ({ branch, page = 1, limit = 5, search, sort }) => {
+      query: ({ branch, page = 1, limit = 5, search, sort,transaction }) => {
         const params = {
           branch,
           page,
           limit,
           search,
           sort,
+          transaction
         };
         return {
           url: "/sales",

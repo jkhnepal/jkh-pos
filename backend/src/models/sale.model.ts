@@ -2,20 +2,24 @@ import mongoose from "mongoose";
 import { nanoid } from "../utils/nanoid";
 import { BranchDocument } from "./branch.model";
 import { ProductDocument } from "./product.model";
+import { TransactionDocument } from "./transaction.model";
 
 export interface SaleInput {
   branch: BranchDocument["_id"];
   product: ProductDocument["_id"];
+  transaction:TransactionDocument["_id"];
   memberName?: string;
   memberPhone?: string;
 
-  cp: number;
+  cp: number; 
   sp: number;
   quantity: number;
   totalAmount: number;
   discountAmount: number;
+  offerDiscountAmount: number;
   totalDiscountAmount: number;
   returnedQuantity?: number;
+
   invoiceNo: string;
 }
 
@@ -34,6 +38,7 @@ const saleSchema = new mongoose.Schema(
     },
     branch: { type: mongoose.Schema.Types.ObjectId, ref: "Branch", required: true },
     product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
+    transaction: { type: mongoose.Schema.Types.ObjectId, ref: "Transaction", required: true },
 
     quantity: { type: Number, required: true },
     cp: { type: Number, required: true },
@@ -45,9 +50,11 @@ const saleSchema = new mongoose.Schema(
 
     discountAmount: { type: Number, required: true },
     totalDiscountAmount: { type: Number, required: true },
+    offerDiscountAmount: { type: Number, required: true },
 
     returnedQuantity: { type: Number, required: true, default: 0 },
     invoiceNo: { type: String, required: true },
+
   },
   {
     timestamps: true,
