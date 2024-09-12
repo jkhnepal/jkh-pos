@@ -128,10 +128,15 @@ export async function getAllSaleByMonthHandler(req: any, res: Response, next: Ne
       {
         $group: {
           _id: null,
-          totalSalesAmount: { $sum: "$totalAmount" },
+          // totalSalesAmount: { $sum: "$soldAt" },
+          totalSalesAmount: {
+            $sum: {
+              $multiply: ["$quantity", "$soldAt"],
+            },
+          },
           totalReturnWorth: {
             $sum: {
-              $multiply: ["$returnedQuantity", "$sp"],
+              $multiply: ["$returnedQuantity", "$soldAt"],
             },
           },
         },
@@ -163,7 +168,13 @@ export async function getAllSaleByMonthHandler(req: any, res: Response, next: Ne
         discountAmount: sale.discountAmount,
         returnedQuantity: sale.returnedQuantity,
         invoiceNo: sale.invoiceNo,
-        totalAmountAfterReturn: sale.totalAmount - sale.sp * sale.returnedQuantity,
+        // totalAmountAfterReturn: sale.totalAmount - sale.sp * sale.returnedQuantity,
+        // totalAmountAfterReturn: sale.totalAmount - sale.soldAt * sale.returnedQuantity,
+
+        totalAmountAfterReturn: sale.totalAmount - sale.soldAt * sale.returnedQuantity - sale.totalDiscountAmount,
+        // totalAmountAfterReturn: sale.totalAmount - sale.sp * sale.returnedQuantity - sale.discountAmount - sale.offerDiscountAmount,
+        // totalamountafterreturn:   sale.totalAmount -   (sale.sp * sale.returnedQuantity) -   sale.discountAmount -   sale.offerDiscountAmount?sale.offerDiscountAmount:0,
+
         memberName: sale.memberName,
         memberPhone: sale.memberPhone,
         saleId: sale.saleId,

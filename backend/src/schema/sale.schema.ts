@@ -27,7 +27,6 @@ const payload = {
       required_error: "discountAmount is required",
     }),
 
-    
     totalDiscountAmount: coerce.number({
       required_error: "totalDiscountAmount is required",
     }),
@@ -82,10 +81,13 @@ const createPayload = {
         required_error: "offerDiscountAmount is required",
       }),
 
+      soldAt: coerce.number({
+        required_error: "offerDiscountAmount is required",
+      }),
+
       totalDiscountAmount: coerce.number({
         required_error: "totalDiscountAmount is required",
       }),
-  
 
       // totalAmountAfterDiscount: coerce.number({
       //   required_error: "totalAmountAfterDiscount is required",

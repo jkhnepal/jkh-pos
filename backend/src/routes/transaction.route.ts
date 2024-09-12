@@ -15,7 +15,8 @@ router.patch("/:transactionId", [requireAdmin,validate(updateTransactionSchema)]
 router.get("/:transactionId", [validate(getTransactionSchema)], getTransactionHandler);
 
 // GET ALL TRANSACTION
-router.get("/", [validate(getAllTransactionSchema)], getAllTransactionHandler);
+// router.get("/", [validate(getAllTransactionSchema)], getAllTransactionHandler);
+router.get("/",  getAllTransactionHandler);
 
 // DELETE TRANSACTION
 router.delete("/:transactionId", [requireAdmin,validate(deleteTransactionSchema)], deleteTransactionHandler);

@@ -3,6 +3,7 @@ import { nanoid } from "../utils/nanoid";
 
 export interface SettingInput {
   billNo: number;
+  discountOfferPercentage: number;
 }
 
 export interface SettingDocument extends SettingInput, mongoose.Document {
@@ -19,6 +20,9 @@ const settingSchema = new mongoose.Schema(
       default: () => `setting_${nanoid()}`,
     },
     billNo: { type: Number, required: true },
+    discountOfferPercentage: { type: Number}
+    
+    
   },
   {
     timestamps: true,

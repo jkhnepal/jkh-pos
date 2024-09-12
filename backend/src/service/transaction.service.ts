@@ -22,7 +22,7 @@ export async function findAllTransaction(filter: FilterQuery<TransactionDocument
   const count = await TransactionModel.countDocuments(filter);
 
   // const results = await TransactionModel.find()
-  const results = await TransactionModel.find().sort({ createdAt: -1 })
+  const results = await TransactionModel.find(filter).sort({ createdAt: -1 })
   .populate({
     path: 'sales.product',
     model: 'Product', // Referencing the Product model

@@ -9,6 +9,9 @@ export interface TransactionInput {
   memberPhone?: string;
   invoiceNo: string;
 
+  // cashPaid: number;
+  // onlinePaid: number;
+
   sales: {
     product: ProductDocument["_id"];
     memberName?: string;
@@ -21,7 +24,7 @@ export interface TransactionInput {
     totalDiscountAmount: number;
     returnedQuantity?: number;
     invoiceNo: string;
-  }[];  
+  }[];
 }
 
 export interface TransactionDocument extends TransactionInput, mongoose.Document {
@@ -41,6 +44,10 @@ const transactionSchema = new mongoose.Schema(
     memberName: { type: String },
     memberPhone: { type: String },
     invoiceNo: { type: String, required: true },
+
+    // cashPaid: { type: Number, required: true },
+    // onlinePaid: { type: Number, required: true },
+    
     sales: [
       {
         product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
