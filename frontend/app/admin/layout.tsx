@@ -161,6 +161,13 @@ const navItems = [
     href: "/admin/return-histories",
   },
 
+  {
+    name: "Settings",
+    icon: <Shirt size={18} />,
+    href: "/admin/settings",
+  },
+
+
   // {
   //   name: "Members",
   //   icon: <Users size={18} />,
