@@ -7,11 +7,11 @@ import { TransactionDocument } from "./transaction.model";
 export interface SaleInput {
   branch: BranchDocument["_id"];
   product: ProductDocument["_id"];
-  transaction:TransactionDocument["_id"];
+  transaction: TransactionDocument["_id"];
   memberName?: string;
   memberPhone?: string;
 
-  cp: number; 
+  cp: number;
   sp: number;
   quantity: number;
   totalAmount: number;
@@ -19,8 +19,10 @@ export interface SaleInput {
   offerDiscountAmount: number;
   totalDiscountAmount: number;
   returnedQuantity?: number;
-
+  soldAt: number;
   invoiceNo: string;
+
+  
 }
 
 export interface SaleDocument extends SaleInput, mongoose.Document {
@@ -54,7 +56,9 @@ const saleSchema = new mongoose.Schema(
 
     returnedQuantity: { type: Number, required: true, default: 0 },
     invoiceNo: { type: String, required: true },
+    soldAt: { type: Number, required: true },
 
+   
   },
   {
     timestamps: true,

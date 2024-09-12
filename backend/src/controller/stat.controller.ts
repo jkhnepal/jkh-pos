@@ -343,16 +343,58 @@ export async function getBranchProfitHandler(req: Request<{}, {}, {}>, res: Resp
   try {
     const queryParameter = req.query;
 
+    const sales = await SaleModel.find(queryParameter);
+    console.log("🚀 ~ getBranchProfitHandler ~ sales:", sales);
+
     const totalSales = await SaleModel.aggregate([
       {
         $match: {
           branch: new mongoose.Types.ObjectId(queryParameter.branch as string),
         },
       },
+
+      // {
+      //   $group: {
+      //     _id: null,
+      //     totalAmount: {
+      //       $sum: {
+      //         $multiply: [
+      //           "$soldAt",
+      //           { $subtract: ["$quantity", "$returnedQuantity"] } // soldAt * (quantity - returnedQuantity)
+      //         ]
+      //       }
+      //     }
+      //   },
+      // },
       {
         $group: {
           _id: null,
-          totalAmount: { $sum: "$totalAmount" },
+          totalAmount: {
+            $sum: {
+              $multiply: [
+                "$soldAt",
+                { $subtract: ["$quantity", "$returnedQuantity"] }, // soldAt * (quantity - returnedQuantity)
+              ],
+            },
+          },
+          totalCost: {
+            $sum: {
+              $multiply: [
+                "$cp",
+                { $subtract: ["$quantity", "$returnedQuantity"] }, // cp * (quantity - returnedQuantity)
+              ],
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          totalAmount: 1,
+          totalCost: 1,
+          totalProfit: {
+            $subtract: ["$totalAmount", "$totalCost"], // totalProfit = totalAmount - totalCost
+          },
         },
       },
     ]);
@@ -434,6 +476,7 @@ export async function getBranchProfitHandler(req: Request<{}, {}, {}>, res: Resp
     return res.status(200).json({
       status: "success",
       totalSales: totalSales[0]?.totalAmount | 0,
+      totalProfit: totalSales[0]?.totalProfit | 0,
       totalSalesAfterDiscount: totalSalesAfterDiscount[0]?.totalAmount | 0,
       totalCp: totalCp[0]?.cp | 0,
       totalReturnedDiscountAmount: totalReturnedDiscount[0]?.totalAmount | 0,

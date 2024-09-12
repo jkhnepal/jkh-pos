@@ -8,7 +8,7 @@ const router = express.Router();
 router.post("/", [requireAdmin], createSettingHandler);
 
 // UPDATE SETTING
-router.patch("/:settingId", [requireAdmin], updateSettingHandler);
+router.patch("/:settingId", updateSettingHandler);
 
 // GET SETTING BY ID
 router.get("/:settingId", getSettingHandler);

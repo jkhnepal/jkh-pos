@@ -29,6 +29,10 @@ const saleSchema = object({
   invoiceNo: string({
     required_error: "Invoice number is required",
   }),
+
+  // cashPaid: number().optional(),
+  // onlinePaid: number().optional(),
+  
 });
 
 const payload = {
